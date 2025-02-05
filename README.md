@@ -13,4 +13,4 @@ Continuous learning is what I seek.
 ### COURSE & YEAR: BSIT 3
 I am Chrizza Arnie T. Gales, a `3rd year BSIT` student from `Cebu Institute of Technology - University`.
 I currently live in Talisay City, Cebu. My hobbies are listening to music, reading manhwas, manhuas, and mangas, and watching movies or tv series.
-I hope to become a developer in the future so I could help my family.
+I hope to become a developer in the future so I could help my family. To God be the Glory!
