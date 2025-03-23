@@ -1,3 +1,20 @@
 <resources>
     <string name="app_name">CampusCart</string>
+    <string name="welcome">Welcome Back!</string>
+    <string name="form_subtitle">Student Access Module</string>
+    <string name="username">Username</string>
+    <string name="register_link">Register</string>
+    <string name="register_link2">Don\'t have an account? </string>
+    <string name="password">Password</string>
+    <string name="create_account">Create Your Account</string>
+    <string name="fn">First Name</string>
+    <string name="add">Address</string>
+    <string name="ln">Last Name</string>
+    <string name="cn">Contact No.</string>
+    <string name="email">Email</string>
+    <string name="register_btn">REGISTER</string>
+    <string name="login_btn">LOGIN</string>
+    <string name="login_link1">Already have an account?</string>
+    <string name="login_link2">Login</string>
+    <string name="logo">logo</string>
 </resources>
