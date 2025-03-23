@@ -72,7 +72,7 @@
                     android:id="@+id/logo"
                     android:layout_width="127dp"
                     android:layout_height="122dp"
-                    android:src="@drawable/logocit_1"
+                    android:src="@drawable/icon2"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
