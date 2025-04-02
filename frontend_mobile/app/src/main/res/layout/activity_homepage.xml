@@ -1,38 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/background_gradient"
-    android:fitsSystemWindows="true">
+    >
 
+    <!-- Top Section -->
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="0dp"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:padding="5dp">
 
         <ImageView
             android:id="@+id/imageView"
-            android:layout_width="212dp"
-            android:layout_height="73dp"
+            android:layout_width="200dp"
+            android:layout_height="70dp"
+            android:layout_gravity="left"
             app:srcCompat="@drawable/logo" />
 
-        <!-- Parent Container -->
+        <!-- Search Bar Container -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:elevation="4dp"
             android:gravity="center"
             android:orientation="horizontal"
-            android:padding="10dp">
+            android:padding="8dp"
+            android:layout_marginTop="-5dp">
 
-            <!-- Search Bar Container (White Background) -->
+            <!-- Search Input Container (With White Background) -->
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -63,21 +67,22 @@
                     android:textSize="16sp" />
             </LinearLayout>
 
-            <!-- Filter Button (Outside White Background) -->
+            <!-- Filter Button (Now Outside White Background) -->
             <ImageButton
-                android:id="@+id/imageButton"
+                android:id="@+id/btnShowFilters"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:background="@null"
                 android:padding="3dp"
                 android:scaleType="fitCenter"
-                app:srcCompat="@drawable/filter" />
+                app:srcCompat="@drawable/filter"
+                android:background="@null" />
         </LinearLayout>
 
-
+        <!-- Category Buttons (Scrollable) -->
         <HorizontalScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp">
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -89,7 +94,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="8dp"
-                    android:layout_weight="1"
                     android:background="@drawable/rounded_button"
                     android:text="Food"
                     android:textColor="#B69B0A"
@@ -100,7 +104,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="8dp"
-                    android:layout_weight="1"
                     android:background="@drawable/rounded_button"
                     android:text="Clothes"
                     android:textColor="#B69B0A"
@@ -111,7 +114,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="8dp"
-                    android:layout_weight="1"
                     android:background="@drawable/rounded_button"
                     android:text="Accessories"
                     android:textColor="#B69B0A"
@@ -122,7 +124,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="8dp"
-                    android:layout_weight="1"
                     android:background="@drawable/rounded_button"
                     android:text="Electronics"
                     android:textColor="#B69B0A"
@@ -132,33 +133,241 @@
                     android:id="@+id/btnMerch"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:background="@drawable/rounded_button"
                     android:text="Merchandise"
                     android:textColor="#B69B0A"
                     android:textStyle="bold" />
             </LinearLayout>
         </HorizontalScrollView>
+    </LinearLayout>
 
-        <ImageView
-            android:id="@+id/imageView2"
-            android:adjustViewBounds="true"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:srcCompat="@drawable/welcome" />
+    <!-- Featured Image -->
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:adjustViewBounds="true"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
+        app:srcCompat="@drawable/welcome" />
+
+    <!-- Section Title -->
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:text="Recently Listed"
+        android:textSize="17sp"
+        android:textColor="#89343B"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView2" />
+
+    <!-- Scrollable Content -->
+    <ScrollView
+        android:id="@+id/scrollView4"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView"
+        app:layout_constraintBottom_toTopOf="@+id/bottomNavBar">
 
         <LinearLayout
             android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Add your content here -->
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Image above Bottom NavBar but in front of ScrollView -->
+    <ImageView
+        android:id="@+id/btnAddProduct"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_marginBottom="5dp"
+        android:elevation="5dp"
+        android:padding="8dp"
+        app:layout_constraintBottom_toTopOf="@id/bottomNavBar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:srcCompat="@drawable/addproduct" />
+
+    <!-- Bottom Navigation Bar -->
+    <LinearLayout
+        android:id="@+id/bottomNavBar"
+        android:layout_width="match_parent"
+        android:layout_height="75dp"
+        android:background="#FED700"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:padding="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- Home -->
+        <LinearLayout
+            android:id="@+id/Home"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:orientation="horizontal">
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <ImageView
+                android:id="@+id/btnHome"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                app:srcCompat="@drawable/home" />
 
             <TextView
-                android:id="@+id/textView"
+                android:id="@+id/txtHome"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Popular Finds" />
+                android:text="Home"
+                android:textSize="13sp"
+                android:gravity="center"
+                android:textColor="#89343B"
+                android:textStyle="bold"/>
         </LinearLayout>
+
+        <!-- Browse -->
+        <LinearLayout
+            android:id="@+id/Browse"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <ImageView
+                android:id="@+id/btnBrowse"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                app:srcCompat="@drawable/search" />
+
+            <TextView
+                android:id="@+id/txtBrowse"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Browse"
+                android:textSize="13sp"
+                android:gravity="center"
+                android:textColor="#89343B"
+                android:textStyle="bold"/>
+        </LinearLayout>
+
+        <!-- Likes -->
+        <LinearLayout
+            android:id="@+id/Likes"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <ImageView
+                android:id="@+id/btnLikes"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                app:srcCompat="@drawable/heart" />
+
+            <TextView
+                android:id="@+id/txtLikes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Likes"
+                android:textSize="13sp"
+                android:gravity="center"
+                android:textColor="#89343B"
+                android:textStyle="bold"/>
+        </LinearLayout>
+
+        <!-- Notifications -->
+        <LinearLayout
+            android:id="@+id/Notifications"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <ImageView
+                android:id="@+id/btnNotifs"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                app:srcCompat="@drawable/notifications" />
+
+            <TextView
+                android:id="@+id/txtNotifs"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Notify"
+                android:textSize="13sp"
+                android:gravity="center"
+                android:textColor="#89343B"
+                android:textStyle="bold"/>
+        </LinearLayout>
+
+        <!-- Messages -->
+        <LinearLayout
+            android:id="@+id/Message"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <ImageView
+                android:id="@+id/btnMessage"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                app:srcCompat="@drawable/mail" />
+
+            <TextView
+                android:id="@+id/txtMessage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Message"
+                android:textSize="13sp"
+                android:gravity="center"
+                android:textColor="#89343B"
+                android:textStyle="bold"/>
+        </LinearLayout>
+
+        <!-- Profile -->
+        <LinearLayout
+            android:id="@+id/Profile"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <ImageView
+                android:id="@+id/btnProfile"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                app:srcCompat="@drawable/profile" />
+
+            <TextView
+                android:id="@+id/txtProfile"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Profile"
+                android:textSize="13sp"
+                android:gravity="center"
+                android:textColor="#89343B"
+                android:textStyle="bold"/>
+        </LinearLayout>
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
