@@ -79,34 +79,26 @@
         </LinearLayout>
     </LinearLayout>
 
-    <!-- ScrollView placed between search bar and bottom navigation -->
-    <ScrollView
-        android:id="@+id/scrollView"
+    <!-- RecyclerView for displaying products -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewProducts"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:fillViewport="true"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/linearLayout"
-        app:layout_constraintBottom_toTopOf="@id/bottomNavBar">
+        app:layout_constraintBottom_toTopOf="@id/bottomNavBar"
+        android:padding="8dp" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <!-- Add your content here -->
-
-        </LinearLayout>
-    </ScrollView>
-
-    <ImageView
+    <ImageButton
         android:id="@+id/btnAddProduct"
         android:layout_width="120dp"
         android:layout_height="120dp"
         android:layout_marginBottom="5dp"
         android:elevation="5dp"
         android:padding="8dp"
+        android:background="@null"
+        android:scaleType="fitCenter"
         app:layout_constraintBottom_toTopOf="@id/bottomNavBar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -125,7 +117,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- Navigation Items -->
+        <!-- Home -->
         <LinearLayout
             android:id="@+id/Home"
             android:layout_width="0dp"
@@ -134,23 +126,30 @@
             android:orientation="vertical"
             android:gravity="center">
 
-            <ImageView
+            <ImageButton
                 android:id="@+id/btnHome"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                app:srcCompat="@drawable/home" />
+                android:layout_gravity="center"
+                android:src="@drawable/home"
+                android:contentDescription="@string/home"
+                android:background="@null"
+                android:scaleType="fitCenter"
+                android:focusable="true"
+                android:clickable="true"/>
 
             <TextView
                 android:id="@+id/txtHome"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Home"
+                android:text="@string/home"
                 android:textSize="13sp"
                 android:gravity="center"
                 android:textColor="#89343B"
                 android:textStyle="bold"/>
         </LinearLayout>
 
+        <!-- Browse -->
         <LinearLayout
             android:id="@+id/Browse"
             android:layout_width="0dp"
@@ -159,23 +158,30 @@
             android:orientation="vertical"
             android:gravity="center">
 
-            <ImageView
+            <ImageButton
                 android:id="@+id/btnBrowse"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                app:srcCompat="@drawable/search" />
+                android:layout_gravity="center"
+                android:background="@null"
+                android:scaleType="fitCenter"
+                android:src="@drawable/search"
+                android:contentDescription="@string/browse"
+                android:focusable="true"
+                android:clickable="true"/>
 
             <TextView
                 android:id="@+id/txtBrowse"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Browse"
+                android:text="@string/browse"
                 android:textSize="13sp"
                 android:gravity="center"
                 android:textColor="#89343B"
                 android:textStyle="bold"/>
         </LinearLayout>
 
+        <!-- Likes -->
         <LinearLayout
             android:id="@+id/Likes"
             android:layout_width="0dp"
@@ -184,23 +190,30 @@
             android:orientation="vertical"
             android:gravity="center">
 
-            <ImageView
+            <ImageButton
                 android:id="@+id/btnLikes"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                app:srcCompat="@drawable/heart" />
+                android:layout_gravity="center"
+                android:background="@null"
+                android:scaleType="fitCenter"
+                android:src="@drawable/heart"
+                android:contentDescription="@string/likes"
+                android:focusable="true"
+                android:clickable="true"/>
 
             <TextView
                 android:id="@+id/txtLikes"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Likes"
+                android:text="@string/likes"
                 android:textSize="13sp"
                 android:gravity="center"
                 android:textColor="#89343B"
                 android:textStyle="bold"/>
         </LinearLayout>
 
+        <!-- Notifications -->
         <LinearLayout
             android:id="@+id/Notifications"
             android:layout_width="0dp"
@@ -209,23 +222,30 @@
             android:orientation="vertical"
             android:gravity="center">
 
-            <ImageView
+            <ImageButton
                 android:id="@+id/btnNotifs"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                app:srcCompat="@drawable/notifications" />
+                android:layout_gravity="center"
+                android:background="@null"
+                android:scaleType="fitCenter"
+                android:src="@drawable/notifications"
+                android:contentDescription="@string/notifications"
+                android:focusable="true"
+                android:clickable="true"/>
 
             <TextView
                 android:id="@+id/txtNotifs"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Notify"
+                android:text="@string/notify"
                 android:textSize="13sp"
                 android:gravity="center"
                 android:textColor="#89343B"
                 android:textStyle="bold"/>
         </LinearLayout>
 
+        <!-- Messages -->
         <LinearLayout
             android:id="@+id/Message"
             android:layout_width="0dp"
@@ -234,23 +254,30 @@
             android:orientation="vertical"
             android:gravity="center">
 
-            <ImageView
+            <ImageButton
                 android:id="@+id/btnMessage"
-                android:layout_width="40dp"
+                android:layout_width="36dp"
                 android:layout_height="40dp"
-                app:srcCompat="@drawable/mail" />
+                android:layout_gravity="center"
+                android:background="@null"
+                android:scaleType="fitCenter"
+                android:contentDescription="@string/messages"
+                android:src="@drawable/mail"
+                android:focusable="true"
+                android:clickable="true"/>
 
             <TextView
                 android:id="@+id/txtMessage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Message"
+                android:text="@string/message2"
                 android:textSize="13sp"
                 android:gravity="center"
                 android:textColor="#89343B"
                 android:textStyle="bold"/>
         </LinearLayout>
 
+        <!-- Profile -->
         <LinearLayout
             android:id="@+id/Profile"
             android:layout_width="0dp"
@@ -259,17 +286,23 @@
             android:orientation="vertical"
             android:gravity="center">
 
-            <ImageView
+            <ImageButton
                 android:id="@+id/btnProfile"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                app:srcCompat="@drawable/profile" />
+                android:layout_gravity="center"
+                android:background="@null"
+                android:scaleType="fitCenter"
+                android:src="@drawable/profile"
+                android:contentDescription="@string/profile"
+                android:focusable="true"
+                android:clickable="true"/>
 
             <TextView
                 android:id="@+id/txtProfile"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Profile"
+                android:text="@string/profile"
                 android:textSize="13sp"
                 android:gravity="center"
                 android:textColor="#89343B"
@@ -277,4 +310,10 @@
         </LinearLayout>
     </LinearLayout>
 
+    <include
+        android:id="@+id/productForm"
+        layout="@layout/activity_add_product"
+        android:visibility="gone" />
 </androidx.constraintlayout.widget.ConstraintLayout>
+
+

@@ -1,6 +1,139 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <LinearLayout
+        android:id="@+id/productFormContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp"
+        android:layout_margin="24dp"
+        android:background="@drawable/form_background"
+        android:elevation="8dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Add New Product"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="#7B1F26"
+            android:gravity="center"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Product Fields -->
+        <EditText
+            android:id="@+id/inputProductName"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:background="@drawable/form_field"
+            android:hint="Product Name" />
+
+        <EditText
+            android:id="@+id/inputDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Description"
+            android:minLines="3"
+            android:gravity="top"
+            android:inputType="textMultiLine"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/form_field"/>
+
+        <Spinner
+            android:id="@+id/dropCategory"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/form_field"/>
+
+        <EditText
+            android:id="@+id/inputStatus"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:text="Pending"
+            android:enabled="false"
+            android:focusable="false"
+            android:textColorHint="#999999"
+            android:textColor="#000000"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/form_field"/>
+
+
+        <Spinner
+            android:id="@+id/dropCondition"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/form_field"/>
+
+        <EditText
+            android:id="@+id/inputQuantity"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:hint="Quantity In Stock"
+            android:inputType="number"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/form_field"/>
+
+        <EditText
+            android:id="@+id/inputPrice"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:hint="Price"
+            android:inputType="numberDecimal"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/form_field"/>
+
+        <ImageView
+            android:id="@+id/imagePreview"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_marginTop="8dp"
+            android:scaleType="fitCenter"
+            android:background="@drawable/form_background"
+            android:src="@drawable/defaultimage" />
+
+        <Button
+            android:id="@+id/btnSelectImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Choose Image"
+            android:layout_marginTop="8dp" />
+
+        <!-- Buttons -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <Button
+                android:id="@+id/btnBack"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Back"
+                android:textStyle="bold"
+                android:textColor="#7B1F26"
+                android:background="@drawable/rounded_button2" />
+
+            <Space
+                android:layout_width="16dp"
+                android:layout_height="wrap_content" />
+
+            <Button
+                android:id="@+id/btnSubmit"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Submit"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF"
+                android:background="@drawable/rounded_button3" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

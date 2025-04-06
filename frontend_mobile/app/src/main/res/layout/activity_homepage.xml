@@ -187,13 +187,15 @@
     </ScrollView>
 
     <!-- Image above Bottom NavBar but in front of ScrollView -->
-    <ImageView
+    <ImageButton
         android:id="@+id/btnAddProduct"
         android:layout_width="120dp"
         android:layout_height="120dp"
         android:layout_marginBottom="5dp"
         android:elevation="5dp"
         android:padding="8dp"
+        android:background="@null"
+        android:scaleType="fitCenter"
         app:layout_constraintBottom_toTopOf="@id/bottomNavBar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -221,11 +223,17 @@
             android:orientation="vertical"
             android:gravity="center">
 
-            <ImageView
+            <ImageButton
                 android:id="@+id/btnHome"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                app:srcCompat="@drawable/home" />
+                android:layout_gravity="center"
+                android:src="@drawable/home"
+                android:contentDescription="Home"
+                android:background="@null"
+                android:scaleType="fitCenter"
+                android:focusable="true"
+                android:clickable="true"/>
 
             <TextView
                 android:id="@+id/txtHome"
@@ -247,11 +255,17 @@
             android:orientation="vertical"
             android:gravity="center">
 
-            <ImageView
+            <ImageButton
                 android:id="@+id/btnBrowse"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                app:srcCompat="@drawable/search" />
+                android:layout_gravity="center"
+                android:background="@null"
+                android:scaleType="fitCenter"
+                android:src="@drawable/search"
+                android:contentDescription="Browse"
+                android:focusable="true"
+                android:clickable="true"/>
 
             <TextView
                 android:id="@+id/txtBrowse"
@@ -273,11 +287,17 @@
             android:orientation="vertical"
             android:gravity="center">
 
-            <ImageView
+            <ImageButton
                 android:id="@+id/btnLikes"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                app:srcCompat="@drawable/heart" />
+                android:layout_gravity="center"
+                android:background="@null"
+                android:scaleType="fitCenter"
+                android:src="@drawable/heart"
+                android:contentDescription="Likes"
+                android:focusable="true"
+                android:clickable="true"/>
 
             <TextView
                 android:id="@+id/txtLikes"
@@ -299,11 +319,17 @@
             android:orientation="vertical"
             android:gravity="center">
 
-            <ImageView
+            <ImageButton
                 android:id="@+id/btnNotifs"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                app:srcCompat="@drawable/notifications" />
+                android:layout_gravity="center"
+                android:background="@null"
+                android:scaleType="fitCenter"
+                android:src="@drawable/notifications"
+                android:contentDescription="Notifications"
+                android:focusable="true"
+                android:clickable="true"/>
 
             <TextView
                 android:id="@+id/txtNotifs"
@@ -325,11 +351,17 @@
             android:orientation="vertical"
             android:gravity="center">
 
-            <ImageView
+            <ImageButton
                 android:id="@+id/btnMessage"
-                android:layout_width="40dp"
+                android:layout_width="36dp"
                 android:layout_height="40dp"
-                app:srcCompat="@drawable/mail" />
+                android:layout_gravity="center"
+                android:background="@null"
+                android:scaleType="fitCenter"
+                android:contentDescription="Messages"
+                android:src="@drawable/mail"
+                android:focusable="true"
+                android:clickable="true"/>
 
             <TextView
                 android:id="@+id/txtMessage"
@@ -351,11 +383,17 @@
             android:orientation="vertical"
             android:gravity="center">
 
-            <ImageView
+            <ImageButton
                 android:id="@+id/btnProfile"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                app:srcCompat="@drawable/profile" />
+                android:layout_gravity="center"
+                android:background="@null"
+                android:scaleType="fitCenter"
+                android:src="@drawable/profile"
+                android:contentDescription="Profile"
+                android:focusable="true"
+                android:clickable="true"/>
 
             <TextView
                 android:id="@+id/txtProfile"
@@ -369,5 +407,8 @@
         </LinearLayout>
 
     </LinearLayout>
-
+    <include
+        android:id="@+id/productForm"
+        layout="@layout/activity_add_product"
+        android:visibility="gone" />
 </androidx.constraintlayout.widget.ConstraintLayout>
