@@ -5,8 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/background_gradient"
-    >
+    android:background="@drawable/background_gradient">
 
     <!-- Top Section -->
     <LinearLayout
@@ -14,10 +13,10 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintStart_toStartOf="parent"
+        android:padding="5dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:padding="5dp">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
             android:id="@+id/imageView"
@@ -28,15 +27,16 @@
 
         <!-- Search Bar Container -->
         <LinearLayout
+            android:id="@+id/searchBarContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
             android:elevation="4dp"
             android:gravity="center"
             android:orientation="horizontal"
-            android:padding="8dp"
-            android:layout_marginTop="-5dp">
+            android:padding="8dp">
 
-            <!-- Search Input Container (With White Background) -->
+            <!-- Search Input Container -->
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -67,114 +67,28 @@
                     android:textSize="16sp" />
             </LinearLayout>
 
-            <!-- Filter Button (Now Outside White Background) -->
+            <!-- Filter Button -->
             <ImageButton
                 android:id="@+id/btnShowFilters"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
+                android:background="@null"
                 android:padding="3dp"
                 android:scaleType="fitCenter"
-                app:srcCompat="@drawable/filter"
-                android:background="@null" />
+                app:srcCompat="@drawable/filter" />
         </LinearLayout>
-
-        <!-- Category Buttons (Scrollable) -->
-        <HorizontalScrollView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp">
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <Button
-                    android:id="@+id/btnFood"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:background="@drawable/rounded_button"
-                    android:text="Food"
-                    android:textColor="#B69B0A"
-                    android:textStyle="bold" />
-
-                <Button
-                    android:id="@+id/btnClothes"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:background="@drawable/rounded_button"
-                    android:text="Clothes"
-                    android:textColor="#B69B0A"
-                    android:textStyle="bold" />
-
-                <Button
-                    android:id="@+id/btnAccessories"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:background="@drawable/rounded_button"
-                    android:text="Accessories"
-                    android:textColor="#B69B0A"
-                    android:textStyle="bold" />
-
-                <Button
-                    android:id="@+id/btnElectronics"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:background="@drawable/rounded_button"
-                    android:text="Electronics"
-                    android:textColor="#B69B0A"
-                    android:textStyle="bold" />
-
-                <Button
-                    android:id="@+id/btnMerch"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/rounded_button"
-                    android:text="Merchandise"
-                    android:textColor="#B69B0A"
-                    android:textStyle="bold" />
-            </LinearLayout>
-        </HorizontalScrollView>
     </LinearLayout>
 
-    <!-- Featured Image -->
-    <ImageView
-        android:id="@+id/imageView2"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:adjustViewBounds="true"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
-        app:srcCompat="@drawable/welcome" />
-
-    <!-- Section Title -->
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:text="Recently Listed"
-        android:textSize="17sp"
-        android:textColor="#89343B"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView2" />
-
-    <!-- Scrollable Content -->
+    <!-- ScrollView placed between search bar and bottom navigation -->
     <ScrollView
-        android:id="@+id/scrollView4"
+        android:id="@+id/scrollView"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:fillViewport="true"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView"
-        app:layout_constraintBottom_toTopOf="@+id/bottomNavBar">
+        app:layout_constraintTop_toBottomOf="@id/linearLayout"
+        app:layout_constraintBottom_toTopOf="@id/bottomNavBar">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -186,7 +100,6 @@
         </LinearLayout>
     </ScrollView>
 
-    <!-- Image above Bottom NavBar but in front of ScrollView -->
     <ImageView
         android:id="@+id/btnAddProduct"
         android:layout_width="120dp"
@@ -212,7 +125,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- Home -->
+        <!-- Navigation Items -->
         <LinearLayout
             android:id="@+id/Home"
             android:layout_width="0dp"
@@ -238,7 +151,6 @@
                 android:textStyle="bold"/>
         </LinearLayout>
 
-        <!-- Browse -->
         <LinearLayout
             android:id="@+id/Browse"
             android:layout_width="0dp"
@@ -264,7 +176,6 @@
                 android:textStyle="bold"/>
         </LinearLayout>
 
-        <!-- Likes -->
         <LinearLayout
             android:id="@+id/Likes"
             android:layout_width="0dp"
@@ -290,7 +201,6 @@
                 android:textStyle="bold"/>
         </LinearLayout>
 
-        <!-- Notifications -->
         <LinearLayout
             android:id="@+id/Notifications"
             android:layout_width="0dp"
@@ -316,7 +226,6 @@
                 android:textStyle="bold"/>
         </LinearLayout>
 
-        <!-- Messages -->
         <LinearLayout
             android:id="@+id/Message"
             android:layout_width="0dp"
@@ -342,7 +251,6 @@
                 android:textStyle="bold"/>
         </LinearLayout>
 
-        <!-- Profile -->
         <LinearLayout
             android:id="@+id/Profile"
             android:layout_width="0dp"
@@ -367,7 +275,6 @@
                 android:textColor="#89343B"
                 android:textStyle="bold"/>
         </LinearLayout>
-
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
