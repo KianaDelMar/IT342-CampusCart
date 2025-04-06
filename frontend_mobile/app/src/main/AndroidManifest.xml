@@ -27,6 +27,8 @@
         </activity>
         <activity android:name=".RegisterActivity" />
         <activity android:name=".HomePage" />
+        <activity android:name=".BrowsePage"/>
+        <activity android:name=".AddProductActivity"/>
         <meta-data
             android:name="JankMonitoring"
             android:value="false"/>

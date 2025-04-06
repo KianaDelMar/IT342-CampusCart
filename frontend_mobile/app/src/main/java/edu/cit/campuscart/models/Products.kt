@@ -7,11 +7,13 @@ data class Products(
     @SerializedName("name") val name: String,
     @SerializedName("pdtDescription") val pdtDescription: String,
     @SerializedName("qtyInStock") val qtyInStock: Int,
-    @SerializedName("buyPrice") val buyPrice: Float,
+    @SerializedName("buyPrice") val buyPrice: Double,
     @SerializedName("imagePath") val imagePath: String,
     @SerializedName("category") val category: String,
     @SerializedName("status") val status: String,
     @SerializedName("conditionType") val conditionType: String,
 
-    @SerializedName("seller") val seller: Seller
+    //@SerializedName("seller") val seller: Seller?
+    @SerializedName("sellerUsername") val sellerUsername: String?,
+    @SerializedName("sellerPhoto") val sellerPhoto: String?
 )
