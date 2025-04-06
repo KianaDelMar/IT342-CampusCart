@@ -49,18 +49,21 @@ class RegisterActivity : AppCompatActivity() {
             startActivity(Intent(this, MainActivity::class.java))
         }
     }
-
+    private var selectedPhoto: String? = null
     private fun registerSeller() {
-        val seller = Seller(
-            username.text.toString(),
-            firstname.text.toString(),
-            lastname.text.toString(),
-            address.text.toString(),
-            contactno.text.toString(),
-            email.text.toString(),
-            password.text.toString()
-        )
+        // Check if the user has uploaded a profile photo
+        val profilePhoto = selectedPhoto ?: "defaultphoto.jpg"  // If no photo selected, use "defaultphoto.jpg"
 
+        val seller = Seller(
+            username = username.text.toString(),
+            firstName = firstname.text.toString(),
+            lastName = lastname.text.toString(),
+            address = address.text.toString(),
+            contactNo = contactno.text.toString(),
+            email = email.text.toString(),
+            password = password.text.toString(),
+            profilePhoto = profilePhoto // Use the determined profile photo
+        )
         RetrofitClient.instance.registerSeller(seller)
             .enqueue(object : Callback<Void> {
                 override fun onResponse(call: Call<Void>, response: Response<Void>) {

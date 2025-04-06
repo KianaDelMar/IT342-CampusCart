@@ -17,4 +17,13 @@
     <string name="login_link1">Already have an account?</string>
     <string name="login_link2">Login</string>
     <string name="logo">logo</string>
+    <string name="product_name">Product Name</string>
+    <string name="messages">Messages</string>
+    <string name="message2">Message</string>
+    <string name="profile">Profile</string>
+    <string name="notify">Notify</string>
+    <string name="notifications">Notifications</string>
+    <string name="likes">Likes</string>
+    <string name="browse">Browse</string>
+    <string name="home">Home</string>
 </resources>

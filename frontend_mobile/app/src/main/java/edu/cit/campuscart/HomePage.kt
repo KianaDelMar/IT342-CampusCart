@@ -1,15 +1,16 @@
 package edu.cit.campuscart
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.ImageButton
+import android.widget.LinearLayout
 import android.widget.PopupWindow
 import android.widget.Spinner
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContentProviderCompat.requireContext
 
 class HomePage : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -17,12 +18,32 @@ class HomePage : AppCompatActivity() {
         setContentView(R.layout.activity_homepage) // Make sure this layout exists!
 
         val btnShowFilters = findViewById<ImageButton>(R.id.btnShowFilters)
+        val addButton = findViewById<ImageButton>(R.id.btnAddProduct)
+        addButton.setOnClickListener {
+            startActivity(Intent(this, AddProductActivity::class.java))
+        }
 
         btnShowFilters.setOnClickListener {
             showFilterPopup(it)
         }
-    }
 
+        // Home button click listener
+        val homeButton = findViewById<ImageButton>(R.id.btnHome)
+        homeButton.setOnClickListener {
+            // If you're already on HomePage, no need to start a new instance of HomePage
+            if (this::class.java != HomePage::class.java) {
+                startActivity(Intent(this@HomePage, HomePage::class.java))
+                finish() // Optional: Close the current activity to prevent back navigation to the same page
+            }
+        }
+
+// Browse button click listener
+        val browseButton = findViewById<ImageButton>(R.id.btnBrowse)
+        browseButton.setOnClickListener {
+            // Navigate to Browse Page
+            startActivity(Intent(this@HomePage, BrowsePage::class.java))
+        }
+    }
     private fun showFilterPopup(anchorView: View) {
         // Inflate the filter_dialog.xml layout
         val popupView = LayoutInflater.from(this).inflate(R.layout.filter_dialog, null)

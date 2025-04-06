@@ -54,6 +54,9 @@ class MainActivity : AppCompatActivity() {
                     if (responseBody?.message == "Login Successful") {
                         Toast.makeText(this@MainActivity, "Login Successful", Toast.LENGTH_SHORT).show()
 
+                        val sharedPref = getSharedPreferences("CampusCartPrefs", MODE_PRIVATE)
+                        sharedPref.edit().putString("loggedInUsername", username).apply()
+
                         val intent = Intent(this@MainActivity, HomePage::class.java)
                         startActivity(intent)
                         finish()
