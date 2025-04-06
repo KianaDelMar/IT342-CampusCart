@@ -187,19 +187,30 @@ app/
 
 ### Backend
 #### Run the App
-##### 1. Open Terminal:
+##### 1. Open Terminal and navigate to the backend project directory:
 ```
-npm start
+cd backend/
 ```
-##### 2. The app should launch and display the Login Page.
+##### 2. Build and run the Spring Boot application by typing the following command in the terminal.
 ```
-app/
+mvnw.cmd spring-boot:run
+
+```
+##### 3. The backend should now be running at.
+```
+http://localhost:8080
+
+backend/
 ├── src/
-│   └── Pages/
-│       └── LoginRegister/
-│           └── AdminLogin.jsx
-│           ├── Login.jsx          #Login Page
-│           └── Register.jsx            
+│   └── main/
+│       ├── java/edu/cit/campuscart/
+│       │   ├── controller/         # Handles API requests
+│       │   ├── service/            # Business logic layer
+│		│	├── repository/         # Abstraction layer over the database
+│       │   ├── entity/              # Data models / entities
+│       │   └── CampuscartApplication.java  # Main entry point
+│       └── resources/
+│           └── application.properties      # App configurations
 
 ```
 ---
