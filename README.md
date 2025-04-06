@@ -206,7 +206,6 @@ backend/
 │       ├── java/edu/cit/campuscart/
 │       │   ├── controller/         # Handles API requests
 │       │   ├── service/            # Business logic layer
-│		│	├── repository/         # Abstraction layer over the database
 │       │   ├── entity/              # Data models / entities
 │       │   └── CampuscartApplication.java  # Main entry point
 │       └── resources/
