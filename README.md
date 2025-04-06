@@ -235,9 +235,3 @@ I hope to become a developer in the future so I could help my family. To God be 
 </a>
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
----
-
-## License
-This project is open-source and licensed under the MIT License.  See `LICENSE.txt` for more information.
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
