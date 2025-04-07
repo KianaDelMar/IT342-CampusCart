@@ -40,7 +40,7 @@ class AddProductActivity : AppCompatActivity() {
         val condition = findViewById<Spinner>(R.id.dropCondition)
 
         // Setup dropdowns
-        val categories = listOf("Select Category", "Electronics", "Clothes", "Food", "Accessories")
+        val categories = listOf("Select Category", "Select Category", "Electronics", "Clothes", "Food", "Accessories", "Stationery/Arts & Crafts", "Merchandise", "Beauty", "Books", "Others")
         val conditions = listOf("Select Condition", "New", "Pre-Loved")
 
         category.adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, categories)
