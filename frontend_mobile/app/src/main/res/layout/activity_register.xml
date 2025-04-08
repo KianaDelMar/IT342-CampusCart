@@ -8,8 +8,6 @@
     android:id="@+id/register"
     tools:context=".RegisterActivity">
 
-
-
     <ScrollView
         android:layout_width="414dp"
         android:layout_height="730dp"
@@ -230,8 +228,5 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.cardview.widget.CardView>
     </ScrollView>
-
-
-    <!-- Register Link -->
 
 </androidx.constraintlayout.widget.ConstraintLayout>
