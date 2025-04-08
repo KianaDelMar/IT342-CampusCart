@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.ImageButton
-import android.widget.LinearLayout
 import android.widget.PopupWindow
 import android.widget.Spinner
 import android.widget.Toast
@@ -108,7 +107,6 @@ class BrowsePage : AppCompatActivity() {
         // Inflate the filter_dialog.xml layout
         val popupView = LayoutInflater.from(this).inflate(R.layout.filter_dialog, null)
 
-        // Create PopupWindow
         val popupWindow = PopupWindow(
             popupView,
             ViewGroup.LayoutParams.WRAP_CONTENT,  // Corrected reference
@@ -123,7 +121,6 @@ class BrowsePage : AppCompatActivity() {
         // Get screen width to adjust position
         val screenWidth = resources.displayMetrics.widthPixels
 
-        // Calculate X position to align to the right of the button
         val popupX = location[0] + anchorView.width // Start from the right edge of the button
         val popupY = location[1] + anchorView.height // Position below the button
 
