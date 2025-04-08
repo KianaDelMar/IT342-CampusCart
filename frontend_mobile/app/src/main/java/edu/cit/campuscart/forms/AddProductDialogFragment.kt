@@ -12,7 +12,6 @@ import androidx.fragment.app.DialogFragment
 import edu.cit.campuscart.databinding.DialogAddProductBinding
 
 class AddProductDialogFragment : DialogFragment() {
-
     private var _binding: DialogAddProductBinding? = null
     private val binding get() = _binding!!
 
