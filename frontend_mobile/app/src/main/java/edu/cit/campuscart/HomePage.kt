@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.ImageButton
-import android.widget.LinearLayout
 import android.widget.PopupWindow
 import android.widget.Spinner
 import android.widget.TextView
@@ -41,15 +40,14 @@ class HomePage : AppCompatActivity() {
             // If you're already on HomePage, no need to start a new instance of HomePage
             if (this::class.java != HomePage::class.java) {
                 startActivity(Intent(this@HomePage, HomePage::class.java))
-                finish() // Optional: Close the current activity to prevent back navigation to the same page
+                finish()
             }
         }
 
 // Browse button click listener
         val browseButton = findViewById<ImageButton>(R.id.btnBrowse)
         browseButton.setOnClickListener {
-            // Navigate to Browse Page
-            startActivity(Intent(this@HomePage, BrowsePage::class.java))
+            startActivity(Intent(this@HomePage, BrowsePage::class.java))// Navigate to Browse Page
         }
     }
     private fun showFilterPopup(anchorView: View) {
@@ -59,7 +57,7 @@ class HomePage : AppCompatActivity() {
         // Create PopupWindow
         val popupWindow = PopupWindow(
             popupView,
-            ViewGroup.LayoutParams.WRAP_CONTENT,  // Corrected reference
+            ViewGroup.LayoutParams.WRAP_CONTENT,
             ViewGroup.LayoutParams.WRAP_CONTENT,
             true // Focusable
         )
@@ -71,7 +69,6 @@ class HomePage : AppCompatActivity() {
         // Get screen width to adjust position
         val screenWidth = resources.displayMetrics.widthPixels
 
-        // Calculate X position to align to the right of the button
         val popupX = location[0] + anchorView.width // Start from the right edge of the button
         val popupY = location[1] + anchorView.height // Position below the button
 
@@ -91,7 +88,6 @@ class HomePage : AppCompatActivity() {
         val spinnerCategory = popupView.findViewById<Spinner>(R.id.spinnerCategory)
         val spinnerCondition = popupView.findViewById<Spinner>(R.id.spinnerCondition)
 
-// Define the dropdown items
         val categories = listOf("Select Category", "Electronics", "Clothes", "Food", "Accessories", "Stationery/Arts & Crafts", "Merchandise", "Beauty", "Books", "Others")
         val conditions = listOf("Select Condition", "New", "Used", "Others")
 
