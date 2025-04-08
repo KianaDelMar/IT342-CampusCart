@@ -7,6 +7,10 @@ android {
     namespace = "edu.cit.campuscart"
     compileSdk = 35
 
+    buildFeatures {
+        viewBinding = true
+    }
+
     defaultConfig {
         applicationId = "edu.cit.campuscart"
         minSdk = 27

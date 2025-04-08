@@ -10,17 +10,25 @@ import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.PopupWindow
 import android.widget.Spinner
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import edu.cit.campuscart.forms.AddProductDialogFragment
 
 class HomePage : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_homepage) // Make sure this layout exists!
 
+        val sharedPref = getSharedPreferences("CampusCartPrefs", MODE_PRIVATE)
+        val username = sharedPref.getString("loggedInUsername", "User")
+        val txtUsername = findViewById<TextView>(R.id.txtUsername)
+        txtUsername.text = "Welcome, $username!"
+
         val btnShowFilters = findViewById<ImageButton>(R.id.btnShowFilters)
         val addButton = findViewById<ImageButton>(R.id.btnAddProduct)
         addButton.setOnClickListener {
-            startActivity(Intent(this, AddProductActivity::class.java))
+            val dialog = AddProductDialogFragment()
+            dialog.show(supportFragmentManager, "AddProductDialog")
         }
 
         btnShowFilters.setOnClickListener {

@@ -312,7 +312,7 @@
 
     <include
         android:id="@+id/productForm"
-        layout="@layout/activity_add_product"
+        layout="@layout/dialog_add_product"
         android:visibility="gone" />
 </androidx.constraintlayout.widget.ConstraintLayout>
 
