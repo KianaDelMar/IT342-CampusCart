@@ -12,8 +12,6 @@ data class Products(
     @SerializedName("category") val category: String,
     @SerializedName("status") val status: String,
     @SerializedName("conditionType") val conditionType: String,
-
-    //@SerializedName("seller") val seller: Seller?
     @SerializedName("sellerUsername") val sellerUsername: String?,
     @SerializedName("sellerPhoto") val sellerPhoto: String?
 )

@@ -1,4 +1,3 @@
-// edu/cit/campuscart/utils/RetrofitClient.kt
 package edu.cit.campuscart.utils
 
 import edu.cit.campuscart.api.ApiService
