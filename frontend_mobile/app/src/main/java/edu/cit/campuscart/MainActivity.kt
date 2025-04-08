@@ -11,7 +11,6 @@ import retrofit2.Callback
 import retrofit2.Response
 import edu.cit.campuscart.models.LoginResponse
 import edu.cit.campuscart.models.LoginRequest
-import edu.cit.campuscart.api.ApiService
 import edu.cit.campuscart.utils.RetrofitClient
 
 class MainActivity : AppCompatActivity() {
