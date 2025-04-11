@@ -17,12 +17,13 @@ import { Person, Lock } from '@mui/icons-material';
 import logo from '../../assets/img/logocit-1.png';
 import cit from '../../assets/img/cit-1.jpg';
 
-
 const StudentLogin = () => {
     const [credentials, setCredentials] = useState({ username: '', password: '' });
     const [errorMessage, setErrorMessage] = useState('');
     const { login } = useAuth();
     const navigate = useNavigate();
+
+    console.log('Image path:', cit);
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -34,7 +35,7 @@ const StudentLogin = () => {
 
         console.log('Logging in with credentials:', credentials);
         try {
-            const response = await axios.post('http://localhost:8080/api/seller/login', credentials);
+            const response = await axios.post('http://localhost:8080/api/user/login', credentials);
             console.log('Login Successful', response.data);
             const userData = response.data;
 
@@ -51,9 +52,6 @@ const StudentLogin = () => {
         <Grid container sx={{ minHeight: '100vh' }}>
             {/* Left Side: Image */}
             <Grid
-                item
-                xs={12}
-                md={6}
                 sx={{
                     backgroundImage: `url(${cit})`,
                     backgroundSize: 'cover',
@@ -61,6 +59,7 @@ const StudentLogin = () => {
                     display: { xs: 'none', md: 'block' },
                     position: 'relative',
                     height: '100vh',
+                    width: { xs: '100%', md: '50%' }
                 }}
             >
                 <Box
@@ -93,14 +92,12 @@ const StudentLogin = () => {
 
             {/* Right Side: Form */}
             <Grid
-                item
-                xs={12}
-                md={6}
-                display="flex"
-                alignItems="center"
-                justifyContent="center"
                 sx={{
+                    width: { xs: '100%', md: '50%' },
                     padding: { xs: 4, md: 8 },
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
                 }}
             >
                 <Paper
