@@ -1,4 +1,3 @@
-// edu/cit/campuscart/adapters/ProductAdapters.kt
 package edu.cit.campuscart.adapters
 
 import android.view.LayoutInflater
@@ -29,8 +28,7 @@ class ProductAdapters(private val products: List<Products>) : RecyclerView.Adapt
         holder.productDescription.text = product.pdtDescription
         holder.sellerUsername.text = product.sellerUsername?: "Unknown Seller"
 
-        // Load product image
-        Picasso.get()
+        Picasso.get()// Load product image
             .load("${Constants.BASE_URL}/${product.imagePath}")
             .placeholder(R.drawable.defaultimage)
             .error(R.drawable.defaultimage)
@@ -44,14 +42,11 @@ class ProductAdapters(private val products: List<Products>) : RecyclerView.Adapt
                 .error(R.drawable.defaultphoto)
                 .into(holder.sellerPhoto)
         } else {
-            // fallback image
-            holder.sellerPhoto.setImageResource(R.drawable.defaultphoto)
+            holder.sellerPhoto.setImageResource(R.drawable.defaultphoto)// fallback image
         }
     }
 
-
     override fun getItemCount(): Int = products.size
-
     inner class ProductViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val productName: TextView = view.findViewById(R.id.product_name)
         val productPrice: TextView = view.findViewById(R.id.product_price)

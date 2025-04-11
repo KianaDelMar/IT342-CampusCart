@@ -19,14 +19,13 @@ import retrofit2.http.Path
 
 interface ApiService {
     @Headers("Content-Type: application/json")
-    @POST("api/seller/postSellerRecord") // Endpoint
-    fun registerSeller(@Body seller: Seller): Call<Void> // No response body expected
+    @POST("api/seller/postSellerRecord")
+    fun registerSeller(@Body seller: Seller): Call<Void>
 
     @Headers("Content-Type: application/json")
     @POST("api/seller/login")
     fun login(@Body request: LoginRequest): Call<LoginResponse>
 
-    // New endpoint for posting a product
     @Multipart
     @POST("api/seller/postproduct")
     fun postProduct(
@@ -52,7 +51,6 @@ interface ApiService {
     @GET("/{imagePath}")
     fun getProductImage(@Path("imagePath") imagePath: String?): Call<ResponseBody?>?
 
-    // Get seller's profile photo
     @Headers("Content-Type: application/json")
     @GET("/uploads/{sellerPhoto}")
     fun getSellerPhoto(@Path("sellerPhoto") sellerPhoto: String?): Call<ResponseBody?>?

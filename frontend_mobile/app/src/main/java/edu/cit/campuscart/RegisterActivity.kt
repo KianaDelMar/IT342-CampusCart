@@ -51,7 +51,6 @@ class RegisterActivity : AppCompatActivity() {
     }
     private var selectedPhoto: String? = null
     private fun registerSeller() {
-        // Check if the user has uploaded a profile photo
         val profilePhoto = selectedPhoto ?: "defaultphoto.jpg"  // If no photo selected, use "defaultphoto.jpg"
 
         val seller = Seller(
