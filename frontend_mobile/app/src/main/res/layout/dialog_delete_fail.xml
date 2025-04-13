@@ -14,15 +14,15 @@
     <ImageView
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:src="@drawable/success"
+        android:src="@drawable/fail"
         android:layout_marginEnd="8dp"/>
 
     <TextView
         android:id="@+id/successMessage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Product added successfully!"
-        android:textColor="#49D349"
+        android:text="Failed to delete product."
+        android:textColor="#FF0000"
         android:textSize="16sp"
         android:textStyle="bold" />
 </LinearLayout>
