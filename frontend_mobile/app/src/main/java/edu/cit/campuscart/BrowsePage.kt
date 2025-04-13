@@ -35,12 +35,18 @@ class BrowsePage : AppCompatActivity() {
         // Initialize RecyclerView
         recyclerView = findViewById(R.id.recyclerViewProducts)
         recyclerView.layoutManager = GridLayoutManager(this, 2)
+        productAdapter = ProductAdapters(productList)
+        recyclerView.adapter = productAdapter
 
         // Fetch products
-        val username = getLoggedInUsername()
-        fetchProducts(username)
+        fetchProducts(getLoggedInUsername())
 
-        //Show Form
+        // Setup fragment result listener to refresh list after product is added
+        supportFragmentManager.setFragmentResultListener("product_added", this) { _, _ ->
+            fetchProducts(getLoggedInUsername())
+        }
+
+        // Show Form
         val addButton = findViewById<ImageButton>(R.id.btnAddProduct)
         addButton.setOnClickListener {
             val dialog = AddProductDialogFragment()
@@ -78,18 +84,15 @@ class BrowsePage : AppCompatActivity() {
 
         call.enqueue(object : Callback<List<Products>> {
             override fun onResponse(call: Call<List<Products>>, response: Response<List<Products>>) {
-                if (response.isSuccessful) {
-                    val products = response.body()
-                    if (products != null) {
-                        val approvedProducts = products.filter {
-                            it.status.equals("approved", ignoreCase = true)
-                        }
+                if (response.isSuccessful && response.body() != null) {
+                    val approvedProducts = response.body()!!.filter {
+                        it.status.equals("approved", ignoreCase = true)
+                    }
+
+                    runOnUiThread {
                         productList.clear()
                         productList.addAll(approvedProducts)
-                        productAdapter = ProductAdapters(productList)
-                        recyclerView.adapter = productAdapter
-                    } else {
-                        Log.e("BrowsePage", "Products list is empty or null")
+                        productAdapter.notifyDataSetChanged()
                     }
                 } else {
                     Log.e("BrowsePage", "Failed to load products: ${response.message()}")
@@ -104,52 +107,41 @@ class BrowsePage : AppCompatActivity() {
     }
 
     private fun showFilterPopup(anchorView: View) {
-        // Inflate the filter_dialog.xml layout
         val popupView = LayoutInflater.from(this).inflate(R.layout.filter_dialog, null)
-
         val popupWindow = PopupWindow(
             popupView,
-            ViewGroup.LayoutParams.WRAP_CONTENT,  // Corrected reference
             ViewGroup.LayoutParams.WRAP_CONTENT,
-            true // Focusable
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            true
         )
 
-        // Get location of the filter button (btnShowFilters)
         val location = IntArray(2)
         anchorView.getLocationOnScreen(location)
 
-        // Get screen width to adjust position
         val screenWidth = resources.displayMetrics.widthPixels
+        val popupX = location[0] + anchorView.width
+        val popupY = location[1] + anchorView.height
 
-        val popupX = location[0] + anchorView.width // Start from the right edge of the button
-        val popupY = location[1] + anchorView.height // Position below the button
-
-        // Ensure popup does not go off-screen
         val maxPopupWidth = screenWidth - popupX
         if (maxPopupWidth < popupView.measuredWidth) {
             popupWindow.width = maxPopupWidth
         }
 
-        // Show the popup aligned to the right of the button
         popupWindow.showAtLocation(anchorView, 0, popupX, popupY)
-
-        // Dismiss when clicking outside
         popupWindow.setOutsideTouchable(true)
         popupWindow.setTouchable(true)
 
         val spinnerCategory = popupView.findViewById<Spinner>(R.id.spinnerCategory)
         val spinnerCondition = popupView.findViewById<Spinner>(R.id.spinnerCondition)
 
-// Define the dropdown items
         val categories = listOf("Select Category", "Electronics", "Clothes", "Food", "Accessories", "Stationery/Arts & Crafts", "Merchandise", "Beauty", "Books", "Others")
         val conditions = listOf("Select Condition", "New", "Used", "Others")
 
-// Set adapters
         val categoryAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, categories)
         val conditionAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, conditions)
+
         spinnerCategory.adapter = categoryAdapter
         spinnerCondition.adapter = conditionAdapter
-
     }
 }
 

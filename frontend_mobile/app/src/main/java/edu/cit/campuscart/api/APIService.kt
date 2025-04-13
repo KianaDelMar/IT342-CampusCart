@@ -14,6 +14,7 @@ import retrofit2.http.Headers
 import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
+import retrofit2.http.PartMap
 import retrofit2.http.Path
 
 
@@ -26,19 +27,20 @@ interface ApiService {
     @POST("api/seller/login")
     fun login(@Body request: LoginRequest): Call<LoginResponse>
 
+   // @Headers("Content-Type: application/json")
     @Multipart
-    @POST("api/seller/postproduct")
-    fun postProduct(
-        @Part("name") name: RequestBody,
-        @Part("pdtDescription") description: RequestBody,
-        @Part("qtyInStock") quantity: RequestBody,
-        @Part("buyPrice") price: RequestBody,
-        @Part image: MultipartBody.Part, // Image file
-        @Part("category") category: RequestBody,
-        @Part("status") status: RequestBody,
-        @Part("conditionType") conditionType: RequestBody,
-        @Part("seller_username") sellerUsername: RequestBody
-    ): Call<Void>
+    @POST("/api/product/postproduct")
+   fun postProduct(
+       @Part("name") name: RequestBody,
+       @Part("pdtDescription") description: RequestBody,
+       @Part("qtyInStock") quantity: RequestBody,
+       @Part("buyPrice") price: RequestBody,
+       @Part image: MultipartBody.Part,
+       @Part("category") category: RequestBody,
+       @Part("status") status: RequestBody,
+       @Part("conditionType") condition: RequestBody,
+       @Part("seller_username") sellerUsername: RequestBody
+   ): Call<String>
 
     @Headers("Content-Type: application/json")
     @GET("api/product/getAllProducts/{username}")
