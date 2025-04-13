@@ -31,6 +31,7 @@ import edu.cit.campuscart.dto.ChangePassword;
 import edu.cit.campuscart.dto.Login;
 import edu.cit.campuscart.entity.UserEntity;
 import edu.cit.campuscart.service.UserService;
+import edu.cit.campuscart.util.JwtUtil;
 
 @RestController
 @RequestMapping("/api/user")
@@ -38,8 +39,10 @@ import edu.cit.campuscart.service.UserService;
 public class UserController {
 	@Autowired
 	private UserService userService;
+	@Autowired
+	private JwtUtil jwtUtil;
 	
-	private static final String UPLOAD_DIR = "C:/Users/Lloyd/Downloads/uploads";
+	private static final String UPLOAD_DIR = "C:/Users/Lloyd/Downloads/profile-images";
 	
 	//CREATE
 	@PostMapping("/postUserRecord")
@@ -68,18 +71,20 @@ public class UserController {
 			
 		UserEntity user = userService.authenticateUser(username, password);
 		if(user != null) {
+			String token = jwtUtil.generateToken(username);
 			Map<String, String> response = new HashMap<>();
+			response.put("token", token);
 			response.put("message", "Login Successful");
 			response.put("username", user.getUsername());
-			response.put("password", user.getPassword());
+			//response.put("password", user.getPassword());
 			response.put("firstName", user.getFirstName());
 			response.put("lastName", user.getLastName());
 			response.put("address", user.getAddress());
 			response.put("contactNo", user.getContactNo());
 			response.put("email", user.getEmail());
 			return ResponseEntity.ok(response); 
-			} else 
-				return ResponseEntity.status(401).body(null);
+		} else 
+			return ResponseEntity.status(401).body(null);
 	}
 	
 	@PostMapping("/uploadProfilePhoto/{username}")
