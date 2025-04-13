@@ -39,6 +39,9 @@ const StudentLogin = () => {
             console.log('Login Successful', response.data);
             const userData = response.data;
 
+            sessionStorage.setItem('token', userData.token);
+
+
             login(userData);
             setErrorMessage('');
             navigate('/home');

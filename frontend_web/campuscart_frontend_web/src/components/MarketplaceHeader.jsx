@@ -10,6 +10,8 @@ import { useNavigate, useLocation, Link } from 'react-router-dom';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import logoWithText from '../assets/img/logo-with-text.png';
+import api from '../config/axiosConfig';
+
 
 const MarketplaceHeader = () => {
   const [openModal, setOpenModal] = useState(false);
@@ -74,6 +76,7 @@ const MarketplaceHeader = () => {
 
   const handleLogout = () => {
     sessionStorage.clear();
+    sessionStorage.removeItem('token');
     navigate('/');
   };
   const handleClose = () => {
@@ -158,7 +161,7 @@ const MarketplaceHeader = () => {
     const fetchProfileData = async () => {
         const username = sessionStorage.getItem('username');
         try {
-            const response = await axios.get(`http://localhost:8080/api/user/getUserRecord/${username}`);
+            const response = await api.get(`/user/getUserRecord/${username}`);
             if (response.status === 200) {
                 const { profilePhoto } = response.data;
 
