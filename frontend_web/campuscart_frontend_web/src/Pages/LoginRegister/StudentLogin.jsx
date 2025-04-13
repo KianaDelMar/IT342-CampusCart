@@ -14,7 +14,7 @@ import {
     InputAdornment,
 } from '@mui/material';
 import { Person, Lock } from '@mui/icons-material';
-import logo from '../../assets/img/logocit-1.png';
+import logo from '../../assets/img/logo-text.png';
 import cit from '../../assets/img/cit-1.jpg';
 
 const StudentLogin = () => {
@@ -49,7 +49,7 @@ const StudentLogin = () => {
     };
 
     return (
-        <Grid container sx={{ minHeight: '100vh' }}>
+        <Grid container sx={{ minHeight: '100vh', overflow: 'hidden' }}>
             {/* Left Side: Image */}
             <Grid
                 sx={{
@@ -57,9 +57,11 @@ const StudentLogin = () => {
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
                     display: { xs: 'none', md: 'block' },
-                    position: 'relative',
+                    position: 'fixed',
                     height: '100vh',
-                    width: { xs: '100%', md: '50%' }
+                    width: '50%',
+                    left: 0,
+                    top: 0
                 }}
             >
                 <Box
@@ -97,7 +99,8 @@ const StudentLogin = () => {
                     padding: { xs: 4, md: 8 },
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'center'
+                    justifyContent: 'center',
+                    marginLeft: { xs: 0, md: '50%' }
                 }}
             >
                 <Paper
@@ -111,10 +114,10 @@ const StudentLogin = () => {
                         backgroundColor: '#fff',
                     }}
                 >
-                    <Box sx={{ mb: 4 }}>
-                        <img src={logo} alt="Logo" style={{ maxWidth: '120px' }} />
+                    <Box sx={{ mb: 2 }}>
+                        <img src={logo} alt="Logo" style={{ maxWidth: '100px' }} />
                     </Box>
-                    <Typography variant="h4" fontWeight="bold" color="text.primary" sx={{ mb: 2 }}>
+                    <Typography variant="h4" fontWeight="bold" color="text.primary" sx={{ mb: 1 }}>
                         Welcome Back
                     </Typography>
                     <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>

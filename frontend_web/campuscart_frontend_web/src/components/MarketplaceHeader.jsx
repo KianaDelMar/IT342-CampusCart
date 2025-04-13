@@ -9,6 +9,7 @@ import MailOutlineOutlinedIcon from '@mui/icons-material/MailOutlineOutlined';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import logoWithText from '../assets/img/logo-with-text.png';
 
 const MarketplaceHeader = () => {
   const [openModal, setOpenModal] = useState(false);
@@ -157,7 +158,7 @@ const MarketplaceHeader = () => {
     const fetchProfileData = async () => {
         const username = sessionStorage.getItem('username');
         try {
-            const response = await axios.get(`http://localhost:8080/api/seller/getSellerRecord/${username}`);
+            const response = await axios.get(`http://localhost:8080/api/user/getUserRecord/${username}`);
             if (response.status === 200) {
                 const { profilePhoto } = response.data;
 
@@ -200,31 +201,72 @@ const MarketplaceHeader = () => {
   return (
     <Box>
       <AppBar position="static" sx={{ backgroundColor: 'transparent' }}>
-        <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
-          <IconButton edge="start" color="inherit" aria-label="menu" sx={{ mr: 2 }} onClick={() => navigate('/home')}>
+        <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', px: 2 }}>
+          <IconButton 
+            edge="start" 
+            color="inherit" 
+            aria-label="menu" 
+            onClick={() => navigate('/home')}
+            sx={{ p: 0 }}
+          >
             <img
-              src='/images/logoCIT.png'
+              src={logoWithText}
               alt="Logo"
               style={{ width: '270px', height: '60px' }} 
             />
           </IconButton>
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <IconButton edge="end" color="black" aria-label="profile" onClick={handleClick} >
-            <Avatar src={profilePhoto} />
-            <Typography variant="subtitle1" sx={{ ml: 1 }}>
-              {username}
-            </Typography>
-          </IconButton>
-          <IconButton edge="end" color="black"  onClick={handleLikesClick} sx={{marginLeft: "25px"}}>
-              <FavoriteBorderOutlinedIcon sx={{ fontSize: "30px" }}/>
-          </IconButton>
-          <IconButton
+          <Box sx={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '9px'
+          }}>
+            <IconButton 
+              edge="end" 
+              color="black" 
+              aria-label="profile" 
+              onClick={handleClick}
+              sx={{
+                borderRadius: '8px',
+                padding: '8px 12px',
+                '&:hover': {
+                  backgroundColor: 'rgba(0, 0, 0, 0.04)'
+                }
+              }}
+            >
+              <Avatar 
+                src={profilePhoto} 
+                sx={{ 
+                  width: 32, 
+                  height: 32,
+                  marginRight: 1
+                }} 
+              />
+              <Typography variant="subtitle1">
+                {username}
+              </Typography>
+            </IconButton>
+            <IconButton 
+              edge="end" 
+              color="black" 
+              onClick={handleLikesClick}
+              sx={{
+                padding: '8px',
+                '&:hover': {
+                  backgroundColor: 'rgba(0, 0, 0, 0.04)'
+                }
+              }}
+            >
+              <FavoriteBorderOutlinedIcon sx={{ fontSize: 28 }}/>
+            </IconButton>
+            <IconButton
               onClick={handleNotificationClick}
               edge="end"
               color="black"
               sx={{
-                marginLeft: "2px",
-                marginTop: "20px"
+                padding: '8px',
+                '&:hover': {
+                  backgroundColor: 'rgba(0, 0, 0, 0.04)'
+                }
               }}
             >
               <Badge 
@@ -237,47 +279,44 @@ const MarketplaceHeader = () => {
                     fontSize: '12px',
                     height: '20px',
                     minWidth: '20px',
-                    marginTop: '5px',   
-                    marginRight: '3px'
+                    top: 2,
+                    right: 2
                   }
                 }}
               >
-                <NotificationsNoneOutlinedIcon sx={{ fontSize: "30px" }}/>
+                <NotificationsNoneOutlinedIcon sx={{ fontSize: 28 }}/>
               </Badge>
             </IconButton>
-          <IconButton edge="end" color="black" onClick={handleMessageClick} sx={{marginLeft: "10px", marginTop: "20px", marginRight: "3px"}}>
-            <Badge badgeContent={unreadMessageCount} 
-            color="error"
-            sx={{
-              '& .MuiBadge-badge': {
-                color: 'white',
-                border: '1px solid transparent',
-                fontSize: '12px',
-                height: '20px',
-                minWidth: '20px',
-                marginTop: '5px',   
-                marginRight: '3px'
-              }
-            }}>
-              <MailOutlineOutlinedIcon sx={{ fontSize: "30px" }} />
-            </Badge>
-          </IconButton>
-
-          {/*<AddProductForm open={openModal} handleClose={handleCloseModal} />
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleOpenModal}
-            sx={{backgroundColor: '#89343b', color: 'white',marginLeft: '15px',
-                  '&:hover': {
-                    backgroundColor: '#ffd700',
-                    color:'#89343b',
-                },
-            }}
-          >
-            Sell
-          </Button>*/}
-          </Box> 
+            <IconButton 
+              edge="end" 
+              color="black" 
+              onClick={handleMessageClick}
+              sx={{
+                padding: '8px',
+                '&:hover': {
+                  backgroundColor: 'rgba(0, 0, 0, 0.04)'
+                }
+              }}
+            >
+              <Badge 
+                badgeContent={unreadMessageCount} 
+                color="error"
+                sx={{
+                  '& .MuiBadge-badge': {
+                    color: 'white',
+                    border: '1px solid transparent',
+                    fontSize: '12px',
+                    height: '20px',
+                    minWidth: '20px',
+                    top: 2,
+                    right: 2
+                  }
+                }}
+              >
+                <MailOutlineOutlinedIcon sx={{ fontSize: 28 }} />
+              </Badge>
+            </IconButton>
+          </Box>
           <Menu
             anchorEl={anchor}
             open={open}

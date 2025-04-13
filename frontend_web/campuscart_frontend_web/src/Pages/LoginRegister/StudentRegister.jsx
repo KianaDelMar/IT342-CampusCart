@@ -12,7 +12,7 @@ import {
     Alert,
 } from '@mui/material';
 import { Person, Email, Lock, LocationOn, Phone, AccountCircle } from '@mui/icons-material';
-import logo from '../../assets/img/logocit-1.png';
+import logo from '../../assets/img/logo-text.png';
 import cit from '../../assets/img/cit-1.jpg';
 import { toast } from 'react-hot-toast';
 
@@ -200,8 +200,8 @@ const Register = () => {
                         backgroundColor: '#fff',
                     }}
                 >
-                    <Box sx={{ mb: 4 }}>
-                        <img src={logo} alt="Logo" style={{ maxWidth: '120px' }} />
+                    <Box sx={{ mb: 2 }}>
+                        <img src={logo} alt="Logo" style={{ maxWidth: '100px' }} />
                     </Box>
                     <Typography variant="h4" fontWeight="bold" color="text.primary" sx={{ mb: 2 }}>
                         Create Your Account
