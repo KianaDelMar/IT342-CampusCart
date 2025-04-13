@@ -21,7 +21,7 @@
         android:id="@+id/successMessage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Product added successfully!"
+        android:text="Product is now deleted!"
         android:textColor="#49D349"
         android:textSize="16sp"
         android:textStyle="bold" />
