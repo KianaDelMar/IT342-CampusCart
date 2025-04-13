@@ -4,6 +4,7 @@ import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './contexts/AuthContext'; 
 
 import Login from './Pages/LoginRegister/StudentLogin';
+import Register from './Pages/LoginRegister/StudentRegister';
 import MarketplaceHeader from './components/MarketplaceHeader';
 import AdminHeader from './components/AdminHeader';
 
@@ -60,6 +61,7 @@ const App = () => {
           <Routes>
             {/* Public Routes */}
             <Route path="/" element={<Login />} />
+            <Route path="/register" element={<Register />} />
             
           </Routes>
         </div>
