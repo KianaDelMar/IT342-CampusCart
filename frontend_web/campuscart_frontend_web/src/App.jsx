@@ -6,6 +6,8 @@ import { AuthProvider } from './contexts/AuthContext';
 import Login from './Pages/LoginRegister/StudentLogin';
 import Register from './Pages/LoginRegister/StudentRegister';
 import MarketplaceHeader from './components/MarketplaceHeader';
+import HomePage from './Pages/Home/HomePage';
+import Settings from './Pages/Profile/UserAccount';
 import AdminHeader from './components/AdminHeader';
 
 import './App.css';
@@ -62,6 +64,11 @@ const App = () => {
             {/* Public Routes */}
             <Route path="/" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            
+            {/* Protected User Routes */}
+            <Route path="/home" element={<ProtectedUserRoute><HomePage /></ProtectedUserRoute>} />
+            <Route path="/account" element={<ProtectedUserRoute><Settings /></ProtectedUserRoute>} />
+
             
           </Routes>
         </div>

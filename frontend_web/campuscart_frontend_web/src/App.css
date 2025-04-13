@@ -39,7 +39,7 @@
 
 body {
   margin: 0;
-  padding: 5px;
+  padding: 0;
   min-height: 100vh;
   position: relative; 
   background: linear-gradient(180deg, rgba(255, 215, 0, 0.31) 4%, rgba(140, 24, 35, 0.5) 100%);
