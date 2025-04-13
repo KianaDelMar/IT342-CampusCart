@@ -17,6 +17,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
+    sessionStorage.removeItem('token');
     setUser(null);
     sessionStorage.clear(); 
   };

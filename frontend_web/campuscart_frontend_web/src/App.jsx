@@ -15,9 +15,10 @@ import './App.css';
 const ProtectedAdminRoute = ({ children }) => {
   const userRole = sessionStorage.getItem('role');
   const navigate = useNavigate();
+  const token = sessionStorage.getItem('token');
   
   React.useEffect(() => {
-    if (userRole !== 'ADMIN') {
+    if (!token || userRole !== 'ADMIN') {
       navigate('/');
     }
   }, [userRole, navigate]);
@@ -32,9 +33,11 @@ const ProtectedAdminRoute = ({ children }) => {
 const ProtectedUserRoute = ({ children }) => {
   const userRole = sessionStorage.getItem('role');
   const navigate = useNavigate();
+  const token = sessionStorage.getItem('token');
+
   
   React.useEffect(() => {
-    if (!userRole || userRole === 'ADMIN') {
+    if (!token ||  !userRole || userRole === 'ADMIN') {
       navigate('/');
       return;
     }

@@ -8,6 +8,7 @@ import axios from 'axios';
 import '../../App.css';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import api from '../../config/axiosConfig';
 
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -73,7 +74,7 @@ const UserAccount = (props) => {
             const updatedData = { firstName, lastName, email, address, contactNo };
             const username = sessionStorage.getItem('username'); 
 
-            const response = await axios.put(`http://localhost:8080/api/user/putUserRecord/${username}`, updatedData);
+            const response = await api.put(`/user/putUserRecord/${username}`, updatedData);
 
             if (response.status === 200) {
                 sessionStorage.setItem('firstName', firstName);
@@ -94,7 +95,7 @@ const UserAccount = (props) => {
         const username = sessionStorage.getItem('username');
         if (window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
             try {
-                const response = await axios.delete(`http://localhost:8080/api/user/deleteUserRecord/${username}`);
+                const response = await api.delete(`/user/deleteUserRecord/${username}`);
                 if (response.status === 200) {
                     toast.success('Account deleted successfully');
                     sessionStorage.clear();
@@ -122,7 +123,7 @@ const UserAccount = (props) => {
 
         try {
             const username = sessionStorage.getItem('username'); 
-            const response = await axios.put(`http://localhost:8080/api/user/changePassword/${username}`, {
+            const response = await api.put(`/user/changePassword/${username}`, {
                 currentPassword,
                 newPassword,
             });
@@ -160,17 +161,20 @@ const UserAccount = (props) => {
         formData.append('file', profileImage);
 
         try {
-            const response = await axios.post(`http://localhost:8080/api/user/uploadProfilePhoto/${username}`, formData, {
-                headers: { 'Content-Type': 'multipart/form-data'},
+            const response = await api.post(`/user/uploadProfilePhoto/${username}`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${sessionStorage.getItem('token')}`
+                }
             });
 
             if(response.status === 200) {
                 toast.success('Profile picture updated successfully');
-                setPreviewImage(response.data.fileName);
+                setPreviewImage(`http://localhost:8080/profile-images/${response.data.fileName}`);
             }
         } catch (error) {
             console.error('Error uploading profile photo: ', error);
-            alert('Failed to upload profile photo');
+            toast.error('Failed to upload profile photo');
         }
     };
 
@@ -178,7 +182,7 @@ const UserAccount = (props) => {
         const fetchProfileData = async () => {
             const username = sessionStorage.getItem('username');
             try {
-                const response = await axios.get(`http://localhost:8080/api/user/getUserRecord/${username}`);
+                const response = await api.get(`/user/getUserRecord/${username}`);
                 if (response.status === 200) {
                     const { firstName, lastName, email, address, contactNo, profilePhoto } = response.data;
     
