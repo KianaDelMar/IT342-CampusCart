@@ -8,6 +8,7 @@ import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNone
 import MailOutlineOutlinedIcon from '@mui/icons-material/MailOutlineOutlined';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import axios from 'axios';
+import AddProductForm from '../Pages/Sell/AddProductForm'
 import toast from 'react-hot-toast';
 import logoWithText from '../assets/img/logo-with-text.png';
 import api from '../config/axiosConfig';
@@ -91,9 +92,9 @@ const MarketplaceHeader = () => {
     navigate('/message');
   };
   
-  /*const handleAddNewProduct = () => {
+  const handleAddNewProduct = () => {
     navigate('/addnewproduct');
-  };*/
+  };
 
   const handleOpenModal = () => {
     setOpenModal(true);
@@ -203,14 +204,20 @@ const MarketplaceHeader = () => {
 
   return (
     <Box>
-      <AppBar position="static" sx={{ backgroundColor: 'transparent' }}>
-        <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', px: 2 }}>
+      <AppBar position="static" sx={{ backgroundColor: 'transparent', boxShadow: 'none' }}>
+        <Toolbar sx={{ 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          px: 3,
+          minHeight: '70px',
+          gap: 2
+        }}>
           <IconButton 
             edge="start" 
             color="inherit" 
             aria-label="menu" 
             onClick={() => navigate('/home')}
-            sx={{ p: 0 }}
+            sx={{ p: 0, '&:hover': { backgroundColor: 'transparent' } }}
           >
             <img
               src={logoWithText}
@@ -218,11 +225,39 @@ const MarketplaceHeader = () => {
               style={{ width: '270px', height: '60px' }} 
             />
           </IconButton>
+
           <Box sx={{ 
             display: 'flex', 
             alignItems: 'center', 
-            gap: '9px'
+            gap: '16px',
+            flex: 1,
+            justifyContent: 'flex-end'
           }}>
+            <AddProductForm open={openModal} handleClose={handleCloseModal} />
+            <Button
+              variant="contained"
+              onClick={handleOpenModal}
+              sx={{
+                backgroundColor: '#89343b',
+                color: 'white',
+                borderRadius: '8px',
+                padding: '8px 24px',
+                textTransform: 'none',
+                fontWeight: 500,
+                fontSize: '0.95rem',
+                boxShadow: 'none',
+                minWidth: '80px',
+                '&:hover': {
+                  backgroundColor: '#7a2d34',
+                  boxShadow: 'none',
+                  transform: 'translateY(-1px)',
+                  transition: 'all 0.2s ease-in-out'
+                }
+              }}
+            >
+              Sell
+            </Button>
+
             <IconButton 
               edge="end" 
               color="black" 
@@ -230,45 +265,69 @@ const MarketplaceHeader = () => {
               onClick={handleClick}
               sx={{
                 borderRadius: '8px',
-                padding: '8px 12px',
+                padding: '8px 16px',
+                backgroundColor: 'rgba(0, 0, 0, 0.02)',
                 '&:hover': {
-                  backgroundColor: 'rgba(0, 0, 0, 0.04)'
+                  backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                  transform: 'translateY(-1px)',
+                  transition: 'all 0.2s ease-in-out'
                 }
               }}
             >
               <Avatar 
                 src={profilePhoto} 
                 sx={{ 
-                  width: 32, 
-                  height: 32,
-                  marginRight: 1
+                  width: 36, 
+                  height: 36,
+                  marginRight: 1.5,
+                  bgcolor: profilePhoto ? 'transparent' : '#89343b',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
                 }} 
-              />
-              <Typography variant="subtitle1">
+              >
+                {!profilePhoto && username?.charAt(0).toUpperCase()}
+              </Avatar>
+              <Typography 
+                variant="subtitle1" 
+                sx={{ 
+                  fontWeight: 500,
+                  color: '#333',
+                  fontSize: '0.95rem'
+                }}
+              >
                 {username}
               </Typography>
             </IconButton>
+
             <IconButton 
               edge="end" 
               color="black" 
               onClick={handleLikesClick}
               sx={{
                 padding: '8px',
+                backgroundColor: 'rgba(0, 0, 0, 0.02)',
+                borderRadius: '8px',
                 '&:hover': {
-                  backgroundColor: 'rgba(0, 0, 0, 0.04)'
+                  backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                  transform: 'translateY(-1px)',
+                  transition: 'all 0.2s ease-in-out'
                 }
               }}
             >
-              <FavoriteBorderOutlinedIcon sx={{ fontSize: 28 }}/>
+              <FavoriteBorderOutlinedIcon sx={{ fontSize: 26, color: '#666' }}/>
             </IconButton>
+
             <IconButton
               onClick={handleNotificationClick}
               edge="end"
               color="black"
               sx={{
                 padding: '8px',
+                backgroundColor: 'rgba(0, 0, 0, 0.02)',
+                borderRadius: '8px',
                 '&:hover': {
-                  backgroundColor: 'rgba(0, 0, 0, 0.04)'
+                  backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                  transform: 'translateY(-1px)',
+                  transition: 'all 0.2s ease-in-out'
                 }
               }}
             >
@@ -278,26 +337,32 @@ const MarketplaceHeader = () => {
                 sx={{
                   '& .MuiBadge-badge': {
                     color: 'white',
-                    border: '1px solid transparent',
-                    fontSize: '12px',
-                    height: '20px',
-                    minWidth: '20px',
+                    border: '1px solid white',
+                    fontSize: '11px',
+                    height: '18px',
+                    minWidth: '18px',
                     top: 2,
-                    right: 2
+                    right: 2,
+                    backgroundColor: '#89343b'
                   }
                 }}
               >
-                <NotificationsNoneOutlinedIcon sx={{ fontSize: 28 }}/>
+                <NotificationsNoneOutlinedIcon sx={{ fontSize: 26, color: '#666' }}/>
               </Badge>
             </IconButton>
+
             <IconButton 
               edge="end" 
               color="black" 
               onClick={handleMessageClick}
               sx={{
                 padding: '8px',
+                backgroundColor: 'rgba(0, 0, 0, 0.02)',
+                borderRadius: '8px',
                 '&:hover': {
-                  backgroundColor: 'rgba(0, 0, 0, 0.04)'
+                  backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                  transform: 'translateY(-1px)',
+                  transition: 'all 0.2s ease-in-out'
                 }
               }}
             >
@@ -307,19 +372,23 @@ const MarketplaceHeader = () => {
                 sx={{
                   '& .MuiBadge-badge': {
                     color: 'white',
-                    border: '1px solid transparent',
-                    fontSize: '12px',
-                    height: '20px',
-                    minWidth: '20px',
+                    border: '1px solid white',
+                    fontSize: '11px',
+                    height: '18px',
+                    minWidth: '18px',
                     top: 2,
-                    right: 2
+                    right: 2,
+                    backgroundColor: '#89343b'
                   }
                 }}
               >
-                <MailOutlineOutlinedIcon sx={{ fontSize: 28 }} />
+                <MailOutlineOutlinedIcon sx={{ fontSize: 26, color: '#666' }} />
               </Badge>
             </IconButton>
           </Box>
+
+          <AddProductForm open={openModal} handleClose={handleCloseModal} />
+
           <Menu
             anchorEl={anchor}
             open={open}
@@ -524,7 +593,6 @@ const MarketplaceHeader = () => {
         </Menu>
         </Toolbar>
       </AppBar>
-      {/*<AddProductForm open={openModal} handleClose={handleCloseModal} />
 
       {/* Nav Bar */}
       <Box sx={{ display: 'flex', justifyContent: 'center', bgcolor: '#89343b', height: '50px' }}>

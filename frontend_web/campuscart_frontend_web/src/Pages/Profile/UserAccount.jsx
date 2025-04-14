@@ -44,7 +44,7 @@ function TabPanel(props) {
   }
 const UserAccount = (props) => {
     const [value, setValue] = useState(0);
-    const [username, setUsername] = useState(sessionStorage.getItem('userName') || '');
+    const [username, setUsername] = useState(sessionStorage.getItem('username') || '');
     const [firstName, setFirstName] = useState(sessionStorage.getItem('firstName') || '');
     const [lastName, setLastName] = useState(sessionStorage.getItem('lastName') || '');
     const [email, setEmail] = useState(sessionStorage.getItem('email') || '');
@@ -183,6 +183,7 @@ const UserAccount = (props) => {
             const username = sessionStorage.getItem('username');
             try {
                 const response = await api.get(`/user/getUserRecord/${username}`);
+
                 if (response.status === 200) {
                     const { firstName, lastName, email, address, contactNo, profilePhoto } = response.data;
     

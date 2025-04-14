@@ -7,8 +7,10 @@ import Login from './Pages/LoginRegister/StudentLogin';
 import Register from './Pages/LoginRegister/StudentRegister';
 import MarketplaceHeader from './components/MarketplaceHeader';
 import HomePage from './Pages/Home/HomePage';
+import Profile from './Pages/Profile/UserProfile';
 import Settings from './Pages/Profile/UserAccount';
 import AdminHeader from './components/AdminHeader';
+import AddProductForm from './Pages/Sell/AddProductForm';
 
 import './App.css';
 
@@ -71,7 +73,8 @@ const App = () => {
             {/* Protected User Routes */}
             <Route path="/home" element={<ProtectedUserRoute><HomePage /></ProtectedUserRoute>} />
             <Route path="/account" element={<ProtectedUserRoute><Settings /></ProtectedUserRoute>} />
-
+            <Route path="/profile" element={<ProtectedUserRoute><Profile /></ProtectedUserRoute>} />
+            <Route path="/addnewproduct" element={<AddProductForm />} />
             
           </Routes>
         </div>
