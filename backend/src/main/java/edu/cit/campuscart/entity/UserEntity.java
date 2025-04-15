@@ -19,11 +19,9 @@ public class UserEntity {
     private String password;
     private String profilePhoto;
 
-    /*
-    @OneToMany(mappedBy = "seller", cascade = CascadeType.ALL, orphanRemoval = true) // ensures that when a seller is deleted, all associated products will also be deleted
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true) // ensures that when a seller is deleted, all associated products will also be deleted
     @JsonManagedReference
     private List<ProductEntity> products;
-    */
 
     public UserEntity() {
         super();
@@ -104,7 +102,7 @@ public class UserEntity {
         this.profilePhoto = profilePhoto;
     }
 
-    /*
+    
     public List<ProductEntity> getProducts() {
         return products;
     }
@@ -112,6 +110,4 @@ public class UserEntity {
     public void setProducts(List<ProductEntity> products) {
         this.products = products;
     }
-     */
-
 }
