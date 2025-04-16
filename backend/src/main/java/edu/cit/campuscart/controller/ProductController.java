@@ -59,6 +59,8 @@ public class ProductController {
 				productData.put("name", product.getName());
 				productData.put("qtyInStock", product.getQtyInStock());
 				productData.put("pdtDescription", product.getPdtDescription());
+				productData.put("conditionType", product.getConditionType());
+				productData.put("status", product.getStatus());
 				productData.put("buyPrice", product.getBuyPrice());
 				productData.put("imagePath", product.getImagePath());
 
@@ -120,6 +122,7 @@ public class ProductController {
 				productData.put("code", product.getCode());
 				productData.put("name", product.getName());
 				productData.put("status", product.getStatus());
+				productData.put("conditionType", product.getConditionType());
 				productData.put("pdtDescription", product.getPdtDescription());
 				productData.put("buyPrice", product.getBuyPrice());
 				productData.put("imagePath", product.getImagePath());
@@ -127,6 +130,7 @@ public class ProductController {
 				// Get user's username
 				if (product.getUser() != null) {
 					productData.put("userUsername", product.getUser().getUsername());
+				    productData.put("userProfileImagePath", product.getUserProfilePhoto()); 
 				}
 
 				response.add(productData);
@@ -145,6 +149,7 @@ public class ProductController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 		}
 	}
+	
 	@GetMapping("/getProducts/{username}")
 	public ResponseEntity<List<Map<String, Object>>> getProducts(@PathVariable String username) {
 		try {
@@ -256,14 +261,17 @@ public class ProductController {
 	        response.put("code", product.getCode());
 	        response.put("name", product.getName());
 	        response.put("status", product.getStatus());
+	        response.put("conditionType", product.getConditionType());
 	        response.put("pdtDescription", product.getPdtDescription());
 	        response.put("buyPrice", product.getBuyPrice());
+	        response.put("category", product.getCategory());
+	        response.put("qtyInStock", product.getQtyInStock());
 	        response.put("imagePath", product.getImagePath());
 
 	        // Include user's information
 	        if (product.getUser() != null) {
 	            response.put("userUsername", product.getUser().getUsername());
-	            response.put("userPhoto", product.getUser().getProfilePhoto());
+	            response.put("userProfileImagePath", product.getUserProfilePhoto());
 	        }
 
 	        return ResponseEntity.ok(response);
