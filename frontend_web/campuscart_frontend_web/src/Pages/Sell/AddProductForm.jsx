@@ -116,7 +116,7 @@ const AddProductForm = ({ open, handleClose }) => {
 
       toast.success('Product added successfully!');
       handleClose(); 
-      navigate('/buy');  
+      navigate('/profile');  
     } catch (error) {
       console.error('Error adding product:', error);
       toast.error(error.response?.data?.message || 'Failed to add product');
@@ -179,6 +179,22 @@ const AddProductForm = ({ open, handleClose }) => {
             },
           }}
         >
+          {/* Close Button */}
+          <IconButton
+            onClick={handleClose}
+            sx={{
+              position: 'absolute',
+              right: 8,
+              top: 8,
+              color: '#89343b',
+              '&:hover': {
+                bgcolor: 'rgba(137, 52, 59, 0.08)',
+              },
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+
           <Box sx={{ mb: 3, textAlign: 'center' }}>
             <Typography 
               variant="h4" 
@@ -365,7 +381,7 @@ const AddProductForm = ({ open, handleClose }) => {
                   }}
                 >
                   <MenuItem value="" disabled>Select status</MenuItem>
-                  <MenuItem value="Available">Pending</MenuItem>
+                  <MenuItem value="Pending">Pending</MenuItem>
                 </Select>
               </FormControl>
             </Box>
