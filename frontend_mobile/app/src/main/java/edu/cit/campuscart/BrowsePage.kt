@@ -11,7 +11,6 @@ import android.widget.ImageButton
 import android.widget.PopupWindow
 import android.widget.Spinner
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import edu.cit.campuscart.adapters.ProductAdapters
@@ -22,7 +21,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class BrowsePage : AppCompatActivity() {
+class BrowsePage : BaseActivity() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var productAdapter: ProductAdapters
@@ -70,6 +69,26 @@ class BrowsePage : AppCompatActivity() {
         val homeButton = findViewById<ImageButton>(R.id.btnHome)
         homeButton.setOnClickListener {
             startActivity(Intent(this@BrowsePage, HomePage::class.java))
+        }
+
+        val likeButton = findViewById<ImageButton>(R.id.btnLikes)
+        likeButton.setOnClickListener {
+            startActivity(Intent(this@BrowsePage, LikePage::class.java))
+        }
+
+        val notifButton = findViewById<ImageButton>(R.id.btnNotifs)
+        notifButton.setOnClickListener {
+            startActivity(Intent(this@BrowsePage, NotificationPage::class.java))
+        }
+
+       /* val messageButton = findViewById<ImageButton>(R.id.btnMessage)
+        messageButton.setOnClickListener {
+            startActivity(Intent(this@BrowsePage, MessagePage::class.java))
+        }*/
+
+        val profileButton = findViewById<ImageButton>(R.id.btnProfile)
+        profileButton.setOnClickListener {
+            startActivity(Intent(this@BrowsePage, ProfilePage::class.java))
         }
     }
 
