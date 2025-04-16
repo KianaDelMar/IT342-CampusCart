@@ -16,6 +16,9 @@ import Bookmarks from './Pages/Profile/Bookmarks';
 import UpdateProductForm from './Pages/Sell/UpdateProductForm';
 import SellerView from './Pages/Sell/SellerView';
 import ViewProduct from './Pages/Sell/ViewProduct';
+import AdminLogin from './Pages/LoginRegister/AdminLogin';
+import Dashboard from './Pages/Admin/Dashboard';
+import ProductApproval from './Pages/Admin/ProductManagement/ProductApproval';
 
 import './App.css';
 
@@ -74,6 +77,7 @@ const App = () => {
             {/* Public Routes */}
             <Route path="/" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/admin" element={<AdminLogin />} />
             
             {/* Protected User Routes */}
             <Route path="/home" element={<ProtectedUserRoute><HomePage /></ProtectedUserRoute>} />
@@ -87,6 +91,18 @@ const App = () => {
             <Route path="/browse/product/:code" element={<ViewProduct section="Browse" />} />
             <Route path="/product/:code" element={<ViewProduct />} />
             <Route path="/profile/:username/product/:code" element={<ViewProduct />} />
+
+            {/* Admin Routes */}
+            <Route path="/admin/dashboard" element={
+              <ProtectedAdminRoute>
+                <Dashboard />
+              </ProtectedAdminRoute>
+            } />
+            <Route path="/admin/approvals" element={
+              <ProtectedAdminRoute>
+                <ProductApproval />
+              </ProtectedAdminRoute>
+            } />
             
           </Routes>
         </div>

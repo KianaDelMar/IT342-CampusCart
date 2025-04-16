@@ -6,7 +6,13 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
   const login = (userData) => {
-    setUser(userData); 
+    // Store token if it exists
+    if (userData.token) {
+      sessionStorage.setItem('token', userData.token);
+    }
+    
+    // Store user data
+    setUser(userData);
     sessionStorage.setItem('username', userData.username);
     sessionStorage.setItem('firstName', userData.firstName);
     sessionStorage.setItem('lastName', userData.lastName);
@@ -17,9 +23,8 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
-    sessionStorage.removeItem('token');
     setUser(null);
-    sessionStorage.clear(); 
+    sessionStorage.clear();
   };
 
   return (
