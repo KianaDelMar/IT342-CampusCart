@@ -22,13 +22,9 @@ import androidx.lifecycle.lifecycleScope
 import edu.cit.campuscart.R
 import edu.cit.campuscart.databinding.DialogAddProductBinding
 import edu.cit.campuscart.utils.RetrofitClient
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
 import java.io.File
 import java.io.FileOutputStream
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -90,7 +86,7 @@ class AddProductDialogFragment : DialogFragment() {
             requireContext(), android.R.layout.simple_spinner_dropdown_item, conditions
         )
 
-        // Image picker button (moved outside of submit logic)
+        // Image picker button
         binding.btnSelectImage.setOnClickListener {
             val intent = Intent(Intent.ACTION_GET_CONTENT).apply { type = "image/*" }
             imagePickerLauncher.launch(intent)
@@ -115,44 +111,44 @@ class AddProductDialogFragment : DialogFragment() {
             if (name.isBlank() || description.isBlank() || quantity.isBlank() || price.isBlank()
                 || category == "Select Category" || condition == "Select Condition" || selectedImageUri == null
             ) {
-                Toast.makeText(
-                    requireContext(),
-                    "Please fill all fields and select an image.",
-                    Toast.LENGTH_SHORT
-                ).show()
+                Toast.makeText(requireContext(), "Please fill all fields and select an image.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
             lifecycleScope.launch {
                 try {
-                    val namePart = name.toPlainTextRequestBody()
-                    val descriptionPart = description.toPlainTextRequestBody()
-                    val quantityPart = quantity.toPlainTextRequestBody()
-                    val pricePart = price.toPlainTextRequestBody()
-                    val categoryPart = category.toPlainTextRequestBody()
-                    val statusPart = status.toPlainTextRequestBody()
-                    val conditionPart = condition.toPlainTextRequestBody()
-                    val usernamePart = sellerUsername.toPlainTextRequestBody()
+                    // Prepare form data as RequestBody
+                    val namePart = name.toRequestBody("text/plain".toMediaType())
+                    val descriptionPart = description.toRequestBody("text/plain".toMediaType())
+                    val quantityPart = quantity.toRequestBody("text/plain".toMediaType())
+                    val pricePart = price.toRequestBody("text/plain".toMediaType())
+                    val categoryPart = category.toRequestBody("text/plain".toMediaType())
+                    val statusPart = status.toRequestBody("text/plain".toMediaType())
+                    val conditionPart = condition.toRequestBody("text/plain".toMediaType())
+                    val usernamePart = sellerUsername.toRequestBody("text/plain".toMediaType())
 
-                    val imageFile = prepareImageFile(selectedImageUri!!)
+                    // Prepare the image as MultipartBody.Part
+                    val imageFile = prepareImageFile(selectedImageUri!!)  // Assuming this is how you prepare the file
                     val imagePart = MultipartBody.Part.createFormData(
-                        "image",
-                        imageFile.name,
-                        imageFile.asRequestBody("image/*".toMediaType())
+                        "image",  // The name that the backend expects for the image field
+                        imageFile.name,  // This uses the file's name, e.g., candies.jpg
+                        imageFile.asRequestBody("image/*".toMediaType())  // Media type of the file
                     )
 
+                    // Retrieve the token from SharedPreferences
+                    val token = requireContext()
+                        .getSharedPreferences("CampusCartPrefs", Context.MODE_PRIVATE)
+                        .getString("authToken", "") ?: ""
+
+                    val bearerToken = "Bearer $token"
+                    Log.d("AddProduct", "Token: $bearerToken")
+                    // Make the API request to post the product
                     RetrofitClient.instance.postProduct(
-                        namePart,
-                        descriptionPart,
-                        quantityPart,
-                        pricePart,
-                        imagePart,
-                        categoryPart,
-                        statusPart,
-                        conditionPart,
-                        usernamePart
-                    ).enqueue(object : Callback<String> {
-                        override fun onResponse(call: Call<String>, response: Response<String>) {
+                          // Adding the Authorization token in the header
+                        bearerToken, namePart, descriptionPart, quantityPart, pricePart, categoryPart,
+                        statusPart, conditionPart, usernamePart, imagePart
+                    ).enqueue(object : Callback<ResponseBody> {
+                        override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                             Log.d("AddProduct", "Response code: ${response.code()}")
                             if (response.isSuccessful) {
                                 showSuccessToast()
@@ -160,31 +156,24 @@ class AddProductDialogFragment : DialogFragment() {
                             } else {
                                 val errorBody = response.errorBody()?.string()
                                 Log.e("AddProduct", "Error: $errorBody")
+                                Log.e("AddProduct", "Error: ${response.errorBody()?.string()}")
                                 showFailToast()
                             }
                         }
 
-                        override fun onFailure(call: Call<String>, t: Throwable) {
-                            Toast.makeText(
-                                requireContext(),
-                                "Error: ${t.message}",
-                                Toast.LENGTH_LONG
-                            ).show()
+                        override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                            Toast.makeText(requireContext(), "Error: ${t.message}", Toast.LENGTH_LONG).show()
                             Log.e("AddProduct", "Network failure", t)
                         }
                     })
 
                 } catch (e: Exception) {
                     Log.e("AddProduct", "Exception during submission", e)
-                    Toast.makeText(requireContext(), "Exception: ${e.message}", Toast.LENGTH_LONG)
-                        .show()
+                    Toast.makeText(requireContext(), "Exception: ${e.message}", Toast.LENGTH_LONG).show()
                 }
             }
         }
     }
-
-    private fun String.toPlainTextRequestBody(): RequestBody =
-        RequestBody.create("text/plain".toMediaType(), this)
 
     private fun showSuccessToast() {
         val toastView = layoutInflater.inflate(R.layout.dialog_add_success, null)
@@ -204,14 +193,16 @@ class AddProductDialogFragment : DialogFragment() {
         toast.show()
     }
 
-    private suspend fun prepareImageFile(uri: Uri): File = withContext(Dispatchers.IO) {
+    private fun prepareImageFile(uri: Uri): File {
+        // Get the file from the URI (your method might vary based on how you handle images)
+        val file = File(requireContext().cacheDir, "upload_${System.currentTimeMillis()}.jpg")
+       // val file = File(requireContext().cacheDir, "upload_${name}.jpg")
         val inputStream = requireContext().contentResolver.openInputStream(uri)
-        val file = File(requireContext().cacheDir, "upload_image.jpg")
         val outputStream = FileOutputStream(file)
         inputStream?.copyTo(outputStream)
         inputStream?.close()
         outputStream.close()
-        return@withContext file
+        return file
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
