@@ -11,6 +11,11 @@ import Profile from './Pages/Profile/UserProfile';
 import Settings from './Pages/Profile/UserAccount';
 import AdminHeader from './components/AdminHeader';
 import AddProductForm from './Pages/Sell/AddProductForm';
+import BrowsePage from './Pages/Browse/BrowsePage';
+import Bookmarks from './Pages/Profile/Bookmarks';
+import UpdateProductForm from './Pages/Sell/UpdateProductForm';
+import SellerView from './Pages/Sell/SellerView';
+import ViewProduct from './Pages/Sell/ViewProduct';
 
 import './App.css';
 
@@ -75,6 +80,13 @@ const App = () => {
             <Route path="/account" element={<ProtectedUserRoute><Settings /></ProtectedUserRoute>} />
             <Route path="/profile" element={<ProtectedUserRoute><Profile /></ProtectedUserRoute>} />
             <Route path="/addnewproduct" element={<AddProductForm />} />
+            <Route path="/browse" element={<ProtectedUserRoute><BrowsePage /></ProtectedUserRoute>} />
+            <Route path="/likes" element={<ProtectedUserRoute><Bookmarks /></ProtectedUserRoute>} />
+            <Route path="/update/:code" element={<UpdateProductForm />} />
+            <Route path="sell/product/:code" element={<SellerView />} /> 
+            <Route path="/browse/product/:code" element={<ViewProduct section="Browse" />} />
+            <Route path="/product/:code" element={<ViewProduct />} />
+            <Route path="/profile/:username/product/:code" element={<ViewProduct />} />
             
           </Routes>
         </div>

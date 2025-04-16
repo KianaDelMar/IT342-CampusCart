@@ -9,6 +9,7 @@ import {
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import axios from "axios";
+import api from '../../config/axiosConfig';
 import { useNavigate } from "react-router-dom";
 import homepage from '../../assets/img/homepage.jpg';
 
@@ -25,12 +26,12 @@ function HomePage() {
   };
 
   const handleSearchSubmit = () => {
-    navigate(`/buy?search=${searchQuery}`);
+    navigate(`/browse?search=${searchQuery}`);
   };
 
   const handleCategoryClick = (category) => {
     const mappedCategory = category === "Stationery" ? "Stationery or Arts and Crafts" : category;
-    navigate(`/buy?category=${mappedCategory}`);
+    navigate(`/browse?category=${mappedCategory}`);
   };
 
   const handleCardClick = (code) => {
@@ -40,7 +41,7 @@ function HomePage() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get(`http://localhost:8080/api/product/getAllProducts/${loggedInUser}`);
+        const response = await api.get(`/product/getAllProducts/${loggedInUser}`);
         const approvedProducts = Array.isArray(response.data) 
           ? response.data.filter(product => product.status && product.status.toLowerCase() === 'approved')
           : [];

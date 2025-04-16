@@ -141,8 +141,8 @@ const MarketplaceHeader = () => {
       case location.pathname === '/home':
         setActiveButton('Home');
         break;
-      case location.pathname.startsWith('/buy'):
-        setActiveButton('Buy');
+      case location.pathname.startsWith('/browse'):
+        setActiveButton('Browse');
         break;
       case location.pathname === '/sell' || location.pathname === '/addnewproduct' || /^\/sell\/product\/\d+$/.test(location.pathname):
         setActiveButton('Sell');
@@ -185,8 +185,8 @@ const MarketplaceHeader = () => {
       case 'Home':
         navigate('/home');
         break;
-      case 'Buy':
-        navigate('/buy');
+      case 'Browse':
+        navigate('/browse');
         break;
       case 'Sell':
         navigate('/sell');
@@ -596,7 +596,7 @@ const MarketplaceHeader = () => {
 
       {/* Nav Bar */}
       <Box sx={{ display: 'flex', justifyContent: 'center', bgcolor: '#89343b', height: '50px' }}>
-        {['Home', 'Buy', 'Message', 'Profile'].map((label, index) => (
+        {['Home', 'Browse', 'Message', 'Profile'].map((label, index) => (
           <React.Fragment key={label}>
             <Button
               sx={activeButton === label ? activeButtonStyle : baseButtonStyle}
