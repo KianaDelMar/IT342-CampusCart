@@ -14,17 +14,16 @@ import retrofit2.http.Headers
 import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
-import retrofit2.http.PartMap
 import retrofit2.http.Path
 
 
 interface ApiService {
     @Headers("Content-Type: application/json")
-    @POST("api/seller/postSellerRecord")
+    @POST("api/user/postUserRecord")
     fun registerSeller(@Body seller: Seller): Call<Void>
 
     @Headers("Content-Type: application/json")
-    @POST("api/seller/login")
+    @POST("api/user/login")
     fun login(@Body request: LoginRequest): Call<LoginResponse>
 
    // @Headers("Content-Type: application/json")

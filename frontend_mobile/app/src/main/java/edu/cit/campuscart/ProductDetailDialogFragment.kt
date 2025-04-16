@@ -10,7 +10,7 @@ import edu.cit.campuscart.models.Products
 
 class ProductDetailDialogFragment {
 //Not Yet Done, Still Working On It
-    override fun onCreateView(
+    /*override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -27,6 +27,6 @@ class ProductDetailDialogFragment {
         // Glide.with(this).load(product.imageUrl).into(imageView)
 
         return view
-    }
+    }*/
 }
 
