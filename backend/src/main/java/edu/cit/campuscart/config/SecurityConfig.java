@@ -33,6 +33,7 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/user/login").permitAll()
+                .requestMatchers("/api/admin/login").permitAll()
                 .requestMatchers("/api/user/postUserRecord").permitAll()
                 .requestMatchers("/profile-images/**").permitAll() // temporary only, should be protected or require authentication
                 .requestMatchers("/uploads/**").permitAll()
