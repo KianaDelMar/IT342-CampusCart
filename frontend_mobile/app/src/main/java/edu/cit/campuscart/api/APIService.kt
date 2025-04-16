@@ -10,6 +10,7 @@ import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.Header
 import retrofit2.http.Headers
 import retrofit2.http.Multipart
 import retrofit2.http.POST
@@ -27,19 +28,20 @@ interface ApiService {
     fun login(@Body request: LoginRequest): Call<LoginResponse>
 
    // @Headers("Content-Type: application/json")
-    @Multipart
-    @POST("/api/product/postproduct")
+   @Multipart
+   @POST("/api/product/postproduct")
    fun postProduct(
+       @Header("Authorization") token: String,
        @Part("name") name: RequestBody,
        @Part("pdtDescription") description: RequestBody,
        @Part("qtyInStock") quantity: RequestBody,
        @Part("buyPrice") price: RequestBody,
-       @Part image: MultipartBody.Part,
        @Part("category") category: RequestBody,
        @Part("status") status: RequestBody,
        @Part("conditionType") condition: RequestBody,
-       @Part("seller_username") sellerUsername: RequestBody
-   ): Call<String>
+       @Part("user_username") username: RequestBody,
+       @Part image: MultipartBody.Part // No name needed here
+   ): Call<ResponseBody>
 
     @Headers("Content-Type: application/json")
     @GET("api/product/getAllProducts/{username}")
