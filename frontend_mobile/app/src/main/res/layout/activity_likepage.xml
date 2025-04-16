@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/background_gradient">
@@ -24,58 +25,29 @@
             android:layout_gravity="left"
             app:srcCompat="@drawable/logo" />
 
-        <!-- Search Bar Container -->
-        <LinearLayout
-            android:id="@+id/searchBarContainer"
+    </LinearLayout>
+
+    <!-- Content Section -->
+    <LinearLayout
+        android:id="@+id/contentSection"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/title_bg"
+        android:orientation="vertical"
+        android:padding="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/linearLayout">
+
+        <TextView
+            android:id="@+id/pageTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:elevation="4dp"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:padding="8dp">
-
-            <!-- Search Input Container -->
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="@android:color/white"
-                android:elevation="4dp"
-                android:gravity="center"
-                android:orientation="horizontal"
-                android:padding="5dp">
-
-                <!-- Search Icon -->
-                <ImageView
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_marginEnd="8dp"
-                    android:src="@android:drawable/ic_menu_search"
-                    app:tint="#333333" />
-
-                <!-- Search Input -->
-                <EditText
-                    android:id="@+id/searchBar"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="@null"
-                    android:hint="Search..."
-                    android:padding="10dp"
-                    android:textSize="16sp" />
-            </LinearLayout>
-
-            <!-- Filter Button -->
-            <ImageButton
-                android:id="@+id/btnShowFilters"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:background="@null"
-                android:padding="3dp"
-                android:scaleType="fitCenter"
-                app:srcCompat="@drawable/filter" />
-        </LinearLayout>
+            android:gravity="start"
+            android:text="Like Page"
+            android:textColor="#89343B"
+            android:textSize="25sp"
+            android:textStyle="bold"
+            android:layout_marginStart="5dp" />
     </LinearLayout>
 
     <!-- RecyclerView for displaying products -->
@@ -85,23 +57,9 @@
         android:layout_height="0dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/linearLayout"
+        app:layout_constraintTop_toBottomOf="@+id/contentSection"
         app:layout_constraintBottom_toTopOf="@id/bottomNavBar"
         android:padding="8dp" />
-
-    <ImageButton
-        android:id="@+id/btnAddProduct"
-        android:layout_width="110dp"
-        android:layout_height="110dp"
-        android:layout_marginBottom="5dp"
-        android:elevation="5dp"
-        android:padding="8dp"
-        android:background="@null"
-        android:scaleType="fitCenter"
-        app:layout_constraintBottom_toTopOf="@id/bottomNavBar"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:srcCompat="@drawable/addproduct" />
 
     <!-- Bottom Navigation Bar -->
     <LinearLayout
@@ -308,9 +266,4 @@
                 android:textStyle="bold"/>
         </LinearLayout>
     </LinearLayout>
-
-    <include
-        android:id="@+id/productForm"
-        layout="@layout/dialog_add_product"
-        android:visibility="gone" />
 </androidx.constraintlayout.widget.ConstraintLayout>

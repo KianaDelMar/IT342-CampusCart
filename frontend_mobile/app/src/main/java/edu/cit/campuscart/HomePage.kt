@@ -10,10 +10,9 @@ import android.widget.ImageButton
 import android.widget.PopupWindow
 import android.widget.Spinner
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import edu.cit.campuscart.forms.AddProductDialogFragment
 
-class HomePage : AppCompatActivity() {
+class HomePage : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_homepage) // Make sure this layout exists!
@@ -48,6 +47,26 @@ class HomePage : AppCompatActivity() {
         val browseButton = findViewById<ImageButton>(R.id.btnBrowse)
         browseButton.setOnClickListener {
             startActivity(Intent(this@HomePage, BrowsePage::class.java))// Navigate to Browse Page
+        }
+
+        val likeButton = findViewById<ImageButton>(R.id.btnLikes)
+        likeButton.setOnClickListener {
+            startActivity(Intent(this@HomePage, LikePage::class.java))
+        }
+
+        val notifButton = findViewById<ImageButton>(R.id.btnNotifs)
+        notifButton.setOnClickListener {
+            startActivity(Intent(this@HomePage, NotificationPage::class.java))
+        }
+
+        /*val messageButton = findViewById<ImageButton>(R.id.btnMessage)
+        messageButton.setOnClickListener {
+            startActivity(Intent(this@HomePage, MessagePage::class.java))
+        }*/
+
+        val profileButton = findViewById<ImageButton>(R.id.btnProfile)
+        profileButton.setOnClickListener {
+            startActivity(Intent(this@HomePage, ProfilePage::class.java))
         }
     }
     private fun showFilterPopup(anchorView: View) {
