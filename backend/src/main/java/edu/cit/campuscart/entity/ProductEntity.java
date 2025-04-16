@@ -128,4 +128,9 @@ public class ProductEntity {
     public void setUser(UserEntity user) {
         this.user = user;
     }
+    
+    public String getUserProfilePhoto() {
+        return user != null ? user.getProfilePhoto() : null;
+    }
+
 }

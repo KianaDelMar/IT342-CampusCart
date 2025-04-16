@@ -127,7 +127,7 @@ public class ProductService {
         Optional<ProductEntity> productOpt = prepo.findById(code);
         if (productOpt.isPresent()) {
             ProductEntity product = productOpt.get();
-            product.setStatus("approved");  // Update status to "approved"
+            product.setStatus("Approved");  // Update status to "approved"
             prepo.save(product);  // Save updated product
         } else {
             throw new NoSuchElementException("Product not found for approval.");
@@ -139,7 +139,7 @@ public class ProductService {
         Optional<ProductEntity> productOpt = prepo.findById(code);
         if (productOpt.isPresent()) {
             ProductEntity product = productOpt.get();
-            product.setStatus("rejected");  // Update status to "rejected"
+            product.setStatus("Rejected");  // Update status to "rejected"
             prepo.save(product);  // Save updated product
         } else {
             throw new NoSuchElementException("Product not found for rejection.");
