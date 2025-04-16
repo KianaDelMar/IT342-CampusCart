@@ -6,7 +6,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.naming.NameAlreadyBoundException;
@@ -42,7 +41,8 @@ public class UserController {
 	@Autowired
 	private JwtUtil jwtUtil;
 	
-	private static final String UPLOAD_DIR = "C:/Users/Lloyd/Downloads/profile-images";
+	//private static final String UPLOAD_DIR = "C:/Users/Lloyd/Downloads/profile-images";
+	private static final String UPLOAD_DIR = System.getProperty("user.home") + "/Downloads/uploads";
 	
 	//CREATE
 	@PostMapping("/postUserRecord")
