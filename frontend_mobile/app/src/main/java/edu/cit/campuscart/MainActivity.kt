@@ -6,7 +6,6 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -14,7 +13,7 @@ import edu.cit.campuscart.models.LoginResponse
 import edu.cit.campuscart.models.LoginRequest
 import edu.cit.campuscart.utils.RetrofitClient
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -61,7 +60,10 @@ class MainActivity : AppCompatActivity() {
                         Toast.makeText(this@MainActivity, "Login Successful", Toast.LENGTH_SHORT).show()
 
                         val sharedPref = getSharedPreferences("CampusCartPrefs", MODE_PRIVATE)
-                        sharedPref.edit().putString("loggedInUsername", username).apply()
+                        sharedPref.edit()
+                            .putString("loggedInUsername", username)
+                            .putString("authToken", responseBody.token) // Save auth token
+                            .apply()
 
                         val intent = Intent(this@MainActivity, HomePage::class.java)
                         startActivity(intent)

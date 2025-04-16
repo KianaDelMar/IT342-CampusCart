@@ -32,6 +32,11 @@ android {
                 "proguard-rules.pro"
             )
         }
+        packagingOptions {
+            jniLibs {
+                pickFirst("lib/x86_64/libart.so")
+            }
+        }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8

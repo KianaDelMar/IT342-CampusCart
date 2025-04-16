@@ -6,10 +6,10 @@
     <solid android:color="@android:color/transparent"/>
 
     <!-- Border color -->
-    <stroke android:width="5dp" android:color="#B69B0A"/>
+    <stroke android:width="4dp" android:color="#B69B0A"/>
 
     <!-- Rounded corners -->
     <corners android:radius="20dp"/>
 
-    <padding android:left="10dp" android:right="10dp"/>
+    <padding android:left="8dp" android:right="8dp"/>
 </shape>

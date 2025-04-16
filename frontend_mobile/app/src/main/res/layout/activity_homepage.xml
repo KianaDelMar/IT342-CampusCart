@@ -166,30 +166,22 @@
         app:layout_constraintTop_toBottomOf="@+id/imageView2" />
 
     <!-- Scrollable Content -->
-    <ScrollView
-        android:id="@+id/scrollView4"
+    <!-- RecyclerView for displaying products -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewProducts"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView"
-        app:layout_constraintBottom_toTopOf="@+id/bottomNavBar">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <!-- Product Cards soon -->
-
-        </LinearLayout>
-    </ScrollView>
+        app:layout_constraintBottom_toTopOf="@id/bottomNavBar"
+        android:padding="8dp" />
 
     <!-- Image above Bottom NavBar but in front of ScrollView -->
     <ImageButton
         android:id="@+id/btnAddProduct"
-        android:layout_width="120dp"
-        android:layout_height="120dp"
+        android:layout_width="110dp"
+        android:layout_height="110dp"
         android:layout_marginBottom="5dp"
         android:elevation="5dp"
         android:padding="8dp"
