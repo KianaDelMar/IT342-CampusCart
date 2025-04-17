@@ -5,7 +5,9 @@ import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import axios from 'axios';
+import api from '../config/axiosConfig';
 import ToastManager from './ToastManager';
+import logoWithText from '../assets/img/logo-with-text.png';
 
 const AdminHeader = () => {
   const navigate = useNavigate();
@@ -14,56 +16,56 @@ const AdminHeader = () => {
   const [activeButton, setActiveButton] = useState('Dashboard');
   const firstName = sessionStorage.getItem('firstName');
   const [notificationAnchor, setNotificationAnchor] = useState(null);
-  const [profilePhoto, setProfilePhoto] = useState(''); 
+  const [profilePhoto, setProfilePhoto] = useState('');
   const [notifications, setNotifications] = useState([
-    { 
-      id: 1, 
+    {
+      id: 1,
       title: 'Product Approval Request',
       content: 'New product "iPhone 15 Pro" needs your approval',
-      time: '2 minutes ago', 
-      read: false 
+      time: '2 minutes ago',
+      read: false
     },
-    { 
-      id: 2, 
+    {
+      id: 2,
       title: 'User Report',
       content: 'A user reported an issue with order #12345',
-      time: '30 minutes ago', 
-      read: false 
+      time: '30 minutes ago',
+      read: false
     },
-    { 
-      id: 3, 
+    {
+      id: 3,
       title: 'System Update',
       content: 'System maintenance and updates have been completed successfully',
-      time: '1 hour ago', 
-      read: false 
+      time: '1 hour ago',
+      read: false
     },
-    { 
-      id: 4, 
+    {
+      id: 4,
       title: 'Product Approval Request',
       content: 'New product "iPhone 15 Pro" needs your approval',
-      time: '1 hour ago', 
-      read: false 
+      time: '1 hour ago',
+      read: false
     },
-    { 
-      id: 5, 
+    {
+      id: 5,
       title: 'User Report',
       content: 'A user reported an issue with order #12345',
-      time: '2 hours ago', 
-      read: false 
+      time: '2 hours ago',
+      read: false
     },
-    { 
-      id: 6, 
+    {
+      id: 6,
       title: 'System Update',
       content: 'System maintenance and updates have been completed successfully',
-      time: '3 hours ago', 
-      read: false 
+      time: '3 hours ago',
+      read: false
     },
-    { 
-      id: 7, 
+    {
+      id: 7,
       title: 'Product Approval Request',
       content: 'New product "iPhone 15 Pro" needs your approval',
-      time: '3 hours ago', 
-      read: true 
+      time: '3 hours ago',
+      read: true
     },
   ]);
   const [toasts, setToasts] = useState([]);
@@ -83,7 +85,7 @@ const AdminHeader = () => {
 
   const handleButtonClick = (label) => {
     setActiveButton(label);
-    switch(label) {
+    switch (label) {
       case 'Dashboard':
         navigate('/admin/dashboard');
         break;
@@ -133,7 +135,7 @@ const AdminHeader = () => {
     width: '250px',
     borderRadius: '0px',
     color: '#89343b',
-   fontWeight: 'bold',
+    fontWeight: 'bold',
     boxShadow: 'inset 0px 4px 8px rgba(0, 0, 0, 0.4)',
   };
 
@@ -160,7 +162,7 @@ const AdminHeader = () => {
     const fetchProfileData = async () => {
       const username = sessionStorage.getItem('username');
       try {
-        const response = await axios.get(`http://localhost:8080/api/admin/getAdminRecord/${username}`);
+        const response = await api.get(`/admin/getAdminRecord/${username}`);
         if (response.status === 200) {
           const { profilePhoto } = response.data;
 
@@ -184,9 +186,8 @@ const AdminHeader = () => {
         <Toolbar>
           <IconButton edge="start" color="inherit" onClick={() => navigate('/admin/dashboard')}>
             <img
-              src='/images/logoCIT.png'
+              src={logoWithText}
               alt="Logo"
-              
               style={{ width: '270px', height: '60px' }}
             />
           </IconButton>
@@ -196,14 +197,14 @@ const AdminHeader = () => {
               onClick={handleNotificationClick}
               edge="end"
               color="black"
-              sx={{ 
+              sx={{
                 color: notificationAnchor ? '#89343b' : 'inherit',
                 marginLeft: "10px",
                 marginTop: "20px",
                 '&:hover': { color: '#89343b' }
               }}
             >
-              <Badge 
+              <Badge
                 badgeContent={unreadCount > 0 ? unreadCount : null}
                 color="error"
                 sx={{
@@ -212,18 +213,18 @@ const AdminHeader = () => {
                     fontSize: '12px',
                     height: '20px',
                     minWidth: '20px',
-                    marginTop: '5px',   
+                    marginTop: '5px',
                     marginRight: '3px'
                   }
                 }}
               >
-                <NotificationsNoneOutlinedIcon sx={{ fontSize: "30px" }}/>
+                <NotificationsNoneOutlinedIcon sx={{ fontSize: "30px" }} />
               </Badge>
             </IconButton>
-            <IconButton 
+            <IconButton
               onClick={handleClick}
-              edge="end" 
-              color="black" 
+              edge="end"
+              color="black"
               aria-label="profile"
             >
               <Avatar src={profilePhoto} sx={{ width: 32, height: 32 }} />
@@ -316,7 +317,7 @@ const AdminHeader = () => {
               <Button
                 size="small"
                 onClick={handleMarkAllAsRead}
-                sx={{ 
+                sx={{
                   color: '#89343b',
                   textTransform: 'none',
                   '&:hover': { bgcolor: 'rgba(137, 52, 59, 0.04)' }
@@ -326,7 +327,7 @@ const AdminHeader = () => {
               </Button>
             </Box>
             <Divider />
-            
+
             <Box sx={{ maxHeight: 360, overflow: 'auto' }}>
               {notifications.length > 0 ? (
                 notifications.map((notification) => (
@@ -382,7 +383,7 @@ const AdminHeader = () => {
                 </Box>
               )}
             </Box>
-            
+
             <Divider />
             <MenuItem
               onClick={() => {
@@ -404,10 +405,10 @@ const AdminHeader = () => {
       </AppBar>
 
       {/* Nav Bar with Dividers */}
-      <Box sx={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        bgcolor: '#89343b', 
+      <Box sx={{
+        display: 'flex',
+        justifyContent: 'center',
+        bgcolor: '#89343b',
         height: '50px',
         alignItems: 'center',
         position: 'relative'
@@ -421,13 +422,13 @@ const AdminHeader = () => {
               {label}
             </Button>
             {index < array.length - 1 && (
-              <Box 
-                sx={{ 
+              <Box
+                sx={{
                   height: '30px',
                   width: '1px',
                   bgcolor: 'rgba(255, 255, 255, 0.3)',
                   alignSelf: 'center'
-                }} 
+                }}
               />
             )}
           </React.Fragment>
@@ -435,8 +436,8 @@ const AdminHeader = () => {
       </Box>
 
       <ToastManager toasts={toasts} handleClose={(id) => {
-        setToasts(current => 
-          current.map(toast => 
+        setToasts(current =>
+          current.map(toast =>
             toast.id === id ? { ...toast, open: false } : toast
           )
         );

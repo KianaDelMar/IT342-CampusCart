@@ -17,7 +17,7 @@ import { Person, Lock } from '@mui/icons-material';
 import logo from '../../assets/img/logo-text.png';
 import cit from '../../assets/img/cit-1.jpg';
 
-const StudentLogin = () => {
+const AdminLogin = () => {
     const [credentials, setCredentials] = useState({ username: '', password: '' });
     const [errorMessage, setErrorMessage] = useState('');
     const { login } = useAuth();
@@ -30,19 +30,20 @@ const StudentLogin = () => {
             setErrorMessage('Please enter username and password');
             return;
         }
-
+  
         console.log('Logging in with credentials:', credentials);
         try {
-            const response = await axios.post('http://localhost:8080/api/user/login', credentials);
+            const response = await axios.post('http://localhost:8080/api/admin/login', credentials);
             console.log('Login Successful', response.data);
             const userData = response.data;
 
-            sessionStorage.setItem('token', userData.token);
-
-
+            // Add role to userData
+            userData.role = 'ADMIN';
+            
+            // Call login from AuthContext with the user data
             login(userData);
-            setErrorMessage('');
-            navigate('/home');
+            setErrorMessage('')
+            navigate('/admin/dashboard');
         } catch (error) {
             setErrorMessage('Invalid username or password');
             console.error('Error logging in: ', error);
@@ -87,9 +88,6 @@ const StudentLogin = () => {
                     <Typography variant="h3" fontWeight="bold">
                         Empower Your Campus
                     </Typography>
-                    <Typography variant="body1" sx={{ mt: 2 }}>
-                        Seamlessly connect, buy, and sell with your fellow students.
-                    </Typography>
                 </Box>
             </Grid>
 
@@ -122,7 +120,7 @@ const StudentLogin = () => {
                         Welcome Back
                     </Typography>
                     <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-                        Student Access Module
+                        Admin Access Module
                     </Typography>
                     {errorMessage && (
                         <Alert severity="error" sx={{ mb: 2 }}>
@@ -202,30 +200,11 @@ const StudentLogin = () => {
                     >
                         Login
                     </Button>
-
-                    <Typography variant="body2" sx={{ mt: 2 }}>
-                        Don't have an account?{' '}
-                        <Link
-                            component={RouterLink}
-                            to="/register"
-                            underline="none"
-                            sx={{
-                                fontWeight: 'bold',
-                                color: '#8A252C',
-                                textDecoration: 'none',
-                                '&:hover': {
-                                    textDecoration: 'underline',
-                                },
-                            }}
-                        >
-                            Register
-                        </Link>
-                    </Typography>
                 </Paper>
             </Grid>
         </Grid>
     );
 };
 
-export default StudentLogin;
+export default AdminLogin;
 
