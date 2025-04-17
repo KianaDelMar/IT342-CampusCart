@@ -21,20 +21,35 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+
 class BrowsePage : BaseActivity() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var productAdapter: ProductAdapters
     private var productList = mutableListOf<Products>()
+    private lateinit var swipeRefreshLayout: SwipeRefreshLayout  // Add SwipeRefreshLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_browsepage)
 
+        // Initialize SwipeRefreshLayout
+        swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout)
+        swipeRefreshLayout.setOnRefreshListener {
+            // Trigger product fetching when user pulls to refresh
+            fetchProducts(getLoggedInUsername())
+        }
+
         // Initialize RecyclerView
         recyclerView = findViewById(R.id.recyclerViewProducts)
         recyclerView.layoutManager = GridLayoutManager(this, 2)
-        productAdapter = ProductAdapters(productList)
+
+        // ✅ Set up adapter with click listener to show product detail dialog
+        productAdapter = ProductAdapters(productList) { selectedProduct ->
+            val dialog = ProductDetailDialogFragment.newInstance(selectedProduct)
+            dialog.show(supportFragmentManager, "ProductDetailDialog")
+        }
         recyclerView.adapter = productAdapter
 
         // Fetch products
@@ -81,11 +96,6 @@ class BrowsePage : BaseActivity() {
             startActivity(Intent(this@BrowsePage, NotificationPage::class.java))
         }
 
-       /* val messageButton = findViewById<ImageButton>(R.id.btnMessage)
-        messageButton.setOnClickListener {
-            startActivity(Intent(this@BrowsePage, MessagePage::class.java))
-        }*/
-
         val profileButton = findViewById<ImageButton>(R.id.btnProfile)
         profileButton.setOnClickListener {
             startActivity(Intent(this@BrowsePage, ProfilePage::class.java))
@@ -116,11 +126,17 @@ class BrowsePage : BaseActivity() {
                 } else {
                     Log.e("BrowsePage", "Failed to load products: ${response.message()}")
                 }
+
+                // Stop the refresh animation after loading
+                swipeRefreshLayout.isRefreshing = false
             }
 
             override fun onFailure(call: Call<List<Products>>, t: Throwable) {
                 Log.e("BrowsePage", "Error: ${t.message}")
                 Toast.makeText(this@BrowsePage, "Failed to load products", Toast.LENGTH_SHORT).show()
+
+                // Stop the refresh animation on failure
+                swipeRefreshLayout.isRefreshing = false
             }
         })
     }
@@ -163,4 +179,3 @@ class BrowsePage : BaseActivity() {
         spinnerCondition.adapter = conditionAdapter
     }
 }
-

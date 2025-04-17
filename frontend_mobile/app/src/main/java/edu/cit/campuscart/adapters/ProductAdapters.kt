@@ -11,7 +11,7 @@ import edu.cit.campuscart.R
 import edu.cit.campuscart.models.Products
 import edu.cit.campuscart.utils.Constants
 
-class ProductAdapters(private val products: List<Products>) : RecyclerView.Adapter<ProductAdapters.ProductViewHolder>() {
+class ProductAdapters(private val products: List<Products>, private val onItemClick: (Products) -> Unit) : RecyclerView.Adapter<ProductAdapters.ProductViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.product_item, parent, false)
@@ -20,29 +20,35 @@ class ProductAdapters(private val products: List<Products>) : RecyclerView.Adapt
 
     override fun onBindViewHolder(holder: ProductViewHolder, position: Int) {
         val product = products[position]
-        val seller = product.sellerUsername
+        val seller = product.userUsername
 
         holder.productName.text = product.name
         val formattedPrice = String.format("%.2f", product.buyPrice)
         holder.productPrice.text = "₱$formattedPrice"
         holder.productDescription.text = product.pdtDescription
-        holder.sellerUsername.text = product.sellerUsername?: "Unknown Seller"
+        holder.userUsername.text = seller ?: "Unknown Seller"
 
-        Picasso.get()// Load product image
+        // Load product image
+        Picasso.get()
             .load("${Constants.BASE_URL}/${product.imagePath}")
             .placeholder(R.drawable.defaultimage)
             .error(R.drawable.defaultimage)
             .into(holder.productImage)
 
-        // Only try to load seller photo if seller is not null and has a profilePhoto
-        if (seller != null && !product.sellerPhoto.isNullOrBlank()) {
+        // Load seller photo
+        if (!product.userProfileImagePath.isNullOrBlank()) {
             Picasso.get()
-                .load("${Constants.BASE_URL}/uploads/${product.sellerPhoto}")
+                .load("${Constants.BASE_URL}/uploads/${product.userProfileImagePath}")
                 .placeholder(R.drawable.defaultphoto)
                 .error(R.drawable.defaultphoto)
                 .into(holder.sellerPhoto)
         } else {
-            holder.sellerPhoto.setImageResource(R.drawable.defaultphoto)// fallback image
+            holder.sellerPhoto.setImageResource(R.drawable.defaultphoto)
+        }
+
+        // Handle item click
+        holder.itemView.setOnClickListener {
+            onItemClick(product)
         }
     }
 
@@ -53,6 +59,6 @@ class ProductAdapters(private val products: List<Products>) : RecyclerView.Adapt
         val productImage: ImageView = view.findViewById(R.id.product_image)
         val sellerPhoto: ImageView = view.findViewById(R.id.seller_photo)
         val productDescription: TextView = view.findViewById(R.id.product_description)
-        val sellerUsername: TextView = view.findViewById(R.id.seller_username)
+        val userUsername: TextView = view.findViewById(R.id.seller_username)
     }
 }

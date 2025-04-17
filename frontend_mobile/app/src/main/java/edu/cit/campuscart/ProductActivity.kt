@@ -1,10 +1,8 @@
+package edu.cit.campuscart
 import android.os.Bundle
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import edu.cit.campuscart.BaseActivity
-import edu.cit.campuscart.R
 import edu.cit.campuscart.models.Products
 import edu.cit.campuscart.adapters.ProductAdapters
 import edu.cit.campuscart.utils.RetrofitClient
@@ -24,7 +22,9 @@ class ProductActivity : BaseActivity() {
         recyclerView = findViewById(R.id.recyclerViewProducts)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-        val loggedInUser = "logged_in_user"  // Replace with actual logged-in username
+        val sharedPref = getSharedPreferences("CampusCartPrefs", MODE_PRIVATE)
+        val loggedInUser = sharedPref.getString("loggedInUsername", "") ?: ""
+
         fetchProductData(loggedInUser)
     }
 
@@ -40,10 +40,15 @@ class ProductActivity : BaseActivity() {
                 if (response.isSuccessful && response.body() != null) {
                     val allProducts = response.body()!!
                     val approvedProducts = allProducts.filter {
-                        it.status.equals("approved", ignoreCase = true) && !it.sellerUsername.isNullOrBlank()
+                        it.status.equals("approved", ignoreCase = true) &&
+                                !it.userUsername.isNullOrBlank()
                     }
 
-                    productAdapter = ProductAdapters(approvedProducts)
+                    productAdapter = ProductAdapters(approvedProducts) { selectedProduct ->
+                        val dialog = ProductDetailDialogFragment.newInstance(selectedProduct)
+                        dialog.show(supportFragmentManager, "ProductDetailDialog")
+                    }
+
                     recyclerView.adapter = productAdapter
                 } else {
                     Toast.makeText(
