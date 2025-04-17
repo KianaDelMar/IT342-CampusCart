@@ -11,7 +11,10 @@ import edu.cit.campuscart.R
 import edu.cit.campuscart.models.Products
 import edu.cit.campuscart.utils.Constants
 
-class ProductAdapters(private val products: List<Products>, private val onItemClick: (Products) -> Unit) : RecyclerView.Adapter<ProductAdapters.ProductViewHolder>() {
+class ProductAdapters(
+    private var products: MutableList<Products>,
+    private val onItemClick: (Products) -> Unit
+) : RecyclerView.Adapter<ProductAdapters.ProductViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.product_item, parent, false)
@@ -28,14 +31,12 @@ class ProductAdapters(private val products: List<Products>, private val onItemCl
         holder.productDescription.text = product.pdtDescription
         holder.userUsername.text = seller ?: "Unknown Seller"
 
-        // Load product image
         Picasso.get()
             .load("${Constants.BASE_URL}/${product.imagePath}")
             .placeholder(R.drawable.defaultimage)
             .error(R.drawable.defaultimage)
             .into(holder.productImage)
 
-        // Load seller photo
         if (!product.userProfileImagePath.isNullOrBlank()) {
             Picasso.get()
                 .load("${Constants.BASE_URL}/uploads/${product.userProfileImagePath}")
@@ -46,13 +47,19 @@ class ProductAdapters(private val products: List<Products>, private val onItemCl
             holder.sellerPhoto.setImageResource(R.drawable.defaultphoto)
         }
 
-        // Handle item click
         holder.itemView.setOnClickListener {
             onItemClick(product)
         }
     }
 
     override fun getItemCount(): Int = products.size
+
+    fun updateData(newList: List<Products>) {
+        products.clear()
+        products.addAll(newList)
+        notifyDataSetChanged()
+    }
+
     inner class ProductViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val productName: TextView = view.findViewById(R.id.product_name)
         val productPrice: TextView = view.findViewById(R.id.product_price)

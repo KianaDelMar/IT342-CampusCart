@@ -5,17 +5,19 @@ import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import com.squareup.picasso.Picasso
 import edu.cit.campuscart.models.Products
 import edu.cit.campuscart.utils.Constants
+import edu.cit.campuscart.utils.PreferenceUtils
 
 class ProductDetailDialogFragment : DialogFragment() {
 
     companion object {
         private const val ARG_PRODUCT = "product"
-
+        private val likedProducts = mutableSetOf<String>()
         fun newInstance(product: Products): ProductDetailDialogFragment {
             val fragment = ProductDetailDialogFragment()
             val args = Bundle()
@@ -38,10 +40,8 @@ class ProductDetailDialogFragment : DialogFragment() {
         val sellerPhoto = view.findViewById<ImageView>(R.id.seller_photo)
         val sellerUsername = view.findViewById<TextView>(R.id.seller_username)
 
-
-        // Optional: you can add seller photo and username if you include them in your layout
-        // (Note: These are *not* defined in your current view_by_buyer.xml,
-        // but are referenced in your previous fragment code. Add them if needed.)
+        val likeButton = view.findViewById<LinearLayout>(R.id.btnLike)
+        val likeIcon = view.findViewById<ImageView>(R.id.imageLikeIcon)
 
         product?.let {
             productName.text = it.name
@@ -60,15 +60,32 @@ class ProductDetailDialogFragment : DialogFragment() {
                 .placeholder(R.drawable.defaultphoto)
                 .error(R.drawable.defaultphoto)
                 .into(sellerPhoto)
+
+            // ✅ Set initial heart icon based on like status
+            if (likedProducts.contains(it.name)) {
+                likeIcon.setImageResource(R.drawable.full_heart)
+            } else {
+                likeIcon.setImageResource(R.drawable.like)
+            }
+
+            product?.let { prod ->
+                val isLiked = PreferenceUtils.isProductLiked(requireContext(), prod.name)
+                likeIcon.setImageResource(if (isLiked) R.drawable.full_heart else R.drawable.like)
+
+                likeButton.setOnClickListener {
+                    val nowLiked = PreferenceUtils.toggleLikedProduct(requireContext(), prod.name)
+                    likeIcon.setImageResource(if (nowLiked) R.drawable.full_heart else R.drawable.like)
+                }
+            }
         }
 
-        val dialog = AlertDialog.Builder(requireContext())
-            .setView(view)
-            .setCancelable(true) // Allow dialog to be cancelled by tapping outside
-            .create()
+            val dialog = AlertDialog.Builder(requireContext())
+                .setView(view)
+                .setCancelable(true) // Allow dialog to be cancelled by tapping outside
+                .create()
 
-        dialog.setCanceledOnTouchOutside(true) // Close dialog when tapping outside
-        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
-        return dialog
-    }
+            dialog.setCanceledOnTouchOutside(true) // Close dialog when tapping outside
+            dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+            return dialog
+        }
 }
