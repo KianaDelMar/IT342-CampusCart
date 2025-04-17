@@ -44,7 +44,7 @@ class ProductActivity : BaseActivity() {
                                 !it.userUsername.isNullOrBlank()
                     }
 
-                    productAdapter = ProductAdapters(approvedProducts) { selectedProduct ->
+                    productAdapter = ProductAdapters(approvedProducts.toMutableList()) { selectedProduct ->
                         val dialog = ProductDetailDialogFragment.newInstance(selectedProduct)
                         dialog.show(supportFragmentManager, "ProductDetailDialog")
                     }
