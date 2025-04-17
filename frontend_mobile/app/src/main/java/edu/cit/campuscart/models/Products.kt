@@ -1,6 +1,7 @@
 package edu.cit.campuscart.models
 
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 
 data class Products(
     @SerializedName("code") val code: Int,
@@ -12,6 +13,6 @@ data class Products(
     @SerializedName("category") val category: String,
     @SerializedName("status") val status: String,
     @SerializedName("conditionType") val conditionType: String,
-    @SerializedName("sellerUsername") val sellerUsername: String?,
-    @SerializedName("sellerPhoto") val sellerPhoto: String?
-)
+    @SerializedName("userUsername") val userUsername: String?,
+    @SerializedName("userProfileImagePath") val userProfileImagePath: String?
+): Serializable

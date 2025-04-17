@@ -27,7 +27,10 @@ class LikePage: BaseActivity() {
         // Initialize RecyclerView
         recyclerView = findViewById(R.id.recyclerViewProducts)
         recyclerView.layoutManager = GridLayoutManager(this, 2)
-        productAdapter = ProductAdapters(productList)
+        productAdapter = ProductAdapters(productList) { selectedProduct ->
+            val dialog = ProductDetailDialogFragment.newInstance(selectedProduct)
+            dialog.show(supportFragmentManager, "ProductDetailDialog")
+        }
         recyclerView.adapter = productAdapter
 
         // Fetch products
