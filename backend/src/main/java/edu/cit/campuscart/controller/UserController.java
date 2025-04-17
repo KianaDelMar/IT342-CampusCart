@@ -76,7 +76,6 @@ public class UserController {
 			response.put("token", token);
 			response.put("message", "Login Successful");
 			response.put("username", user.getUsername());
-			//response.put("password", user.getPassword());
 			response.put("firstName", user.getFirstName());
 			response.put("lastName", user.getLastName());
 			response.put("address", user.getAddress());

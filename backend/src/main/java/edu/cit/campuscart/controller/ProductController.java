@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import edu.cit.campuscart.entity.ProductEntity;
+import edu.cit.campuscart.service.AdminService;
 import edu.cit.campuscart.service.ProductService;
 
 import org.springframework.web.bind.annotation.PutMapping;
@@ -41,6 +42,9 @@ public class ProductController {
 
 	@Autowired
 	ProductService pserv;
+	
+	@Autowired
+    private AdminService adminService;
 
 	//private static final String UPLOAD_DIR = "C:/Users/Lloyd/Downloads/"; 
 	//private static final String UPLOAD_DIR = "C:/Users/chriz/Downloads/";
@@ -347,5 +351,10 @@ public class ProductController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to reject product.");
         }
+    }
+    	
+    @GetMapping("/pendingApproval")
+    public List<Map<String, Object>> getPendingApprovalProducts() {
+        return adminService.getAllProductsWithUsers();
     }
 }
