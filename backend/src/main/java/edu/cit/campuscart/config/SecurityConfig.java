@@ -37,6 +37,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/user/postUserRecord").permitAll()
                 .requestMatchers("/profile-images/**").permitAll() // temporary only, should be protected or require authentication
                 .requestMatchers("/uploads/**").permitAll()
+                .requestMatchers("/api/product/getAllProducts/**").permitAll()
                 .anyRequest().authenticated()
             )
             .sessionManagement(session -> session
