@@ -26,9 +26,6 @@ public class ProductService {
 	
 	@Autowired
 	private UserRepository userRepo;
-
-	@Autowired
-    private NotificationService notificationService;  // Inject NotificationService
 	
 	public ProductService() {
 		super();
@@ -128,19 +125,12 @@ public class ProductService {
 	// Approve product
 	public void approveProduct(int code) throws Exception {
 		Optional<ProductEntity> productOpt = prepo.findById(code);
-
+	
 		if (productOpt.isPresent()) {
 			ProductEntity product = productOpt.get();
 			product.setStatus("Approved");  
 			prepo.save(product);  
 
-			// Fetch the seller's FCM token and send a notification
-			UserEntity seller = userRepo.findByUsername(product.getUser());
-			if (seller != null && seller.getFcmToken() != null) {
-				notificationService.sendPushNotification(seller.getFcmToken()); 
-			} else {
-				throw new Exception("Seller's FCM token not found.");
-			}
 		} else {
 			throw new NoSuchElementException("Product not found for approval.");
 		}
