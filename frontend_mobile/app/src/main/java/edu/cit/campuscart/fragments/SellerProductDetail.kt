@@ -2,6 +2,7 @@ package edu.cit.campuscart.fragments
 
 import android.app.AlertDialog
 import android.app.Dialog
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.widget.ImageView
@@ -12,9 +13,17 @@ import edu.cit.campuscart.R
 import edu.cit.campuscart.models.Products
 import edu.cit.campuscart.utils.Constants
 import android.graphics.Color
+import android.util.Log
+import android.view.Gravity
 import android.widget.ImageButton
+import android.widget.Toast
 import androidx.appcompat.widget.AppCompatImageButton
 import edu.cit.campuscart.forms.EditProductDialogFragment
+import edu.cit.campuscart.notifdialogs.DeleteConfirmationDialog
+import edu.cit.campuscart.utils.RetrofitClient
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class SellerProductDetail : DialogFragment() {
 
@@ -30,8 +39,49 @@ class SellerProductDetail : DialogFragment() {
         }
     }
 
+    private lateinit var product: Products
+
+    // Moved and fixed function to take productId
+    private fun deleteProduct(productId: Int) {
+        val context = requireContext()
+        val prefs = context.getSharedPreferences("CampusCartPrefs", Context.MODE_PRIVATE)
+
+        val loggedInUsername = prefs.getString("loggedInUsername", "") ?: ""
+        val token = prefs.getString("authToken", "") ?: ""
+
+        if (product.userUsername != loggedInUsername) {
+            Toast.makeText(context, "You are not the creator of this product.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if (token.isEmpty()) {
+            Toast.makeText(context, "User not authenticated. Please log in again.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val bearerToken = "Bearer $token"
+
+        RetrofitClient.instance.deleteProduct(bearerToken, productId)
+            .enqueue(object : Callback<Void> {
+                override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                    if (response.isSuccessful) {
+                        showSuccessToast()
+                        dismiss()
+                    } else {
+                        Log.e("DeleteProduct", "Response Code: ${response.code()}")
+                        Log.e("DeleteProduct", "Error Body: ${response.errorBody()?.string()}")
+                        showFailToast()
+                    }
+                }
+
+                override fun onFailure(call: Call<Void>, t: Throwable) {
+                    Toast.makeText(context, "Network error: ${t.message}", Toast.LENGTH_SHORT).show()
+                }
+            })
+    }
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val product = arguments?.getSerializable(ARG_PRODUCT) as? Products
+        product = arguments?.getSerializable(ARG_PRODUCT) as Products
         val view = LayoutInflater.from(context).inflate(R.layout.view_by_seller, null)
 
         val productImage = view.findViewById<ImageView>(R.id.product_image)
@@ -43,7 +93,7 @@ class SellerProductDetail : DialogFragment() {
         val editButton = view.findViewById<AppCompatImageButton>(R.id.btnEdit)
         val deleteButton = view.findViewById<ImageButton>(R.id.btnDelete)
 
-        product?.let {
+        product.let {
             productName.text = it.name
             productDescription.text = it.pdtDescription
             productPrice.text = "₱${String.format("%.2f", it.buyPrice)}"
@@ -63,9 +113,16 @@ class SellerProductDetail : DialogFragment() {
                 .into(productImage)
 
             editButton.setOnClickListener {
-                dismiss() // Close the current dialog first
+                dismiss() // Close current dialog
                 val editDialog = EditProductDialogFragment.newInstance(product)
                 editDialog.show(parentFragmentManager, "EditProductDialog")
+            }
+
+            deleteButton.setOnClickListener {
+                val dialog = DeleteConfirmationDialog {
+                    product.code?.let { code -> deleteProduct(code) }
+                }
+                dialog.show(parentFragmentManager, "DeleteConfirmationDialog")
             }
         }
 
@@ -77,5 +134,25 @@ class SellerProductDetail : DialogFragment() {
         dialog.setCanceledOnTouchOutside(true)
         dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
         return dialog
+    }
+
+    private fun showSuccessToast() {
+        val toastView = layoutInflater.inflate(R.layout.dialog_delete_success, null)
+        Toast(requireContext()).apply {
+            view = toastView
+            duration = Toast.LENGTH_SHORT
+            setGravity(Gravity.TOP or Gravity.CENTER_HORIZONTAL, 0, 80)
+            show()
+        }
+    }
+
+    private fun showFailToast() {
+        val toastView = layoutInflater.inflate(R.layout.dialog_delete_fail, null)
+        Toast(requireContext()).apply {
+            view = toastView
+            duration = Toast.LENGTH_SHORT
+            setGravity(Gravity.TOP or Gravity.CENTER_HORIZONTAL, 0, 80)
+            show()
+        }
     }
 }

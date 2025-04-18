@@ -32,14 +32,3 @@ class DeleteConfirmationDialog(
         return dialog
     }
 }
-
-/*Usage
-
-val dialog = DeleteConfirmationDialog {
-    // Handle delete logic here
-    deleteProduct(productId)
-}
-dialog.show(parentFragmentManager, "DeleteConfirmationDialog")
-
-*/
-
