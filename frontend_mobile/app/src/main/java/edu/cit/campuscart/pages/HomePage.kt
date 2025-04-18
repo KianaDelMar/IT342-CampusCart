@@ -35,7 +35,6 @@ class HomePage : BaseActivity() {
             showFilterPopup(it)
         }
 
-        // Home button click listener
         val homeButton = findViewById<ImageButton>(R.id.btnHome)
         homeButton.setOnClickListener {
             // If you're already on HomePage, no need to start a new instance of HomePage
@@ -45,7 +44,6 @@ class HomePage : BaseActivity() {
             }
         }
 
-// Browse button click listener
         val browseButton = findViewById<ImageButton>(R.id.btnBrowse)
         browseButton.setOnClickListener {
             startActivity(Intent(this@HomePage, BrowsePage::class.java))// Navigate to Browse Page
