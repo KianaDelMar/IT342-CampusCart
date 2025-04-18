@@ -1,4 +1,4 @@
-package edu.cit.campuscart
+package edu.cit.campuscart.fragments
 
 import android.app.AlertDialog
 import android.app.Dialog
@@ -9,6 +9,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import com.squareup.picasso.Picasso
+import edu.cit.campuscart.R
 import edu.cit.campuscart.models.Products
 import edu.cit.campuscart.utils.Constants
 import edu.cit.campuscart.utils.PreferenceUtils

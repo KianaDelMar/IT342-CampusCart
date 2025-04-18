@@ -14,11 +14,13 @@ import retrofit2.http.Header
 import retrofit2.http.Headers
 import retrofit2.http.Multipart
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Part
+import retrofit2.http.PartMap
 import retrofit2.http.Path
 
 
-interface ApiService {
+interface APIService {
     @Headers("Content-Type: application/json")
     @POST("api/user/postUserRecord")
     fun registerSeller(@Body seller: Seller): Call<Void>
@@ -61,4 +63,20 @@ interface ApiService {
     @Headers("Content-Type: application/json")
     @GET("/approved")
     fun getApprovedProducts(): Call<List<Products>>
+
+    @Headers("Content-Type: application/json")
+    @GET("api/product/getProductsByUser/{username}")
+    fun getProductsByUser(
+        @Header("Authorization") token: String,
+        @Path("username") username: String
+    ): Call<List<Products>>
+
+    @Multipart
+    @PUT("api/product/putProductDetails/{code}")
+    fun putProductDetails(
+        @Header("Authorization") token: String,
+        @Path("code") code: Int,
+        @Part("product") product: RequestBody,
+        @Part imagePath: MultipartBody.Part? = null
+    ): Call<Products>
 }

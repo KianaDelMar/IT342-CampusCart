@@ -1,4 +1,4 @@
-package edu.cit.campuscart
+package edu.cit.campuscart.pages
 
 import android.content.Intent
 import android.os.Bundle
@@ -10,6 +10,8 @@ import android.widget.ImageButton
 import android.widget.PopupWindow
 import android.widget.Spinner
 import android.widget.TextView
+import edu.cit.campuscart.BaseActivity
+import edu.cit.campuscart.R
 import edu.cit.campuscart.forms.AddProductDialogFragment
 
 class HomePage : BaseActivity() {

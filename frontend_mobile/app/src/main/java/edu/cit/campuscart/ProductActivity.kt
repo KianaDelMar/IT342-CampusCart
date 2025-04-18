@@ -5,6 +5,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import edu.cit.campuscart.models.Products
 import edu.cit.campuscart.adapters.ProductAdapters
+import edu.cit.campuscart.fragments.ProductDetailDialogFragment
 import edu.cit.campuscart.utils.RetrofitClient
 import retrofit2.Call
 import retrofit2.Callback
