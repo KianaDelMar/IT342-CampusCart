@@ -1,4 +1,4 @@
-package edu.cit.campuscart
+package edu.cit.campuscart.pages
 
 import android.content.Intent
 import android.os.Bundle
@@ -22,6 +22,9 @@ import retrofit2.Callback
 import retrofit2.Response
 
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import edu.cit.campuscart.BaseActivity
+import edu.cit.campuscart.fragments.ProductDetailDialogFragment
+import edu.cit.campuscart.R
 
 class BrowsePage : BaseActivity() {
 

@@ -1,13 +1,13 @@
 package edu.cit.campuscart.utils
 
-import edu.cit.campuscart.api.ApiService
+import edu.cit.campuscart.api.APIService
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import okhttp3.logging.HttpLoggingInterceptor
 
 object RetrofitClient {
-    val instance: ApiService by lazy {
+    val instance: APIService by lazy {
 
         // Create logging interceptor
         val logging = HttpLoggingInterceptor().apply {
@@ -27,6 +27,6 @@ object RetrofitClient {
             .build()
 
         // Return the ApiService instance
-        retrofit.create(ApiService::class.java)
+        retrofit.create(APIService::class.java)
     }
 }

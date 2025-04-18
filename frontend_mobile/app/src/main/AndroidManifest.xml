@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
         tools:ignore="ScopedStorage" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
     <application
@@ -29,11 +30,11 @@
             </intent-filter>
         </activity>
         <activity android:name=".RegisterActivity" />
-        <activity android:name=".HomePage" />
-        <activity android:name=".BrowsePage"/>
-        <activity android:name=".LikePage" />
-        <activity android:name=".NotificationPage" />
-        <activity android:name=".ProfilePage" />
+        <activity android:name=".pages.HomePage" />
+        <activity android:name=".pages.BrowsePage"/>
+        <activity android:name=".pages.LikePage" />
+        <activity android:name=".pages.NotificationPage" />
+        <activity android:name=".pages.ProfilePage" />
         <meta-data
             android:name="JankMonitoring"
             android:value="false"/>

@@ -1,10 +1,13 @@
-package edu.cit.campuscart
+package edu.cit.campuscart.pages
 import android.content.Intent
 import android.os.Bundle
 import android.widget.ImageButton
 import android.widget.Toast
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import edu.cit.campuscart.BaseActivity
+import edu.cit.campuscart.fragments.ProductDetailDialogFragment
+import edu.cit.campuscart.R
 import edu.cit.campuscart.adapters.ProductAdapters
 import edu.cit.campuscart.models.Products
 import edu.cit.campuscart.utils.PreferenceUtils

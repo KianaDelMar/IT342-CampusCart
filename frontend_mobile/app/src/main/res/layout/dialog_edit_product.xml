@@ -24,7 +24,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Add New Product"
+                android:text="Edit Product"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 android:textColor="#7B1F26"
@@ -71,8 +71,7 @@
                 android:text="Pending"
                 android:enabled="false"
                 android:focusable="false"
-                android:textColorHint="#999999"
-                android:textColor="#000000"
+                android:textColor="#666666"
                 android:layout_marginTop="8dp"
                 android:background="@drawable/form_field" />
 
@@ -110,7 +109,7 @@
                 android:background="@drawable/form_field" />
 
             <ImageView
-                android:id="@+id/imagePreview"
+                android:id="@+id/selectedImageView"
                 android:layout_width="match_parent"
                 android:layout_height="100dp"
                 android:layout_marginTop="8dp"
