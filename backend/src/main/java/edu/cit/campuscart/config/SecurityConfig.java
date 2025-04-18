@@ -35,11 +35,10 @@ public class SecurityConfig {
                 .requestMatchers("/api/user/login").permitAll()
                 .requestMatchers("/api/admin/login").permitAll()
                 .requestMatchers("/api/user/postUserRecord").permitAll()
-                .requestMatchers("/profile-images/**").permitAll() // temporary only, should be protected or require authentication
                 .requestMatchers("/uploads/**").permitAll()
-                .requestMatchers("/api/product/getAllProducts/**").permitAll()
-                .requestMatchers("/api/product/getProductsByUser/**").permitAll()
-                .requestMatchers("/api/product/putProductDetails/**").permitAll()
+                .requestMatchers("/api/product/getAllProducts/**").permitAll() // should be protected or require authentication
+                .requestMatchers("/api/product/getProductsByUser/**").permitAll() // should be protected or require authentication
+                .requestMatchers("/api/product/putProductDetails/**").permitAll() // should be protected or require authentication
                 .anyRequest().authenticated()
             )
             .sessionManagement(session -> session
