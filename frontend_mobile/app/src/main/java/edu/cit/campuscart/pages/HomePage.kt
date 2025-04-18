@@ -10,11 +10,29 @@ import android.widget.ImageButton
 import android.widget.PopupWindow
 import android.widget.Spinner
 import android.widget.TextView
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import edu.cit.campuscart.BaseActivity
 import edu.cit.campuscart.R
 import edu.cit.campuscart.forms.AddProductDialogFragment
+import edu.cit.campuscart.models.Notification
 
 class HomePage : BaseActivity() {
+
+    private fun updateNotificationBadgeFromPrefs(badgeTextView: TextView) {
+        val sharedPref = getSharedPreferences("CampusCartPrefs", MODE_PRIVATE)
+        val json = sharedPref.getString("notificationList", null)
+        val type = object : TypeToken<MutableList<Notification>>() {}.type
+        val notifications: MutableList<Notification> = Gson().fromJson(json, type) ?: mutableListOf()
+
+        if (notifications.isNotEmpty()) {
+            badgeTextView.text = notifications.size.toString()
+            badgeTextView.visibility = View.VISIBLE
+        } else {
+            badgeTextView.visibility = View.GONE
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_homepage) // Make sure this layout exists!
@@ -23,6 +41,9 @@ class HomePage : BaseActivity() {
         val username = sharedPref.getString("loggedInUsername", "User")
         val txtUsername = findViewById<TextView>(R.id.txtUsername)
         txtUsername.text = "Welcome, $username!"
+
+        val badgeTextView: TextView = findViewById(R.id.notificationBadge)
+        updateNotificationBadgeFromPrefs(badgeTextView)
 
         val btnShowFilters = findViewById<ImageButton>(R.id.btnShowFilters)
         val addButton = findViewById<ImageButton>(R.id.btnAddProduct)

@@ -27,16 +27,52 @@
 
     </LinearLayout>
 
-    <!-- RecyclerView for displaying products -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerUserProducts"
+    <!-- Content Section -->
+    <LinearLayout
+        android:id="@+id/contentSection"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#FED700"
+        android:orientation="vertical"
+        android:padding="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/linearLayout"
+        android:gravity="center"
+        android:layout_gravity="center">
+
+        <TextView
+            android:id="@+id/pageTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Notifications"
+            android:textColor="#89343B"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginStart="5dp"
+            android:layout_gravity="center"
+            android:gravity="center"/>
+    </LinearLayout>
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshLayout"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
+        app:layout_constraintTop_toBottomOf="@id/contentSection"
         app:layout_constraintBottom_toTopOf="@id/bottomNavBar"
-        android:padding="8dp" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+        <!-- RecyclerView for displaying products -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/notificationRecyclerView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/contentSection"
+            app:layout_constraintBottom_toTopOf="@id/bottomNavBar"
+            android:background="#FFFFFF"
+            android:padding="8dp" />
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <!-- Bottom Navigation Bar -->
     <LinearLayout
@@ -156,38 +192,17 @@
             android:orientation="vertical"
             android:gravity="center">
 
-            <!-- Wrap icon in FrameLayout to allow badge overlay -->
-            <FrameLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-
-                <ImageButton
-                    android:id="@+id/btnNotifs"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_gravity="center"
-                    android:background="@null"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/notifications"
-                    android:contentDescription="@string/notifications"
-                    android:focusable="true"
-                    android:clickable="true"/>
-
-                <!-- Badge View -->
-                <TextView
-                    android:id="@+id/notificationBadge"
-                    android:layout_width="18dp"
-                    android:layout_height="18dp"
-                    android:layout_gravity="top|end"
-                    android:background="@drawable/badge_background"
-                    android:text="0"
-                    android:textColor="@android:color/white"
-                    android:textSize="10sp"
-                    android:gravity="center"
-                    android:visibility="gone"
-                    android:layout_marginTop="2dp"
-                    android:layout_marginEnd="2dp"/>
-            </FrameLayout>
+            <ImageButton
+                android:id="@+id/btnNotifs"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:background="@null"
+                android:scaleType="fitCenter"
+                android:src="@drawable/notifications"
+                android:contentDescription="@string/notifications"
+                android:focusable="true"
+                android:clickable="true"/>
 
             <TextView
                 android:id="@+id/txtNotifs"

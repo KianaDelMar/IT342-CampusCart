@@ -42,7 +42,7 @@ public class UserController {
 	private JwtUtil jwtUtil;
 	
 	//private static final String UPLOAD_DIR = "C:/Users/Lloyd/Downloads/profile-images";
-	private static final String UPLOAD_DIR = System.getProperty("user.home") + "/Downloads/uploads";
+	private static final String UPLOAD_DIR = System.getProperty("user.home") + "/Downloads/";
 	
 	//CREATE
 	@PostMapping("/postUserRecord")

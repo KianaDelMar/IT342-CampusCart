@@ -10,6 +10,7 @@ import android.widget.ArrayAdapter
 import android.widget.ImageButton
 import android.widget.PopupWindow
 import android.widget.Spinner
+import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -20,11 +21,13 @@ import edu.cit.campuscart.utils.RetrofitClient
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-
+import com.google.gson.reflect.TypeToken
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.google.gson.Gson
 import edu.cit.campuscart.BaseActivity
 import edu.cit.campuscart.fragments.ProductDetailDialogFragment
 import edu.cit.campuscart.R
+import edu.cit.campuscart.models.Notification
 
 class BrowsePage : BaseActivity() {
 
@@ -32,6 +35,20 @@ class BrowsePage : BaseActivity() {
     private lateinit var productAdapter: ProductAdapters
     private var productList = mutableListOf<Products>()
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout  // Add SwipeRefreshLayout
+
+    private fun updateNotificationBadgeFromPrefs(badgeTextView: TextView) {
+        val sharedPref = getSharedPreferences("CampusCartPrefs", MODE_PRIVATE)
+        val json = sharedPref.getString("notificationList", null)
+        val type = object : TypeToken<MutableList<Notification>>() {}.type
+        val notifications: MutableList<Notification> = Gson().fromJson(json, type) ?: mutableListOf()
+
+        if (notifications.isNotEmpty()) {
+            badgeTextView.text = notifications.size.toString()
+            badgeTextView.visibility = View.VISIBLE
+        } else {
+            badgeTextView.visibility = View.GONE
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,6 +64,9 @@ class BrowsePage : BaseActivity() {
         // Initialize RecyclerView
         recyclerView = findViewById(R.id.recyclerViewProducts)
         recyclerView.layoutManager = GridLayoutManager(this, 2)
+
+        val badgeTextView: TextView = findViewById(R.id.notificationBadge)
+        updateNotificationBadgeFromPrefs(badgeTextView)
 
         // ✅ Set up adapter with click listener to show product detail dialog
         productAdapter = ProductAdapters(productList) { selectedProduct ->

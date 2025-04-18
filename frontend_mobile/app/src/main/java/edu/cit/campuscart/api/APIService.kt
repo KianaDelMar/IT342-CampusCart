@@ -2,6 +2,7 @@ package edu.cit.campuscart.api
 
 import edu.cit.campuscart.models.LoginRequest
 import edu.cit.campuscart.models.LoginResponse
+import edu.cit.campuscart.models.Notification
 import edu.cit.campuscart.models.Products
 import edu.cit.campuscart.models.Seller
 import okhttp3.MultipartBody
@@ -91,4 +92,11 @@ interface APIService {
         @Header("Authorization") token: String,
         @Path("code") code: Int
     ): Call<Void>
+
+    // Notification endpoint
+    @GET("api/notifications/user/{username}")
+    fun getUserNotifications(
+        @Header("Authorization") token: String,
+        @Path("username") username: String
+    ): Call<List<Notification>>
 }

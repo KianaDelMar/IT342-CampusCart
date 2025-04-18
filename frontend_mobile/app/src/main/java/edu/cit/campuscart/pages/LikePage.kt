@@ -1,14 +1,19 @@
 package edu.cit.campuscart.pages
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.ImageButton
+import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import edu.cit.campuscart.BaseActivity
 import edu.cit.campuscart.fragments.ProductDetailDialogFragment
 import edu.cit.campuscart.R
 import edu.cit.campuscart.adapters.ProductAdapters
+import edu.cit.campuscart.models.Notification
 import edu.cit.campuscart.models.Products
 import edu.cit.campuscart.utils.PreferenceUtils
 import edu.cit.campuscart.utils.RetrofitClient
@@ -20,9 +25,26 @@ class LikePage : BaseActivity() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: ProductAdapters
 
+    private fun updateNotificationBadgeFromPrefs(badgeTextView: TextView) {
+        val sharedPref = getSharedPreferences("CampusCartPrefs", MODE_PRIVATE)
+        val json = sharedPref.getString("notificationList", null)
+        val type = object : TypeToken<MutableList<Notification>>() {}.type
+        val notifications: MutableList<Notification> = Gson().fromJson(json, type) ?: mutableListOf()
+
+        if (notifications.isNotEmpty()) {
+            badgeTextView.text = notifications.size.toString()
+            badgeTextView.visibility = View.VISIBLE
+        } else {
+            badgeTextView.visibility = View.GONE
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_likepage)
+
+        val badgeTextView: TextView = findViewById(R.id.notificationBadge)
+        updateNotificationBadgeFromPrefs(badgeTextView)
 
         val likeButton = findViewById<ImageButton>(R.id.btnLikes)
         likeButton.setOnClickListener {

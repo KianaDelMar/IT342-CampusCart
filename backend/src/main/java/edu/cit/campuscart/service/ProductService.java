@@ -26,6 +26,9 @@ public class ProductService {
 	
 	@Autowired
 	private UserRepository userRepo;
+
+	@Autowired
+	private NotificationService notificationService;
 	
 	public ProductService() {
 		super();
@@ -128,9 +131,23 @@ public class ProductService {
 	
 		if (productOpt.isPresent()) {
 			ProductEntity product = productOpt.get();
-			product.setStatus("Approved");  
-			prepo.save(product);  
-
+			
+			// Check if the status is currently "Pending" before approving
+			if ("Pending".equals(product.getStatus())) {
+				product.setStatus("Approved");
+				prepo.save(product);  // Save the product with the new status
+	
+				// Send a notification to the product owner about the approval
+				String message = "Your product '" + product.getName() + "' has been approved!";
+				String type = "info";  // You can customize this based on your notification types
+				String username = product.getUser().getUsername();   // Assuming there is an owner associated with the product
+	
+				// Create a notification for the product owner
+				notificationService.createNotification(message, type, username);
+			} else {
+				throw new IllegalStateException("Product is not in Pending status and cannot be approved.");
+			}
+	
 		} else {
 			throw new NoSuchElementException("Product not found for approval.");
 		}
