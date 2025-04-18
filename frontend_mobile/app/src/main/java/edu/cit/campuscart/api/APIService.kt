@@ -71,6 +71,7 @@ interface APIService {
         @Path("username") username: String
     ): Call<List<Products>>
 
+    //Edit product endpoint
     @Multipart
     @PUT("api/product/putProductDetails/{code}")
     fun putProductDetails(
