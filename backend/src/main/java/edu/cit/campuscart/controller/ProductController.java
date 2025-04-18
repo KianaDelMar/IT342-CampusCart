@@ -48,7 +48,7 @@ public class ProductController {
 
 	//private static final String UPLOAD_DIR = "C:/Users/Lloyd/Downloads/"; 
 	//private static final String UPLOAD_DIR = "C:/Users/chriz/Downloads/";
-	private static final String UPLOAD_DIR = System.getProperty("user.home") + "/Downloads/";
+		private static final String UPLOAD_DIR = System.getProperty("user.home") + "/Downloads/";
 	
 	
 	// get products by logged in user
