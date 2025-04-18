@@ -96,7 +96,7 @@ const Register = () => {
             
             // Delay navigation slightly to show toast
             setTimeout(() => {
-                navigate('/');
+                navigate('/login');
             }, 2000);
         } catch (error) {
             if (error.response && error.response.data.message) {

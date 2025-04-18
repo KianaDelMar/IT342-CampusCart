@@ -29,7 +29,7 @@ const ProtectedAdminRoute = ({ children }) => {
   
   React.useEffect(() => {
     if (!token || userRole !== 'ADMIN') {
-      navigate('/');
+      navigate('/login');
     }
   }, [userRole, navigate]);
 
@@ -48,7 +48,7 @@ const ProtectedUserRoute = ({ children }) => {
   
   React.useEffect(() => {
     if (!token ||  !userRole || userRole === 'ADMIN') {
-      navigate('/');
+      navigate('/login');
       return;
     }
   }, [userRole, navigate]);
@@ -66,7 +66,7 @@ const App = () => {
       <AuthProvider>
         <div>
           {!location.pathname.startsWith('/admin') && 
-           location.pathname !== '/' && 
+           location.pathname !== '/login' && 
            location.pathname !== '/register' && 
            location.pathname !== '/admin' &&
            <MarketplaceHeader />}
@@ -75,7 +75,7 @@ const App = () => {
           
           <Routes>
             {/* Public Routes */}
-            <Route path="/" element={<Login />} />
+            <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/admin" element={<AdminLogin />} />
             
