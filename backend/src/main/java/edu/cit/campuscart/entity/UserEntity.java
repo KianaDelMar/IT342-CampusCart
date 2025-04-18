@@ -17,10 +17,14 @@ public class UserEntity {
     private String address;
     private String password;
     private String profilePhoto;
+    private Long id;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true) // ensures that when a seller is deleted, all associated products will also be deleted
     @JsonManagedReference
     private List<ProductEntity> products;
+
+    @OneToMany(mappedBy = "user")
+    private List<NotificationEntity> notifications;
 
     public UserEntity() {
         super();
@@ -108,6 +112,32 @@ public class UserEntity {
 
     public void setProducts(List<ProductEntity> products) {
         this.products = products;
+    }
+
+    // Getters and setters
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public List<NotificationEntity> getNotifications() {
+        return notifications;
+    }
+
+    public void setNotifications(List<NotificationEntity> notifications) {
+        this.notifications = notifications;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", email='" + email + '\'' +
+                '}';
     }
 
 }
