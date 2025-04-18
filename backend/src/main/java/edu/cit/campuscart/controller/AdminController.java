@@ -33,8 +33,10 @@ public class AdminController {
 	private AdminService adminService;
 	@Autowired
 	private JwtUtil jwtUtil;
-	
-	private static final String UPLOAD_DIR = "C:/Users/Lloyd/Downloads/uploads";
+
+
+	//private static final String UPLOAD_DIR = "C:/Users/Lloyd/Downloads/uploads";
+    private static final String UPLOAD_DIR = "C:/Users/chriz/Downloads/uploads";
 	
 	@GetMapping("/getAdminRecord/{username}") 
 	public AdminEntity getAdminByUsername(@PathVariable String username) throws NameNotFoundException {

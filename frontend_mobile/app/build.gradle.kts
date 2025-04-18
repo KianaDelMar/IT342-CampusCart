@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -59,6 +60,7 @@ android {
 }
 
 dependencies {
+    implementation("com.google.firebase:firebase-messaging:23.4.0")
     implementation("androidx.constraintlayout:constraintlayout:2.2.1")
     implementation(libs.androidx.core.ktx)
     implementation("androidx.appcompat:appcompat:1.7.0")

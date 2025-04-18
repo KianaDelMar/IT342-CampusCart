@@ -2,7 +2,6 @@ package edu.cit.campuscart.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import org.apache.catalina.User;
 
 import java.util.List;
 
@@ -18,6 +17,9 @@ public class UserEntity {
     private String address;
     private String password;
     private String profilePhoto;
+
+    @Column(name = "fcm_token")
+    private String fcmToken;  // Ensure this is a String
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true) // ensures that when a seller is deleted, all associated products will also be deleted
     @JsonManagedReference
@@ -36,6 +38,15 @@ public class UserEntity {
         this.address = address;
         this.password = password;
         this.profilePhoto = profilePhoto;
+    }
+
+    // Getters and setters
+    public String getFcmToken() {
+        return fcmToken;
+    }
+
+    public void setFcmToken(String fcmToken) {
+        this.fcmToken = fcmToken;
     }
 
     public String getUsername() {
@@ -110,4 +121,5 @@ public class UserEntity {
     public void setProducts(List<ProductEntity> products) {
         this.products = products;
     }
+
 }
