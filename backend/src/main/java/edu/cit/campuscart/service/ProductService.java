@@ -130,19 +130,7 @@ public class ProductService {
 			ProductEntity product = productOpt.get();
 			product.setStatus("Approved");  
 			prepo.save(product);  
-	
-			// Fetch the seller's FCM token and send a notification
-			UserEntity seller = userRepo.findByUsername(product.getUser());
-			if (seller != null && seller.getFcmToken() != null) {
-				try {
-					notificationService.sendPushNotification(seller.getFcmToken()); 
-				} catch (Exception e) {
-					System.out.println("Error sending notification: " + e.getMessage());
-				}
-			} else {
-				// Log a warning instead of throwing an exception
-				System.out.println("Warning: Seller's FCM token not found for product code " + code + ". Skipping notification.");
-			}
+
 		} else {
 			throw new NoSuchElementException("Product not found for approval.");
 		}
