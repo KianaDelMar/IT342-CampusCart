@@ -1,6 +1,8 @@
 package edu.cit.campuscart.pages
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.widget.ImageButton
 import android.widget.Toast
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -21,6 +23,39 @@ class ProfilePage : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_profilepage) // Make sure this layout has a RecyclerView with the ID
+
+        val profileButton = findViewById<ImageButton>(R.id.btnProfile)
+        profileButton.setOnClickListener {
+            if (this::class.java != ProfilePage::class.java) {
+                startActivity(Intent(this@ProfilePage, HomePage::class.java))
+                finish()
+            }
+        }
+
+        val browseButton = findViewById<ImageButton>(R.id.btnBrowse)
+        browseButton.setOnClickListener {
+            startActivity(Intent(this@ProfilePage, BrowsePage::class.java))
+        }
+
+        val notifButton = findViewById<ImageButton>(R.id.btnNotifs)
+        notifButton.setOnClickListener {
+            startActivity(Intent(this@ProfilePage, NotificationPage::class.java))
+        }
+
+        val homeButton = findViewById<ImageButton>(R.id.btnHome)
+        homeButton.setOnClickListener {
+            startActivity(Intent(this@ProfilePage, HomePage::class.java))
+        }
+        /*
+        val messageButton = findViewById<ImageButton>(R.id.btnMessage)
+        messageButton.setOnClickListener {
+            startActivity(Intent(this@ProfilePage, MessagePage::class.java))
+        }*/
+
+        val likeButton = findViewById<ImageButton>(R.id.btnLikes)
+        likeButton.setOnClickListener {
+            startActivity(Intent(this@ProfilePage, LikePage::class.java))
+        }
 
         recyclerViewProfileProducts = findViewById(R.id.recyclerUserProducts)
         recyclerViewProfileProducts.layoutManager = GridLayoutManager(this, 2)
@@ -52,7 +87,6 @@ class ProfilePage : BaseActivity() {
             ) {
                 if (response.isSuccessful && response.body() != null) {
                     val userProducts = response.body()!! // No filtering
-                    // Log the full product details
 
                     val adapter = ProductAdapters(userProducts.toMutableList()) { selectedProduct ->
                         Log.d("ProfilePage", "Selected Product Category: ${selectedProduct.category}")

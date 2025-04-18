@@ -55,15 +55,12 @@ class BrowsePage : BaseActivity() {
         }
         recyclerView.adapter = productAdapter
 
-        // Fetch products
         fetchProducts(getLoggedInUsername())
 
-        // Setup fragment result listener to refresh list after product is added
         supportFragmentManager.setFragmentResultListener("product_added", this) { _, _ ->
             fetchProducts(getLoggedInUsername())
         }
 
-        // Show Form
         val addButton = findViewById<ImageButton>(R.id.btnAddProduct)
         addButton.setOnClickListener {
             val dialog = AddProductDialogFragment()
@@ -75,7 +72,7 @@ class BrowsePage : BaseActivity() {
             showFilterPopup(it)
         }
 
-        // Bottom nav buttons
+        // Bottom Nav Buttons
         val browseButton = findViewById<ImageButton>(R.id.btnBrowse)
         browseButton.setOnClickListener {
             if (this::class.java != BrowsePage::class.java) {
@@ -103,6 +100,11 @@ class BrowsePage : BaseActivity() {
         profileButton.setOnClickListener {
             startActivity(Intent(this@BrowsePage, ProfilePage::class.java))
         }
+        /*
+        val messageButton = findViewById<ImageButton>(R.id.btnMessage)
+        messageButton.setOnClickListener {
+            startActivity(Intent(this@BrowsePage, MessagePage::class.java))
+        }*/
     }
 
     private fun getLoggedInUsername(): String {
