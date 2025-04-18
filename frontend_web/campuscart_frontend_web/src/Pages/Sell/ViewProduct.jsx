@@ -250,7 +250,7 @@ const ViewProduct = () => {
                             }}>
                                 <Avatar
                                     src={!imageError && product.userProfileImagePath ?
-                                        `http://localhost:8080/profile-images/${product.userProfileImagePath}` :
+                                        `http://localhost:8080/uploads/${product.userProfileImagePath}` :
                                         `https://ui-avatars.com/api/?name=${product.userUsername}&background=89343b&color=fff`
                                     }
                                     alt={product.userUsername}

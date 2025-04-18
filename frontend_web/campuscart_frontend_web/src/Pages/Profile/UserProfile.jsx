@@ -58,7 +58,7 @@ const UserProfile = () => {
                     setEmail(email);
 
                     if (profilePhoto) {
-                        setProfilePhoto(`http://localhost:8080/profile-images/${profilePhoto}`);
+                        setProfilePhoto(`http://localhost:8080/uploads/${profilePhoto}`);
                     }
                 }
             } catch (error) {

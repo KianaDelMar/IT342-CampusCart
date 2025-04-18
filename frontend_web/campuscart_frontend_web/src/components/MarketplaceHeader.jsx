@@ -78,7 +78,7 @@ const MarketplaceHeader = () => {
   const handleLogout = () => {
     sessionStorage.clear();
     sessionStorage.removeItem('token');
-    navigate('/');
+    navigate('/login');
   };
   const handleClose = () => {
       setAnchor(null);
@@ -167,7 +167,7 @@ const MarketplaceHeader = () => {
                 const { profilePhoto } = response.data;
 
                 if (profilePhoto) {
-                    setProfilePhoto(`http://localhost:8080/profile-images/${profilePhoto}`);
+                    setProfilePhoto(`http://localhost:8080/uploads/${profilePhoto}`);
                 }
             }
         } catch (error) {
@@ -198,7 +198,7 @@ const MarketplaceHeader = () => {
         navigate('/profile');
         break;
       default:
-        navigate('/');
+        navigate('/login');
     }
   };
 

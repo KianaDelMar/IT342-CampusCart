@@ -134,7 +134,7 @@ const UserAccount = (props) => {
                 setCurrentPassword('');
                 setNewPassword('');
                 setConfirmPassword('');
-                navigate('/');
+                navigate('/login');
             }
         } catch (error) {
             toast.error('Failed to change password');
@@ -170,7 +170,7 @@ const UserAccount = (props) => {
 
             if(response.status === 200) {
                 toast.success('Profile picture updated successfully');
-                setPreviewImage(`http://localhost:8080/profile-images/${response.data.fileName}`);
+                setPreviewImage(`http://localhost:8080/uploads/${response.data.fileName}`);
             }
         } catch (error) {
             console.error('Error uploading profile photo: ', error);
@@ -195,7 +195,7 @@ const UserAccount = (props) => {
                     setUsername(username);
 
                     if (profilePhoto) {
-                        setPreviewImage(`http://localhost:8080/profile-images/${profilePhoto}`);
+                        setPreviewImage(`http://localhost:8080/uploads/${profilePhoto}`);
                     }
                 }
             } catch (error) {
