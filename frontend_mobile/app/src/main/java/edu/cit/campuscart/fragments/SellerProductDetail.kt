@@ -12,7 +12,6 @@ import edu.cit.campuscart.R
 import edu.cit.campuscart.models.Products
 import edu.cit.campuscart.utils.Constants
 import android.graphics.Color
-import android.util.Log
 import android.widget.ImageButton
 import androidx.appcompat.widget.AppCompatImageButton
 import edu.cit.campuscart.forms.EditProductDialogFragment
@@ -25,7 +24,7 @@ class SellerProductDetail : DialogFragment() {
         fun newInstance(product: Products): SellerProductDetail {
             val fragment = SellerProductDetail()
             val args = Bundle()
-            args.putSerializable(ARG_PRODUCT, product) // Products must implement Serializable
+            args.putSerializable(ARG_PRODUCT, product)
             fragment.arguments = args
             return fragment
         }
@@ -35,7 +34,6 @@ class SellerProductDetail : DialogFragment() {
         val product = arguments?.getSerializable(ARG_PRODUCT) as? Products
         val view = LayoutInflater.from(context).inflate(R.layout.view_by_seller, null)
 
-        // Views in view_by_seller.xml
         val productImage = view.findViewById<ImageView>(R.id.product_image)
         val productName = view.findViewById<TextView>(R.id.product_name)
         val productDescription = view.findViewById<TextView>(R.id.product_description)
@@ -52,11 +50,10 @@ class SellerProductDetail : DialogFragment() {
             productCondition.text = it.conditionType
             productStatus.text = it.status?.replaceFirstChar { char -> char.uppercase() } ?: "Pending"
 
-            // Optionally, color the status based on value
             when (it.status?.lowercase()) {
-                "approved" -> productStatus.setTextColor(Color.parseColor("#49D349")) // Green
-                "pending" -> productStatus.setTextColor(Color.parseColor("#E1A117")) // Orange
-                else -> productStatus.setTextColor(Color.parseColor("#C4C4C4"))      // Gray
+                "approved" -> productStatus.setTextColor(Color.parseColor("#49D349"))
+                "pending" -> productStatus.setTextColor(Color.parseColor("#E1A117"))
+                else -> productStatus.setTextColor(Color.parseColor("#C4C4C4"))
             }
 
             Picasso.get()
@@ -74,10 +71,10 @@ class SellerProductDetail : DialogFragment() {
 
         val dialog = AlertDialog.Builder(requireContext())
             .setView(view)
-            .setCancelable(true) // Allow dialog to be cancelled by tapping outside
+            .setCancelable(true)
             .create()
 
-        dialog.setCanceledOnTouchOutside(true) // Close dialog when tapping outside
+        dialog.setCanceledOnTouchOutside(true)
         dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
         return dialog
     }

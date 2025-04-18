@@ -22,7 +22,6 @@ import edu.cit.campuscart.models.Products
 import edu.cit.campuscart.utils.RetrofitClient
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.Call
 import retrofit2.Callback
@@ -96,24 +95,21 @@ class EditProductDialogFragment : DialogFragment() {
         condition.value = product.conditionType
         status.value = product.status
 
-        // Set up Category Spinner
         val categories = listOf(" ", "Electronics", "Clothes", "Food", "Accessories", "Stationery/Arts & Crafts", "Merchandise", "Beauty", "Books", "Others")
         val categoryAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, categories)
         categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.dropCategory.adapter = categoryAdapter
 
-// Set up Condition Spinner
         val conditions = listOf("New", "Used", "Others")
         val conditionAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, conditions)
         conditionAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.dropCondition.adapter = conditionAdapter
 
-// Load initial category and condition selections
-        binding.dropCategory.setSelection(getCategoryPosition(product.category)) // Position of the current product's category
-        binding.dropCondition.setSelection(getConditionPosition(product.conditionType)) // Position of the current product's condition
+        binding.dropCategory.setSelection(getCategoryPosition(product.category))
+        binding.dropCondition.setSelection(getConditionPosition(product.conditionType))
 
         Glide.with(this)
-            .load("http://192.168.1.54:8080/" + product.imagePath)
+            .load("http://192.168.1.54:8080/" + product.imagePath) //NOTE: Local, to change when deployment
             .placeholder(R.drawable.defaultimage)
             .error(R.drawable.defaultimage)
             .into(binding.selectedImageView)
@@ -150,6 +146,8 @@ class EditProductDialogFragment : DialogFragment() {
             imagePickerLauncher.launch("image/*")
         }
 
+        binding.btnBack.setOnClickListener { dismiss() }
+
         binding.btnSubmit.setOnClickListener {
             updateProduct()
         }
@@ -185,7 +183,7 @@ class EditProductDialogFragment : DialogFragment() {
             status = status.value ?: "",
             userUsername = product.userUsername,
             imagePath = product.imagePath,
-            userProfileImagePath = product.userProfileImagePath // Add this line
+            userProfileImagePath = product.userProfileImagePath
         )
 
         val gson = Gson()
@@ -264,7 +262,6 @@ class EditProductDialogFragment : DialogFragment() {
     private fun getCategoryPosition(category: String?): Int {
         val categories = listOf(" ","Electronics", "Clothes", "Food", "Accessories", "Stationery/Arts & Crafts", "Merchandise", "Beauty", "Books", "Others")
 
-        // Check if category is valid and exists in the list, otherwise default to the first position
         return categories.indexOf(category ?: "").takeIf { it >= 0 } ?: 0
     }
 
