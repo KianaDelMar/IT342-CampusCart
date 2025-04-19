@@ -35,10 +35,13 @@ public class SecurityConfig {
                 .requestMatchers("/api/user/login").permitAll()
                 .requestMatchers("/api/admin/login").permitAll()
                 .requestMatchers("/api/user/postUserRecord").permitAll()
+                .requestMatchers("/api/auth/google").permitAll()
+                .requestMatchers("/api/auth/**").permitAll()  // Allow all auth endpoints
                 .requestMatchers("/uploads/**").permitAll()
                 .requestMatchers("/api/product/getAllProducts/**").permitAll() // should be protected or require authentication
                 .requestMatchers("/api/product/getProductsByUser/**").permitAll() // should be protected or require authentication
                 .requestMatchers("/api/product/putProductDetails/**").permitAll() // should be protected or require authentication
+                .requestMatchers("/api/user/getUsername/**").authenticated()
                 .anyRequest().authenticated()
             )
             .sessionManagement(session -> session
@@ -52,10 +55,12 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "https://accounts.google.com"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);
+        configuration.setExposedHeaders(Arrays.asList("Authorization"));
+        configuration.setMaxAge(3600L);
         
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

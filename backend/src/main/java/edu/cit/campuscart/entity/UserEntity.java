@@ -18,6 +18,8 @@ public class UserEntity {
     private String password;
     private String profilePhoto;
     private Long id;
+    
+    private String googleId;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true) // ensures that when a seller is deleted, all associated products will also be deleted
     @JsonManagedReference
@@ -112,6 +114,14 @@ public class UserEntity {
 
     public void setProducts(List<ProductEntity> products) {
         this.products = products;
+    }
+    
+    public String getGoogleId() {
+        return googleId;
+    }
+
+    public void setGoogleId(String googleId) {
+        this.googleId = googleId;
     }
 
     // Getters and setters

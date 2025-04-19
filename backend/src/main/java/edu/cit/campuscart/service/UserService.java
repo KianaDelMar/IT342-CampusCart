@@ -1,6 +1,7 @@
 package edu.cit.campuscart.service;
 
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import javax.naming.NameAlreadyBoundException;
 import javax.naming.NameNotFoundException;
@@ -36,6 +37,10 @@ public class UserService {
   	
   	public boolean isEmailExists(String email) {
         return userRepo.existsByEmail(email);
+    }
+
+    public boolean existsByUsername(String username) {
+        return userRepo.existsByUsername(username);
     }
 
 	/*
@@ -108,4 +113,13 @@ public class UserService {
 		
 		return msg;
 	}
+	
+	public UserEntity save(UserEntity user) {
+	    return userRepo.save(user);
+	}
+	
+	public UserEntity findByEmail(String email) {
+        return userRepo.findByEmail(email);
+    }
+
 }

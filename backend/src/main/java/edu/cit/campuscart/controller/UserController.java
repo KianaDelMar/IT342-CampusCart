@@ -41,8 +41,7 @@ public class UserController {
 	@Autowired
 	private JwtUtil jwtUtil;
 	
-	//private static final String UPLOAD_DIR = "C:/Users/Lloyd/Downloads/profile-images";
-	private static final String UPLOAD_DIR = System.getProperty("user.home") + "/Downloads/";
+	private static final String UPLOAD_DIR = System.getProperty("user.home") + "/Downloads/uploads";
 	
 	//CREATE
 	@PostMapping("/postUserRecord")
@@ -89,18 +88,28 @@ public class UserController {
 	@PostMapping("/uploadProfilePhoto/{username}")
 	public ResponseEntity<Map<String,String>> uploadProfilePhoto(@PathVariable String username, @RequestParam("file") MultipartFile file) throws NameNotFoundException {
 		try {
-			if(file.isEmpty()) 
+			if(file.isEmpty()) {
 				return ResponseEntity.badRequest().body(Map.of("message", "No file selected"));
+			}
 			
-			//Getting the filename
-			String fileName = StringUtils.cleanPath(file.getOriginalFilename());
-			//Save image to target location
-			Path targetLocation = Paths.get(UPLOAD_DIR, fileName);
-	        Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+			// Create uploads directory if it doesn't exist
+			Path uploadPath = Paths.get(UPLOAD_DIR);
+			if (!Files.exists(uploadPath)) {
+				Files.createDirectories(uploadPath);
+			}
 			
-	        //Save only the filename to the database
+			// Generate a unique filename to prevent overwrites
+			String originalFilename = StringUtils.cleanPath(file.getOriginalFilename());
+			String fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
+			String fileName = username + "_" + System.currentTimeMillis() + fileExtension;
+			
+			// Save image to target location
+			Path targetLocation = uploadPath.resolve(fileName);
+			Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+			
+			// Save filename to database
 			UserEntity user = userService.getUserByUsername(username);
-			user.setProfilePhoto(fileName); //stores the filename only
+			user.setProfilePhoto(fileName);
 			userService.putUserDetails(username, user);
 			
 			Map<String, String> response = new HashMap<>();
@@ -108,7 +117,11 @@ public class UserController {
 			response.put("fileName", fileName);
 			return ResponseEntity.ok(response);
 		} catch(IOException e) {
-			return ResponseEntity.status(500).body(Map.of("message", "Failed to upload the file"));
+			e.printStackTrace(); // Log the full stack trace
+			return ResponseEntity.status(500).body(Map.of(
+				"message", "Failed to upload the file",
+				"error", e.getMessage()
+			));
 		}
 	}
 	
