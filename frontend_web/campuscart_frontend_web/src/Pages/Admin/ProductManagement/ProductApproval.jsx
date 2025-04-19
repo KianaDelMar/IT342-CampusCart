@@ -549,9 +549,9 @@ const ProductApproval = () => {
                             label={value}
                             sx={{
                               bgcolor: 
-                                value === 'Approved' ? '#007bff' :
+                                value === 'Approved' ? '#28a745' :
                                 value === 'Rejected' ? '#dc3545' :
-                                value === 'Pending' ? '#28a745' :
+                                value === 'Pending' ? '#ff9800' :
                                 '#757575',
                               color: 'white',
                               fontWeight: 500,

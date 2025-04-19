@@ -31,10 +31,8 @@ const AdminLogin = () => {
             return;
         }
   
-        console.log('Logging in with credentials:', credentials);
         try {
             const response = await axios.post('http://localhost:8080/api/admin/login', credentials);
-            console.log('Login Successful', response.data);
             const userData = response.data;
 
             // Add role to userData
