@@ -103,7 +103,7 @@ const UserProfile = () => {
                         <Box sx={{ position: 'relative', width: 100, height: 100 }}>
                             <Avatar
                                 src={profilePhoto}
-                                alt="Profile Picture"
+                                alt={username}
                                 sx={{
                                     width: 100,
                                     height: 100,
@@ -277,8 +277,14 @@ const UserProfile = () => {
                                                             position: 'absolute',
                                                             top: 12,
                                                             right: 12,
-                                                            backgroundColor: product.status === 'Available' ? '#4caf50' : 
-                                                                           product.status === 'Pending' ? '#ff9800' : '#f44336',
+                                                            backgroundColor:
+                                                                product.status === 'Approved'
+                                                                    ? '#28a745'
+                                                                    : product.status === 'Pending'
+                                                                        ? '#ff9800'
+                                                                        : product.status === 'Rejected'
+                                                                            ? '#dc3545'
+                                                                            : '#9e9e9e', // fallback color
                                                             color: 'white',
                                                             padding: '4px 12px',
                                                             borderRadius: '12px',

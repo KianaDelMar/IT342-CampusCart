@@ -56,7 +56,7 @@ const BrowsePage = () => {
     const searchParams = new URLSearchParams(location.search);
     const searchQuery = searchParams.get('search') || '';
     const categoryQuery = searchParams.get('category') || '';
-    const [imageError, setImageError] = useState(false);
+    const [imageErrors, setImageErrors] = useState({});
     const [allProducts, setAllProducts] = useState([]);
     const [filteredProducts, setFilteredProducts] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -455,12 +455,12 @@ const BrowsePage = () => {
                                         height: '60px',
                                     }}>
                                         <Avatar
-                                            src={!imageError && product.userProfileImagePath ?
+                                            src={!imageErrors[product.code] && product.userProfileImagePath ?
                                                 `http://localhost:8080/uploads/${product.userProfileImagePath}` :
                                                 `https://ui-avatars.com/api/?name=${product.userUsername}&background=89343b&color=fff`
                                             }
                                             alt={product.userUsername}
-                                            onError={() => setImageError(true)}
+                                            onError={() => setImageErrors(prev => ({ ...prev, [product.code]: true }))}
                                             sx={{
                                                 width: 32,
                                                 height: 32,

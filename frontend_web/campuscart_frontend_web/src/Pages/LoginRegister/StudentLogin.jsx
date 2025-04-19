@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../../contexts/AuthContext';
@@ -12,10 +12,12 @@ import {
     Alert,
     Paper,
     InputAdornment,
+    Divider,
 } from '@mui/material';
 import { Person, Lock } from '@mui/icons-material';
 import logo from '../../assets/img/logo-text.png';
 import cit from '../../assets/img/cit-1.jpg';
+import GoogleSignIn from '../../components/GoogleSignIn';
 
 const StudentLogin = () => {
     const [credentials, setCredentials] = useState({ username: '', password: '' });
@@ -23,6 +25,7 @@ const StudentLogin = () => {
     const { login } = useAuth();
     const navigate = useNavigate();
 
+    //for custom login
     const handleLogin = async (e) => {
         e.preventDefault();
 
@@ -31,10 +34,8 @@ const StudentLogin = () => {
             return;
         }
 
-        console.log('Logging in with credentials:', credentials);
         try {
             const response = await axios.post('http://localhost:8080/api/user/login', credentials);
-            console.log('Login Successful', response.data);
             const userData = response.data;
 
             sessionStorage.setItem('token', userData.token);
@@ -48,6 +49,7 @@ const StudentLogin = () => {
             console.error('Error logging in: ', error);
         }
     };
+
 
     return (
         <Grid container sx={{ minHeight: '100vh', overflow: 'hidden' }}>
@@ -202,6 +204,8 @@ const StudentLogin = () => {
                     >
                         Login
                     </Button>
+
+                    <GoogleSignIn />
 
                     <Typography variant="body2" sx={{ mt: 2 }}>
                         Don't have an account?{' '}

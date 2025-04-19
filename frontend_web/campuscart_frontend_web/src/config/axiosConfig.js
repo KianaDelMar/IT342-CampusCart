@@ -2,6 +2,10 @@ import axios from 'axios';
 
 const api = axios.create({
   baseURL: 'http://localhost:8080/api',
+  headers: {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json'
+  }
 });
 
 // Add a request interceptor to include JWT token
@@ -16,7 +20,7 @@ api.interceptors.request.use(
   error => {
     if (error.response && error.response.status === 401) {
       sessionStorage.removeItem('token');
-      window.location.href = '/login'; // or use navigate() in components
+      window.location.href = '/login'; 
     }
     return Promise.reject(error);
   }

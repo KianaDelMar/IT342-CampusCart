@@ -53,6 +53,7 @@ const UserAccount = (props) => {
     const [editMode, setEditMode] = useState(false);
     const [profileImage, setProfileImage] = useState(null);
     const [previewImage, setPreviewImage] = useState('');
+    const [isGoogleUser, setIsGoogleUser] = useState(false);
     const navigate = useNavigate();
 
     // State for Change Password
@@ -185,7 +186,7 @@ const UserAccount = (props) => {
                 const response = await api.get(`/user/getUserRecord/${username}`);
 
                 if (response.status === 200) {
-                    const { firstName, lastName, email, address, contactNo, profilePhoto } = response.data;
+                    const { firstName, lastName, email, address, contactNo, profilePhoto, googleId } = response.data;
     
                     setFirstName(firstName);
                     setLastName(lastName);
@@ -193,6 +194,7 @@ const UserAccount = (props) => {
                     setAddress(address);
                     setContactNo(contactNo);
                     setUsername(username);
+                    setIsGoogleUser(!!googleId);
 
                     if (profilePhoto) {
                         setPreviewImage(`http://localhost:8080/uploads/${profilePhoto}`);
@@ -239,7 +241,7 @@ const UserAccount = (props) => {
                 }}
             >
                 <Tab label="Personal Info" {...a11yProps(0)} />
-                <Tab label="Change Password" {...a11yProps(1)} />
+                {!isGoogleUser && <Tab label="Change Password" {...a11yProps(1)} />}
             </Tabs>
 
             <TabPanel value={value} index={0}>
@@ -373,41 +375,43 @@ const UserAccount = (props) => {
                 </Paper>
             </TabPanel>
 
-            <TabPanel value={value} index={1}>
-                <Paper elevation={1} sx={{ padding: 3, marginTop: '-25px', backgroundColor: '#f0f0f0', border: '2px solid #8A252C', borderRadius: '10px' }}>
-                    <Typography variant="h6" sx={{fontWeight: 'bold'}}>Change Password</Typography>
-                    <Box sx={{ mt: 2 }}>
-                        <TextField
-                            margin="dense"
-                            label="Current Password"
-                            type="password"
-                            fullWidth
-                            variant="outlined"
-                            value={currentPassword}
-                            onChange={(e) => setCurrentPassword(e.target.value)}
-                        />
-                        <TextField
-                            margin="dense"
-                            label="New Password"
-                            type="password"
-                            fullWidth
-                            variant="outlined"
-                            value={newPassword}
-                            onChange={(e) => setNewPassword(e.target.value)}
-                        />
-                        <TextField
-                            margin="dense"
-                            label="Confirm New Password"
-                            type="password"
-                            fullWidth
-                            variant="outlined"
-                            value={confirmPassword}
-                            onChange={(e) => setConfirmPassword(e.target.value)}
-                        />
-                        </Box>
-                        <Button onClick={handleChangePassword} color="primary" variant="outlined" sx={{ mt: 1, borderColor: '#8A252C', color: '#8A252C' }}  >Change Password</Button>
-                </Paper>
-            </TabPanel>
+            {!isGoogleUser && (
+                <TabPanel value={value} index={1}>
+                    <Paper elevation={1} sx={{ padding: 3, marginTop: '-25px', backgroundColor: '#f0f0f0', border: '2px solid #8A252C', borderRadius: '10px' }}>
+                        <Typography variant="h6" sx={{fontWeight: 'bold'}}>Change Password</Typography>
+                        <Box sx={{ mt: 2 }}>
+                            <TextField
+                                margin="dense"
+                                label="Current Password"
+                                type="password"
+                                fullWidth
+                                variant="outlined"
+                                value={currentPassword}
+                                onChange={(e) => setCurrentPassword(e.target.value)}
+                            />
+                            <TextField
+                                margin="dense"
+                                label="New Password"
+                                type="password"
+                                fullWidth
+                                variant="outlined"
+                                value={newPassword}
+                                onChange={(e) => setNewPassword(e.target.value)}
+                            />
+                            <TextField
+                                margin="dense"
+                                label="Confirm New Password"
+                                type="password"
+                                fullWidth
+                                variant="outlined"
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
+                            />
+                            </Box>
+                            <Button onClick={handleChangePassword} color="primary" variant="outlined" sx={{ mt: 1, borderColor: '#8A252C', color: '#8A252C' }}  >Change Password</Button>
+                    </Paper>
+                </TabPanel>
+            )}
         </Box>
     );
 };
