@@ -48,7 +48,7 @@ public class ProductController {
 
 	//private static final String UPLOAD_DIR = "C:/Users/Lloyd/Downloads/"; 
 	//private static final String UPLOAD_DIR = "C:/Users/chriz/Downloads/";
-		private static final String UPLOAD_DIR = System.getProperty("user.home") + "/Downloads/";
+	private static final String UPLOAD_DIR = System.getProperty("user.home") + "/Downloads/";
 	
 	
 	// get products by logged in user
@@ -132,10 +132,10 @@ public class ProductController {
 				productData.put("buyPrice", product.getBuyPrice());
 				productData.put("imagePath", product.getImagePath());
 
-				// Get user's username
+				// Get user's information
 				if (product.getUser() != null) {
 					productData.put("userUsername", product.getUser().getUsername());
-				    productData.put("userProfileImagePath", product.getUserProfilePhoto()); 
+					productData.put("userProfileImagePath", product.getUser().getProfilePhoto());
 				}
 
 				response.add(productData);
