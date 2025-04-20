@@ -1,5 +1,7 @@
 package edu.cit.campuscart.api
 
+import edu.cit.campuscart.models.GoogleLoginRequest
+import edu.cit.campuscart.models.GoogleLoginResponse
 import edu.cit.campuscart.models.LoginRequest
 import edu.cit.campuscart.models.LoginResponse
 import edu.cit.campuscart.models.Notification
@@ -99,4 +101,7 @@ interface APIService {
         @Header("Authorization") token: String,
         @Path("username") username: String
     ): Call<List<Notification>>
+
+    @POST("/auth/google")
+    fun googleLogin(@Body request: GoogleLoginRequest): Call<GoogleLoginResponse>
 }
