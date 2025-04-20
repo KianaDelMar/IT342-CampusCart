@@ -26,4 +26,7 @@
     <string name="likes">Likes</string>
     <string name="browse">Browse</string>
     <string name="home">Home</string>
+
+    <string name="google_client_id">391808809208-0lgjosiprov564dn0u0ac8p69q48nsbv.apps.googleusercontent.com</string>
+
 </resources>

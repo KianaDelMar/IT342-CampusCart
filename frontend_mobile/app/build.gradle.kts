@@ -9,6 +9,8 @@ android {
 
     buildFeatures {
         viewBinding = true
+        buildConfig = true
+        compose = true
     }
 
     defaultConfig {
@@ -22,6 +24,11 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+        // Define BuildConfig fields using properties from local.properties
+        val googleClientId = project.findProperty("GOOGLE_CLIENT_ID") as String?
+        buildConfigField("String", "GOOGLE_CLIENT_ID", "\"${googleClientId ?: ""}\"")
+        buildConfigField("String", "API_BASE_URL", "\"${findProperty("API_BASE_URL") ?: ""}\"")
+
     }
 
     buildTypes {
@@ -59,6 +66,8 @@ android {
 }
 
 dependencies {
+    // Google Sign-In
+    implementation("com.google.android.gms:play-services-auth:20.7.0")
     implementation("androidx.constraintlayout:constraintlayout:2.2.1")
     implementation(libs.androidx.core.ktx)
     implementation("androidx.appcompat:appcompat:1.7.0")
