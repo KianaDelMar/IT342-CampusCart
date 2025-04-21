@@ -109,7 +109,7 @@ class EditProductDialogFragment : DialogFragment() {
         binding.dropCondition.setSelection(getConditionPosition(product.conditionType))
 
         Glide.with(this)
-            .load("http://192.168.1.54:8080/" + product.imagePath) //NOTE: Local, to change when deployment
+            .load("http://192.168.1.59:8080/" + product.imagePath) //NOTE: Local, to change when deployment
             .placeholder(R.drawable.defaultimage)
             .error(R.drawable.defaultimage)
             .into(binding.selectedImageView)

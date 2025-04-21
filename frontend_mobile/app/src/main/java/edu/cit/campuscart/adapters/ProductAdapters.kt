@@ -60,6 +60,12 @@ class ProductAdapters(
         notifyDataSetChanged()
     }
 
+    fun updateList(newList: List<Products>) {
+        products.clear()
+        products.addAll(newList)
+        notifyDataSetChanged()
+    }
+
     inner class ProductViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val productName: TextView = view.findViewById(R.id.product_name)
         val productPrice: TextView = view.findViewById(R.id.product_price)
