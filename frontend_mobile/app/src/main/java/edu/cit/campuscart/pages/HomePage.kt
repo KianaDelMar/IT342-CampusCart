@@ -2,20 +2,27 @@ package edu.cit.campuscart.pages
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
+import android.util.Log
 import android.view.View
-import android.view.ViewGroup
-import android.widget.ArrayAdapter
+import android.widget.Button
 import android.widget.ImageButton
-import android.widget.PopupWindow
-import android.widget.Spinner
 import android.widget.TextView
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import edu.cit.campuscart.BaseActivity
 import edu.cit.campuscart.R
+import edu.cit.campuscart.adapters.ProductAdapters
 import edu.cit.campuscart.forms.AddProductDialogFragment
+import edu.cit.campuscart.fragments.SellerProductDetail
 import edu.cit.campuscart.models.Notification
+import edu.cit.campuscart.models.Products
+import edu.cit.campuscart.utils.RetrofitClient
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class HomePage : BaseActivity() {
 
@@ -45,15 +52,10 @@ class HomePage : BaseActivity() {
         val badgeTextView: TextView = findViewById(R.id.notificationBadge)
         updateNotificationBadgeFromPrefs(badgeTextView)
 
-        val btnShowFilters = findViewById<ImageButton>(R.id.btnShowFilters)
         val addButton = findViewById<ImageButton>(R.id.btnAddProduct)
         addButton.setOnClickListener {
             val dialog = AddProductDialogFragment()
             dialog.show(supportFragmentManager, "AddProductDialog")
-        }
-
-        btnShowFilters.setOnClickListener {
-            showFilterPopup(it)
         }
 
         val homeButton = findViewById<ImageButton>(R.id.btnHome)
@@ -64,6 +66,8 @@ class HomePage : BaseActivity() {
                 finish()
             }
         }
+
+        loadRecentProducts(getLoggedInUsername())
 
         val browseButton = findViewById<ImageButton>(R.id.btnBrowse)
         browseButton.setOnClickListener {
@@ -89,53 +93,68 @@ class HomePage : BaseActivity() {
         profileButton.setOnClickListener {
             startActivity(Intent(this@HomePage, ProfilePage::class.java))
         }
-    }
-    private fun showFilterPopup(anchorView: View) {
-        // Inflate the filter_dialog.xml layout
-        val popupView = LayoutInflater.from(this).inflate(R.layout.filter_dialog, null)
 
-        // Create PopupWindow
-        val popupWindow = PopupWindow(
-            popupView,
-            ViewGroup.LayoutParams.WRAP_CONTENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT,
-            true // Focusable
-        )
+        val intent = Intent(this, BrowsePage::class.java)
 
-        // Get location of the filter button (btnShowFilters)
-        val location = IntArray(2)
-        anchorView.getLocationOnScreen(location)
-
-        // Get screen width to adjust position
-        val screenWidth = resources.displayMetrics.widthPixels
-
-        val popupX = location[0] + anchorView.width // Start from the right edge of the button
-        val popupY = location[1] + anchorView.height // Position below the button
-
-        // Ensure popup does not go off-screen
-        val maxPopupWidth = screenWidth - popupX
-        if (maxPopupWidth < popupView.measuredWidth) {
-            popupWindow.width = maxPopupWidth
+        findViewById<Button>(R.id.btnFood).setOnClickListener {
+            intent.putExtra("CATEGORY", "Food")
+            startActivity(intent)
         }
 
-        // Show the popup aligned to the right of the button
-        popupWindow.showAtLocation(anchorView, 0, popupX, popupY)
+        findViewById<Button>(R.id.btnClothes).setOnClickListener {
+            intent.putExtra("CATEGORY", "Clothes")
+            startActivity(intent)
+        }
 
-        // Dismiss when clicking outside
-        popupWindow.setOutsideTouchable(true)
-        popupWindow.setTouchable(true)
+        findViewById<Button>(R.id.btnAccessories).setOnClickListener {
+            intent.putExtra("CATEGORY", "Accessories")
+            startActivity(intent)
+        }
 
-        val spinnerCategory = popupView.findViewById<Spinner>(R.id.spinnerCategory)
-        val spinnerCondition = popupView.findViewById<Spinner>(R.id.spinnerCondition)
+        findViewById<Button>(R.id.btnElectronics).setOnClickListener {
+            intent.putExtra("CATEGORY", "Electronics")
+            startActivity(intent)
+        }
 
-        val categories = listOf("Select Category", "Electronics", "Clothes", "Food", "Accessories", "Stationery/Arts & Crafts", "Merchandise", "Beauty", "Books", "Others")
-        val conditions = listOf("Select Condition", "New", "Used", "Others")
+        findViewById<Button>(R.id.btnMerch).setOnClickListener {
+            intent.putExtra("CATEGORY", "Merchandise")
+            startActivity(intent)
+        }
 
-// Set adapters
-        val categoryAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, categories)
-        val conditionAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, conditions)
-        spinnerCategory.adapter = categoryAdapter
-        spinnerCondition.adapter = conditionAdapter
+    }
 
+    private fun getLoggedInUsername(): String {
+        val sharedPref = getSharedPreferences("CampusCartPrefs", MODE_PRIVATE)
+        return sharedPref.getString("loggedInUsername", "") ?: ""
+    }
+
+    private fun loadRecentProducts(username:String) {
+        val recyclerView = findViewById<RecyclerView>(R.id.recyclerRecentProducts)
+        recyclerView.layoutManager = GridLayoutManager(this, 2)
+
+        val apiService = RetrofitClient.instance
+        val call = apiService.getAllProducts(username)
+
+        call.enqueue(object : Callback<List<Products>> {
+            override fun onResponse(call: Call<List<Products>>, response: Response<List<Products>>) {
+                if (response.isSuccessful) {
+                    val allProducts = response.body() ?: emptyList()
+
+                    // Show the last 10 added products (most recent assumed at end)
+                    val recentProducts = allProducts.takeLast(10).reversed()
+
+                    val adapter = ProductAdapters(recentProducts.toMutableList()) { product ->
+                        val dialog = SellerProductDetail.newInstance(product)
+                        dialog.show(supportFragmentManager, "ProductDetail")
+                    }
+
+                    recyclerView.adapter = adapter
+                }
+            }
+
+            override fun onFailure(call: Call<List<Products>>, t: Throwable) {
+                Log.e("HomePage", "Failed to load recent products: ${t.message}")
+            }
+        })
     }
 }

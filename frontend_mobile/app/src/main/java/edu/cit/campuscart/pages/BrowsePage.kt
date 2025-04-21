@@ -1,12 +1,17 @@
 package edu.cit.campuscart.pages
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.Button
+import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.PopupWindow
 import android.widget.Spinner
@@ -30,11 +35,11 @@ import edu.cit.campuscart.R
 import edu.cit.campuscart.models.Notification
 
 class BrowsePage : BaseActivity() {
-
     private lateinit var recyclerView: RecyclerView
     private lateinit var productAdapter: ProductAdapters
     private var productList = mutableListOf<Products>()
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout  // Add SwipeRefreshLayout
+    private var allProducts = mutableListOf<Products>()
 
     private fun updateNotificationBadgeFromPrefs(badgeTextView: TextView) {
         val sharedPref = getSharedPreferences("CampusCartPrefs", MODE_PRIVATE)
@@ -54,12 +59,24 @@ class BrowsePage : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_browsepage)
 
+        val selectedCategory = intent.getStringExtra("CATEGORY")
+
+        if (selectedCategory != null) {
+            filterProductsByCategory(selectedCategory)
+        } else {
+            fetchProducts(getLoggedInUsername())
+        }
+
         // Initialize SwipeRefreshLayout
         swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout)
         swipeRefreshLayout.setOnRefreshListener {
-            // Trigger product fetching when user pulls to refresh
             fetchProducts(getLoggedInUsername())
         }
+
+        // Initialize RecyclerView
+        recyclerView = findViewById(R.id.recyclerViewProducts)
+        recyclerView.layoutManager = GridLayoutManager(this, 2)
+
 
         // Initialize RecyclerView
         recyclerView = findViewById(R.id.recyclerViewProducts)
@@ -80,6 +97,20 @@ class BrowsePage : BaseActivity() {
         supportFragmentManager.setFragmentResultListener("product_added", this) { _, _ ->
             fetchProducts(getLoggedInUsername())
         }
+
+        val searchBar = findViewById<EditText>(R.id.searchBar)
+        searchBar.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(query: CharSequence?, start: Int, before: Int, count: Int) {
+                val filtered = allProducts.filter {
+                    it.name.contains(query.toString(), ignoreCase = true)
+                }
+                productAdapter.updateList(filtered.toMutableList())
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
+        })
 
         val addButton = findViewById<ImageButton>(R.id.btnAddProduct)
         addButton.setOnClickListener {
@@ -125,6 +156,7 @@ class BrowsePage : BaseActivity() {
         messageButton.setOnClickListener {
             startActivity(Intent(this@BrowsePage, MessagePage::class.java))
         }*/
+
     }
 
     private fun getLoggedInUsername(): String {
@@ -146,6 +178,10 @@ class BrowsePage : BaseActivity() {
                     runOnUiThread {
                         productList.clear()
                         productList.addAll(approvedProducts)
+
+                        allProducts.clear()
+                        allProducts.addAll(approvedProducts)
+
                         productAdapter.notifyDataSetChanged()
                     }
                 } else {
@@ -164,6 +200,40 @@ class BrowsePage : BaseActivity() {
                 swipeRefreshLayout.isRefreshing = false
             }
         })
+    }
+
+    private fun fetchFilteredProducts(username: String, category: String?, condition: String?) {
+        val sharedPreferences = getSharedPreferences("CampusCartPrefs", Context.MODE_PRIVATE)
+        val token = sharedPreferences.getString("authToken", "") ?: ""
+
+        if (token.isEmpty()) {
+            Toast.makeText(this, "User not authenticated. Please log in again.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val bearerToken = "Bearer $token"
+
+        RetrofitClient.instance.getFilteredProducts(
+            bearerToken, username, category, condition
+        ).enqueue(object : Callback<List<Products>> {
+            override fun onResponse(call: Call<List<Products>>, response: Response<List<Products>>) {
+                if (response.isSuccessful) {
+                    val filteredProducts = response.body() ?: emptyList()
+                    productAdapter.updateList(filteredProducts)
+                } else {
+                    Log.e("BrowsePage", "Failed to load filtered products: ${response.code()}")
+                }
+            }
+
+            override fun onFailure(call: Call<List<Products>>, t: Throwable) {
+                Toast.makeText(this@BrowsePage, "Network error: ${t.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    private fun filterProductsByCategory(category: String) {
+        val filtered = allProducts.filter { it.category == category }
+        productAdapter.updateList(filtered)
     }
 
     private fun showFilterPopup(anchorView: View) {
@@ -188,8 +258,8 @@ class BrowsePage : BaseActivity() {
         }
 
         popupWindow.showAtLocation(anchorView, 0, popupX, popupY)
-        popupWindow.setOutsideTouchable(true)
-        popupWindow.setTouchable(true)
+        popupWindow.isOutsideTouchable = true
+        popupWindow.isTouchable = true
 
         val spinnerCategory = popupView.findViewById<Spinner>(R.id.spinnerCategory)
         val spinnerCondition = popupView.findViewById<Spinner>(R.id.spinnerCondition)
@@ -202,5 +272,20 @@ class BrowsePage : BaseActivity() {
 
         spinnerCategory.adapter = categoryAdapter
         spinnerCondition.adapter = conditionAdapter
+
+        popupView.findViewById<Button>(R.id.btnApply).setOnClickListener {
+            val selectedCategory = spinnerCategory.selectedItem.toString()
+            val selectedCondition = spinnerCondition.selectedItem.toString()
+
+            popupWindow.dismiss()
+
+            // Apply the filter API call
+            fetchFilteredProducts(getLoggedInUsername(), selectedCategory.takeIf { it != "Select Category" }, selectedCondition.takeIf { it != "Select Condition" })
+        }
+
+        popupView.findViewById<Button>(R.id.btnClear).setOnClickListener {
+            popupWindow.dismiss()
+            fetchProducts(getLoggedInUsername()) // Call your original method to show all products
+        }
     }
 }
