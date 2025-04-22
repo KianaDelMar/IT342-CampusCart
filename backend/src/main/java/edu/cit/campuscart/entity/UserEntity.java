@@ -1,9 +1,11 @@
 package edu.cit.campuscart.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.List;
+import java.util.ArrayList;
 
 @Entity
 public class UserEntity {
@@ -25,8 +27,9 @@ public class UserEntity {
     @JsonManagedReference
     private List<ProductEntity> products;
 
-    @OneToMany(mappedBy = "user")
-    private List<NotificationEntity> notifications;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<NotificationEntity> notifications = new ArrayList<>();
 
     public UserEntity() {
         super();

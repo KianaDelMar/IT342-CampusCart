@@ -219,6 +219,7 @@ public class AdminService {
     }
     
     //DELETE ADMIN ACCOUNT
+  	@Transactional
   	public String deleteAdmin(String username) {
   		String msg = "";
   		if(adminRepo.findByUsername(username) != null) {
