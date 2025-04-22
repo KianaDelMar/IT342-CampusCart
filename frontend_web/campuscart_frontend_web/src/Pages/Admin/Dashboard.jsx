@@ -42,7 +42,7 @@ ChartJS.register(
 const Dashboard = () => {
   const [dashboardData, setDashboardData] = useState({
     stats: {
-      totalUsers: 7, 
+      
     },
     recentProducts: [], 
     recentlySold: [
@@ -118,11 +118,14 @@ const Dashboard = () => {
           api.get('/admin/users')
         ]);
 
+        console.log('Fetched Users', usersResponse.data);
+        console.log('Admin Response', adminsResponse.data);
+
         const totalUsers = usersResponse.data.length;
 
         // Fetch pending approvals data
         const approvalsResponse = await api.get('/product/pendingApproval');
-        console.log('Approved Products', approvalsResponse.data);
+        console.log('Products', approvalsResponse.data);
         const approvals = approvalsResponse.data;
 
         // Calculate stats
@@ -175,7 +178,7 @@ const Dashboard = () => {
       data: [
         dashboardData.stats.approvedProducts,
         dashboardData.stats.pendingApprovals,
-        dashboardData.stats.rejectedProducts
+        dashboardData.stats.rejectedProducts,
       ],
       backgroundColor: [
         '#28a745', // Approved - Green

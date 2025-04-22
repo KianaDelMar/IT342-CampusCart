@@ -57,6 +57,35 @@ const Register = () => {
             return;
         }
 
+        if (!/[A-Z]/.test(newUser.password)) {
+            setErrorMessage('Password must include at least one uppercase letter.');
+            setIsLoading(false);
+            return;
+        }
+        if (!/[a-z]/.test(newUser.password)) {
+            setErrorMessage('Password must include at least one lowercase letter.');
+            setIsLoading(false);
+            return;
+        }
+        if (!/[0-9]/.test(newUser.password)) {
+            setErrorMessage('Password must include at least one number.');
+            setIsLoading(false);
+            return;
+        }
+        if (!/[^A-Za-z0-9]/.test(newUser.password)) {
+            setErrorMessage('Password must include at least one symbol.');
+            setIsLoading(false);
+            return;
+        }
+
+        // Email validation
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!emailRegex.test(newUser.email)) {
+            setErrorMessage('Please enter a valid email address.');
+            setIsLoading(false);
+            return;
+        }
+
         // Contact number validation
         if (!newUser.contactNo.trim()) {
             setErrorMessage('Contact number is required');
@@ -89,11 +118,11 @@ const Register = () => {
                 contactNo: '',
                 email: '',
             });
-            
+
             toast.success('Registration successful!', {
                 duration: 2000
             });
-            
+
             // Delay navigation slightly to show toast
             setTimeout(() => {
                 navigate('/login');
@@ -111,7 +140,7 @@ const Register = () => {
 
     const handleContactNoChange = (e) => {
         const value = e.target.value;
-        
+
         // Only allow numbers
         if (!/^\d*$/.test(value)) {
             setErrorMessage('Contact number must contain only numbers');
@@ -287,7 +316,6 @@ const Register = () => {
                         <TextField
                             fullWidth
                             label="Email"
-                            type="email"
                             value={newUser.email}
                             onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
                             sx={{ mb: 2 }}
