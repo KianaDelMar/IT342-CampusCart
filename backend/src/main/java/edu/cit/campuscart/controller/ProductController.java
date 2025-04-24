@@ -272,6 +272,7 @@ public class ProductController {
 	        response.put("status", product.getStatus());
 	        response.put("conditionType", product.getConditionType());
 	        response.put("pdtDescription", product.getPdtDescription());
+			response.put("feedback", product.getFeedback());
 	        response.put("buyPrice", product.getBuyPrice());
 	        response.put("category", product.getCategory());
 	        response.put("qtyInStock", product.getQtyInStock());
@@ -347,13 +348,14 @@ public class ProductController {
 	
 	// Reject Product
     @PostMapping("/reject")
-    public ResponseEntity<String> rejectProduct(@RequestBody Map<String, Integer> request) {
-        int productCode = request.get("productCode");
+    public ResponseEntity<?> rejectProduct(@RequestBody Map<String, String> request) {
         try {
-            pserv.rejectProduct(productCode);  // Call the service to reject the product
-            return ResponseEntity.ok("Product rejected successfully.");
+            String productCode = request.get("productCode");
+            String feedback = request.get("feedback");
+            pserv.rejectProduct(productCode, feedback);
+            return ResponseEntity.ok().body(Map.of("message", "Product rejected successfully"));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to reject product.");
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
     	

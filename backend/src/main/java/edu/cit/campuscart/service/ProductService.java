@@ -153,15 +153,20 @@ public class ProductService {
 		}
 	}
     
-    // Reject product
-    public void rejectProduct(int code) throws Exception {
-        Optional<ProductEntity> productOpt = prepo.findById(code);
-        if (productOpt.isPresent()) {
-            ProductEntity product = productOpt.get();
-            product.setStatus("Rejected");  // Update status to "rejected"
-            prepo.save(product);  // Save updated product
-        } else {
-            throw new NoSuchElementException("Product not found for rejection.");
-        }
+	// Reject product
+    @Transactional
+    public void rejectProduct(String productCode, String feedback) {
+        ProductEntity product = prepo.findByCode(Integer.parseInt(productCode))
+            .orElseThrow(() -> new RuntimeException("Product not found"));
+        
+        product.setStatus("Rejected");
+        product.setFeedback(feedback);
+        prepo.save(product);
+        
+        // Create rejection notification
+        String message = "Your product " + product.getName() + " has been rejected. Feedback: " + feedback;
+        String type = "rejection";
+        String username = product.getUser().getUsername();
+        notificationService.createNotification(message, type, username);
     }
 }
