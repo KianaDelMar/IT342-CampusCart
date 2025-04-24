@@ -504,6 +504,8 @@ const ProductApproval = () => {
               .map((row, index) => (
                 <TableRow 
                   hover 
+                  role="checkbox"
+                  tabIndex={-1}
                   key={index} 
                   onClick={() => handleProductClick(row)}
                   sx={{ 
@@ -639,6 +641,163 @@ const ProductApproval = () => {
           }
         }}
       />
+
+      {/* Enhanced Product Details Modal */}
+            <Dialog 
+              open={openModal} 
+              onClose={handleCloseModal}
+              maxWidth="md"
+              fullWidth
+              PaperProps={{
+                sx: {
+                  borderRadius: '12px',
+                  padding: '16px'
+                }
+              }}
+            >
+              <DialogTitle sx={{ 
+                borderBottom: '1px solid #e0e0e0',
+                pb: 2,
+                fontSize: '1.5rem',
+                fontWeight: 600
+              }}>
+                Product Details
+              </DialogTitle>
+              <DialogContent sx={{ mt: 2, height: '300px' }}>
+                {selectedProduct && (
+                  <Grid container spacing={3} sx={{ height: '100%' }}>
+                    {/* Product Image */}
+                    <Grid item xs={12} md={4} sx={{ height: '100%' }}>
+                      <Box sx={{ 
+                        width: '100%',
+                        height: '100%',
+                        borderRadius: '8px',
+                        overflow: 'hidden',
+                        border: '1px solid #e0e0e0'
+                      }}>
+                        {selectedProduct.image ? (
+                          <img 
+                            src={selectedProduct.image} 
+                            alt={selectedProduct.productName}
+                            style={{
+                              width: '100%',
+                              height: '100%',
+                              objectFit: 'cover'
+                            }}
+                          />
+                        ) : (
+                          <Box sx={{ 
+                            width: '100%',
+                            height: '100%',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            bgcolor: '#f5f5f5'
+                          }}>
+                            <Typography color="text.secondary">
+                              No image available
+                            </Typography>
+                          </Box>
+                        )}
+                      </Box>
+                    </Grid>
+      
+                    {/* Product Details */}
+                    <Grid item xs={12} md={8} sx={{ height: '270px' }}>
+                      <Box sx={{ 
+                        p: 2, 
+                        bgcolor: '#f8f9fa',
+                        borderRadius: '8px',
+                        border: '1px solid #e0e0e0',
+                        height: '100%',
+                        display: 'flex',
+                        flexDirection: 'column'
+                      }}>
+                        <Typography variant="h6" sx={{ color: '#1a237e', mb: 3 }}>
+                          {selectedProduct.productName}
+                        </Typography>
+                        
+                        <Grid container spacing={3}>
+                          <Grid item xs={6}>
+                            <Typography variant="subtitle2" color="text.secondary">
+                              Product Code
+                            </Typography>
+                            <Typography variant="body1" sx={{ mb: 2, fontWeight: 500 }}>
+                              {selectedProduct.productCode}
+                            </Typography>
+                          </Grid>
+                          
+                          <Grid item xs={6}>
+                            <Typography variant="subtitle2" color="text.secondary">
+                              Category
+                            </Typography>
+                            <Typography variant="body1" sx={{ mb: 2, fontWeight: 500 }}>
+                              {selectedProduct.category}
+                            </Typography>
+                          </Grid>
+                          
+                          <Grid item xs={6}>
+                            <Typography variant="subtitle2" color="text.secondary">
+                              Seller
+                            </Typography>
+                            <Typography variant="body1" sx={{ mb: 2, fontWeight: 500 }}>
+                              {selectedProduct.user}
+                            </Typography>
+                          </Grid>
+                          
+                          <Grid item xs={6}>
+                            <Typography variant="subtitle2" color="text.secondary">
+                              Status
+                            </Typography>
+                            <Typography variant="body1" sx={{ mb: 2, fontWeight: 500 }}>
+                              {selectedProduct.status}
+                            </Typography>
+                          </Grid>
+                        </Grid>
+                      </Box>
+                    </Grid>
+                  </Grid>
+                )}
+              </DialogContent>
+              <DialogActions sx={{ 
+                borderTop: '1px solid #e0e0e0',
+                pt: 2,
+                px: 3 
+              }}>
+                <Button 
+                  onClick={handleCloseModal} 
+                  variant="outlined"
+                  sx={{ 
+                    borderColor: '#89343b',
+                    color: '#89343b',
+                    '&:hover': {
+                      borderColor: '#6d2931',
+                      backgroundColor: 'rgba(137, 52, 59, 0.04)'
+                    }
+                  }}
+                >
+                  Close
+                </Button>
+                <Button 
+                  onClick={handleApproveInModal}
+                  variant="contained"
+                  color="success"
+                  sx={{ ml: 1 }}
+                  disabled={selectedProduct?.status === 'Approved' || selectedProduct?.status === 'Sold'}
+                >
+                  Approve
+                </Button>
+                <Button 
+                  onClick={handleRejectInModal}
+                  variant="contained"
+                  color="error"
+                  sx={{ ml: 1 }}
+                  disabled={selectedProduct?.status === 'Rejected' || selectedProduct?.status === 'Sold'}
+                >
+                  Reject
+                </Button>
+              </DialogActions>
+            </Dialog>
 
       {/* Toast Messages */}
       <ToastManager toasts={toasts} handleClose={(id) => {

@@ -19,6 +19,8 @@ import ViewProduct from './Pages/Sell/ViewProduct';
 import AdminLogin from './Pages/LoginRegister/AdminLogin';
 import Dashboard from './Pages/Admin/Dashboard';
 import ProductApproval from './Pages/Admin/ProductManagement/ProductApproval';
+import AdminSettings from './Pages/Admin/AdminSettings';
+import ManageProducts from './Pages/Admin/ProductManagement/ManageProducts';
 
 import './App.css';
 
@@ -58,7 +60,9 @@ const ProtectedUserRoute = ({ children }) => {
 
 const App = () => {
   const location = useLocation();
-  const isAdminRoute = location.pathname.startsWith('/admin') && location.pathname !== '/admin';
+  const isAdminRoute = location.pathname.startsWith('/admin') && 
+                      location.pathname !== '/admin' && 
+                      location.pathname !== '/admin/';
 
   return (
     <>
@@ -69,6 +73,7 @@ const App = () => {
            location.pathname !== '/login' && 
            location.pathname !== '/register' && 
            location.pathname !== '/admin' &&
+           location.pathname !== '/admin/' &&
            <MarketplaceHeader />}
           
           {isAdminRoute && <AdminHeader />}
@@ -101,6 +106,16 @@ const App = () => {
             <Route path="/admin/approvals" element={
               <ProtectedAdminRoute>
                 <ProductApproval />
+              </ProtectedAdminRoute>
+            } />
+            <Route path="/admin/settings" element={
+              <ProtectedAdminRoute>
+                <AdminSettings />
+              </ProtectedAdminRoute>
+            } />
+            <Route path="/admin/productsellers" element={
+              <ProtectedAdminRoute>
+                <ManageProducts />
               </ProtectedAdminRoute>
             } />
             

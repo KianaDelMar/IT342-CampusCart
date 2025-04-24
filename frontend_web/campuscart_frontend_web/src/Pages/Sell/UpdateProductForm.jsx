@@ -90,9 +90,21 @@ const UpdateProductForm = ({ product, onUpdateSuccess, setProduct }) => {
         imageFile !== null // If there's a new image
       );
 
+      const rejected_hasChanges = 
+      product.status === "Rejected" && (
+        productName !== originalValues.name ||
+        description !== originalValues.pdtDescription ||
+        Number(quantity) !== originalValues.qtyInStock ||
+        Number(price) !== originalValues.buyPrice ||
+        category !== originalValues.category ||
+        conditionType !== originalValues.conditionType ||
+        imageFile !== null // If there's a new image
+      );
+      
+
     // Determine the new status
     let newStatus = status;
-    if (product.status === "Pending") {
+    if (product.status === "Pending" || product.status === "Rejected") {
       newStatus = "Pending"; // Keep as Pending
     } else if (product.status === "Approved") {
       if (status === "Sold") {
@@ -132,9 +144,12 @@ const UpdateProductForm = ({ product, onUpdateSuccess, setProduct }) => {
       if (response.status === 200) {
         if (hasChanges && product.status === "Approved") {
           toast.success('Product updated successfully and status changed to Pending');
+        } else if (rejected_hasChanges && product.status === "Rejected") {
+          toast.success('Product updated resubmitted successfully and status changed to Pending');
         } else {
           toast.success('Product updated successfully');
         }
+
         if (typeof onUpdateSuccess === 'function') {
           onUpdateSuccess();
         }

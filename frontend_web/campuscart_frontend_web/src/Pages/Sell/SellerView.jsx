@@ -328,6 +328,12 @@ const SellerView = () => {
                     {product.conditionType}
                   </span>
                 </Typography>
+                <Typography variant="body1">
+                  <strong>Condition:</strong>{' '}
+                  <span style={{ color: '#666' }}>
+                    {product.category}
+                  </span>
+                </Typography>
               </Box>
             </Box>
 

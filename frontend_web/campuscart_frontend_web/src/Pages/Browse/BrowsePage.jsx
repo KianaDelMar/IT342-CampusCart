@@ -158,9 +158,8 @@ const BrowsePage = () => {
                     console.log('Products with profile photos:', approvedProducts.map(p => ({
                         username: p.userUsername,
                         photo: p.userProfileImagePath
-                      })));
+                    })));
                     setAllProducts(approvedProducts);
-                    setFilteredProducts(approvedProducts);
                 }
             } catch (error) {
                 console.error("Error fetching all products:", error);
@@ -177,7 +176,7 @@ const BrowsePage = () => {
         const fetchFilteredProducts = async () => {
             setLoading(true);
             try {
-                const response = await axios.get(
+                const response = await api.get(
                     `http://localhost:8080/api/product/getAllProductsFilter/${loggedInUser}`,
                     {
                         params: {
@@ -225,7 +224,7 @@ const BrowsePage = () => {
     if (loading) return <div>Loading...</div>;
 
     return (
-        <Container maxWidth="xl" sx={{ 
+        <Container maxWidth="xl" sx={{
             py: 3,
             px: { xs: 2, sm: 3, md: 4 },
             maxWidth: '1800px !important',
@@ -338,7 +337,7 @@ const BrowsePage = () => {
                             }}
                         >
                             <MenuItem value="">All</MenuItem>
-                            <MenuItem value="Available">Available</MenuItem>
+                            <MenuItem value="Approved">Approved</MenuItem>
                             <MenuItem value="Sold">Sold</MenuItem>
                         </Select>
                     </FormControl>
@@ -513,16 +512,29 @@ const BrowsePage = () => {
                                         />
                                     </Box>
 
-                                    <CardContent sx={{ 
+                                    <CardContent sx={{
                                         p: 2,
                                         height: '140px',
                                         display: 'flex',
                                         flexDirection: 'column',
                                     }}>
+                                        <Typography
+                                            variant="h6"
+                                            sx={{
+                                                color: '#89343b',
+                                                fontWeight: 700,
+                                                fontSize: '1.1rem',
+                                                display: 'inline-block',
+                                                mr: 1.5
+                                            }}
+                                        >
+                                            {product.name}
+                                        </Typography>
+
                                         <Typography variant="h6" sx={{
-                                            fontWeight: 600,
                                             color: '#2C3E50',
-                                            fontSize: '1rem',
+                                            fontWeight: 600,
+                                            fontSize: '0.95rem',
                                             overflow: 'hidden',
                                             textOverflow: 'ellipsis',
                                             display: '-webkit-box',
@@ -531,7 +543,7 @@ const BrowsePage = () => {
                                             lineHeight: 1.4,
                                             mb: 1.5
                                         }}>
-                                            {product.name}
+                                            {product.category}
                                         </Typography>
 
                                         <Typography variant="h6" sx={{
@@ -559,8 +571,8 @@ const BrowsePage = () => {
                                             gap: 2
                                         }}>
                                             <Box sx={{ flex: 1 }}>
-                                                <Typography 
-                                                    variant="h6" 
+                                                <Typography
+                                                    variant="h6"
                                                     sx={{
                                                         color: '#89343b',
                                                         fontWeight: 700,
@@ -571,8 +583,8 @@ const BrowsePage = () => {
                                                 >
                                                     PHP {product.buyPrice.toFixed(2)}
                                                 </Typography>
-                                                <Typography 
-                                                    variant="body2" 
+                                                <Typography
+                                                    variant="body2"
                                                     sx={{
                                                         color: '#666',
                                                         fontWeight: 500,
