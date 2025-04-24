@@ -127,6 +127,7 @@ public class ProductController {
 				productData.put("code", product.getCode());
 				productData.put("name", product.getName());
 				productData.put("status", product.getStatus());
+				productData.put("category", product.getCategory());
 				productData.put("conditionType", product.getConditionType());
 				productData.put("pdtDescription", product.getPdtDescription());
 				productData.put("buyPrice", product.getBuyPrice());
@@ -194,11 +195,14 @@ public class ProductController {
 
 	// Filtering Products
 	@GetMapping("/getAllProductsFilter/{username}")
-	public ResponseEntity<List<Map<String, Object>>> getAllProductsFilter(@PathVariable String username,
-			@RequestParam(required = false) String category, @RequestParam(required = false) String status,
+	public ResponseEntity<List<Map<String, Object>>> getAllProductsFilter(
+			@PathVariable String username,
+			@RequestParam(required = false) String category, 
+			@RequestParam(required = false) String status,
 			@RequestParam(required = false) String conditionType) {
+
 		// Fetch products based on filters (excluding username as a filter)
-		List<ProductEntity> products = pserv.getFilteredProducts(category, status, conditionType);
+		List<ProductEntity> products = pserv.getFilteredProducts(username, category, status, conditionType);
 
 		// Build a custom response including user's username
 		List<Map<String, Object>> response = products.stream().map(product -> {

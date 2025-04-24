@@ -1,6 +1,7 @@
 package edu.cit.campuscart.entity;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.time.LocalDateTime;
 
@@ -20,7 +21,8 @@ public class NotificationEntity {
     private LocalDateTime timestamp;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_username", referencedColumnName = "username")
+    @JsonIgnore
     private UserEntity user; 
 
     // Default constructor

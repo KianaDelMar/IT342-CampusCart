@@ -7,6 +7,7 @@ import javax.naming.NameAlreadyBoundException;
 import javax.naming.NameNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import edu.cit.campuscart.dto.ChangePassword;
@@ -18,6 +19,9 @@ public class UserService {
     @Autowired
     private UserRepository userRepo;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     public UserService() {
         super();
     }
@@ -27,11 +31,8 @@ public class UserService {
   		if(userRepo.existsById(user.getUsername())) {
   			throw new NameAlreadyBoundException("Username " + user.getUsername() + " is already taken. Input another username.");
   		}
-  		
-  		if (isEmailExists(user.getEmail())) {
-              throw new NameAlreadyBoundException("Email already exists");
-          }
-  		
+  		// Hash the password before saving
+  		user.setPassword(passwordEncoder.encode(user.getPassword()));
   		return userRepo.save(user);
   	}
   	
@@ -58,9 +59,10 @@ public class UserService {
 	        throw new NoSuchElementException("Seller not found. Please register.");
 	    }
 		
-		System.out.println("Retrieved seller: " + user.getUsername() + ", Password: " + user.getPassword());
+		System.out.println("Retrieved seller: " + user.getUsername());
 		
-		if (user.getPassword().equals(password)) {
+		// Check if the password matches using password encoder
+		if (passwordEncoder.matches(password, user.getPassword())) {
 	        return user; // Authentication successful
 	    } else {
 	        System.out.println("Password does not match.");
@@ -94,11 +96,13 @@ public class UserService {
 		UserEntity user = userRepo.findById(username)
 		        .orElseThrow(() -> new NameNotFoundException("User with username: " + username + " does not exist"));
 		
-		if(!user.getPassword().equals(passwordRequest.getCurrentPassword())) {
+		// Verify current password
+		if (!passwordEncoder.matches(passwordRequest.getCurrentPassword(), user.getPassword())) {
 			throw new RuntimeException("Current password is incorrect.");
 		}
 		
-		user.setPassword(passwordRequest.getNewPassword());
+		// Hash and set the new password
+		user.setPassword(passwordEncoder.encode(passwordRequest.getNewPassword()));
 		return userRepo.save(user);
 	}
 	

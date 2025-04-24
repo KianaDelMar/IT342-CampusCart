@@ -19,4 +19,13 @@ public class ProductSpecifications {
         return (root, query, criteriaBuilder) -> 
             conditionType == null || conditionType.isEmpty() ? criteriaBuilder.conjunction() : criteriaBuilder.equal(root.get("conditionType"), conditionType);
     }
+
+    public static Specification<ProductEntity> userNot(String username) {
+        return (root, query, cb) -> {
+            if (username == null || username.isEmpty()) {
+                return cb.conjunction(); // no filtering if null
+            }
+            return cb.notEqual(root.get("user").get("username"), username);
+        };
+    }    
 }

@@ -34,9 +34,7 @@ public class AdminController {
 	@Autowired
 	private JwtUtil jwtUtil;
 
-
-	//private static final String UPLOAD_DIR = "C:/Users/Lloyd/Downloads/uploads";
-    private static final String UPLOAD_DIR = "C:/Users/chriz/Downloads/uploads";
+	private static final String UPLOAD_DIR = System.getProperty("user.home") + "/Downloads/uploads";
 	
 	@GetMapping("/getAdminRecord/{username}") 
 	public AdminEntity getAdminByUsername(@PathVariable String username) throws NameNotFoundException {
@@ -91,18 +89,28 @@ public class AdminController {
 	@PostMapping("/uploadProfilePhoto/{username}")
 	public ResponseEntity<Map<String,String>> uploadProfilePhoto(@PathVariable String username, @RequestParam("file") MultipartFile file) throws NameNotFoundException {
 		try {
-			if(file.isEmpty()) 
+			if(file.isEmpty()) {
 				return ResponseEntity.badRequest().body(Map.of("message", "No file selected"));
+			}
 			
-			//Getting the filename
-			String fileName = StringUtils.cleanPath(file.getOriginalFilename());
-			//Save image to target location
-			Path targetLocation = Paths.get(UPLOAD_DIR, fileName);
-	        Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+			// Create uploads directory if it doesn't exist
+			Path uploadPath = Paths.get(UPLOAD_DIR);
+			if (!Files.exists(uploadPath)) {
+				Files.createDirectories(uploadPath);
+			}
 			
-	        //Save only the filename to the database
+			// Generate a unique filename to prevent overwrites
+			String originalFilename = StringUtils.cleanPath(file.getOriginalFilename());
+			String fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
+			String fileName = username + "_" + System.currentTimeMillis() + fileExtension;
+			
+			// Save image to target location
+			Path targetLocation = uploadPath.resolve(fileName);
+			Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+			
+			// Save filename to database
 			AdminEntity admin = adminService.getAdminByUsername(username);
-			admin.setProfilePhoto(fileName); //stores the filename only
+			admin.setProfilePhoto(fileName);
 			adminService.putAdminDetails(username, admin);
 			
 			Map<String, String> response = new HashMap<>();
@@ -110,7 +118,11 @@ public class AdminController {
 			response.put("fileName", fileName);
 			return ResponseEntity.ok(response);
 		} catch(IOException e) {
-			return ResponseEntity.status(500).body(Map.of("message", "Failed to upload the file"));
+			e.printStackTrace(); // Log the full stack trace
+			return ResponseEntity.status(500).body(Map.of(
+				"message", "Failed to upload the file",
+				"error", e.getMessage()
+			));
 		}
 	}
 	
