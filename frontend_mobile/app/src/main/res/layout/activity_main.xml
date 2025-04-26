@@ -114,78 +114,12 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent" />
 
-                <!-- OR Divider -->
-                <LinearLayout
-                    android:id="@+id/orDivider"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="14dp"
-                    android:orientation="horizontal"
-                    app:layout_constraintTop_toBottomOf="@id/loginButton"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent">
-
-                    <View
-                        android:layout_width="0dp"
-                        android:layout_height="1dp"
-                        android:layout_weight="1"
-                        android:background="#CCCCCC"
-                        android:layout_gravity="center"/>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="OR"
-                        android:textColor="#888888"
-                        android:paddingHorizontal="10dp" />
-
-                    <View
-                        android:layout_width="0dp"
-                        android:layout_height="1dp"
-                        android:layout_weight="1"
-                        android:background="#CCCCCC"
-                        android:layout_gravity="center"/>
-                </LinearLayout>
-
-                <!-- Google Login -->
-                <LinearLayout
-                    android:id="@+id/googleLoginButton"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:gravity="center"
-                    android:orientation="horizontal"
-                    app:layout_constraintTop_toBottomOf="@id/orDivider"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    android:background="?attr/selectableItemBackground"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:padding="12dp">
-
-                    <ImageView
-                        android:id="@+id/imageGoogle"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/google"
-                        android:contentDescription="Google icon" />
-
-                    <TextView
-                        android:id="@+id/txtGoogle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:text="Continue with Google"
-                        android:textSize="14sp"
-                        android:textColor="@android:color/black" />
-                </LinearLayout>
-
                 <!-- Register Links -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="horizontal"
-                    app:layout_constraintTop_toBottomOf="@+id/googleLoginButton"
+                    app:layout_constraintTop_toBottomOf="@+id/loginButton"
                     tools:layout_editor_absoluteX="20dp"
                     android:gravity="center"
                     android:layout_marginTop="14dp">

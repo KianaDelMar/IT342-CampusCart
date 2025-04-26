@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:minWidth="250dp"
+    android:maxWidth="320dp"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:background="@drawable/bg_toast"
+    android:padding="16dp"
+    android:elevation="6dp"
+    android:layout_margin="12dp">
+
+    <ImageView
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/fail"
+        android:layout_marginEnd="8dp"/>
+
+    <TextView
+        android:id="@+id/successMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Failed to upload profile photo."
+        android:textColor="#FF0000"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+</LinearLayout>

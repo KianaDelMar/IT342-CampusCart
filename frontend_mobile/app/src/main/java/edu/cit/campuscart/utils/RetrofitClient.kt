@@ -1,5 +1,6 @@
 package edu.cit.campuscart.utils
 
+import com.google.gson.GsonBuilder
 import edu.cit.campuscart.api.APIService
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -9,24 +10,25 @@ import okhttp3.logging.HttpLoggingInterceptor
 object RetrofitClient {
     val instance: APIService by lazy {
 
-        // Create logging interceptor
         val logging = HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY
         }
 
-        // Create OkHttpClient with the logging interceptor
         val client = OkHttpClient.Builder()
             .addInterceptor(logging)
             .build()
 
-        // Create Retrofit instance and pass in the client
+        // Make Gson lenient
+        val gson = GsonBuilder()
+            .setLenient()
+            .create()
+
         val retrofit = Retrofit.Builder()
-            .baseUrl(Constants.BASE_URL + "/") // Assuming Constants.BASE_URL already ends with "/"
-            .addConverterFactory(GsonConverterFactory.create())
-            .client(client) // Attach OkHttpClient to Retrofit
+            .baseUrl(Constants.BASE_URL + "/")
+            .addConverterFactory(GsonConverterFactory.create(gson)) // use custom Gson
+            .client(client)
             .build()
 
-        // Return the ApiService instance
         retrofit.create(APIService::class.java)
     }
 }

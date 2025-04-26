@@ -35,6 +35,7 @@
         <activity android:name=".pages.LikePage" />
         <activity android:name=".pages.NotificationPage" />
         <activity android:name=".pages.ProfilePage" />
+        <activity android:name=".pages.AccountSettings" />
         <meta-data
             android:name="JankMonitoring"
             android:value="false"/>

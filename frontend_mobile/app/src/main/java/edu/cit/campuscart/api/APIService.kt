@@ -1,17 +1,16 @@
 package edu.cit.campuscart.api
 
-import edu.cit.campuscart.models.GoogleLoginRequest
-import edu.cit.campuscart.models.GoogleLoginResponse
+import edu.cit.campuscart.models.ChangePasswordRequest
 import edu.cit.campuscart.models.LoginRequest
 import edu.cit.campuscart.models.LoginResponse
 import edu.cit.campuscart.models.Notification
 import edu.cit.campuscart.models.Products
 import edu.cit.campuscart.models.Seller
+import edu.cit.campuscart.models.UploadResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Call
-import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -23,7 +22,6 @@ import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
-
 
 interface APIService {
 
@@ -104,9 +102,7 @@ interface APIService {
         @Path("username") username: String
     ): Call<List<Notification>>
 
-    @POST("api/user/auth/google")
-    fun googleLogin(@Body request: GoogleLoginRequest): Call<GoogleLoginResponse>
-
+    //Product Filtering
     @GET("api/product/getAllProductsFilter/{username}")
     fun getFilteredProducts(
         @Header("Authorization") token: String,
@@ -114,4 +110,43 @@ interface APIService {
         @Query("category") category: String?,
         @Query("conditionType") condition: String?
     ): Call<List<Products>>
+
+    // Fetch User Record
+    @GET("api/user/getUserRecord/{username}")
+    fun getUserByUsername(
+        @Header("Authorization") token: String,
+        @Path("username") username: String
+    ): Call<Seller>
+
+    // Upload Profile Photo
+    @Multipart
+    @POST("api/user/uploadProfilePhoto/{username}")
+    fun uploadProfilePhoto(
+        @Header("Authorization") token: String,
+        @Path("username") username: String,
+        @Part file: MultipartBody.Part
+    ): Call<UploadResponse>
+
+    // Update User Record
+    @PUT("api/user/putUserRecord/{username}")
+    fun updateUserDetails(
+        @Header("Authorization") token: String,
+        @Path("username") username: String,
+        @Body updatedSeller: Seller
+    ): Call<Seller>
+
+    // Change Password
+    @PUT("api/user/changePassword/{username}")
+    fun changePassword(
+        @Header("Authorization") token: String,
+        @Path("username") username: String,
+        @Body passwordRequest: ChangePasswordRequest
+    ): Call<Void>
+
+    // Delete User Record
+    @DELETE("api/user/deleteUserRecord/{username}")
+    fun deleteUser(
+        @Header("Authorization") token: String,
+        @Path("username") username: String
+    ):  Call<ResponseBody>
 }
