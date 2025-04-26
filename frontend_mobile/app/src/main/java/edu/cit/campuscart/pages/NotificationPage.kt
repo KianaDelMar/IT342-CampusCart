@@ -16,6 +16,7 @@ import edu.cit.campuscart.R
 import edu.cit.campuscart.adapters.NotificationAdapter
 import edu.cit.campuscart.api.APIService
 import edu.cit.campuscart.models.Notification
+import edu.cit.campuscart.utils.Constants
 import retrofit2.*
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -69,7 +70,7 @@ class NotificationPage : BaseActivity() {
 
     private fun initializeRetrofit() {
         val retrofit = Retrofit.Builder()
-            .baseUrl("http://192.168.1.54:8080/")
+            .baseUrl(Constants.BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 

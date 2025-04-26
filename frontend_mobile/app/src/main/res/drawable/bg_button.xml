@@ -6,7 +6,7 @@
     <solid android:color="@android:color/transparent"/>
 
     <!-- Border color -->
-    <stroke android:width="5dp" android:color="#89343B"/>
+    <stroke android:width="4dp" android:color="#89343B"/>
 
     <padding android:left="10dp" android:right="10dp"/>
 </shape>

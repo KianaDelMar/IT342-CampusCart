@@ -19,6 +19,7 @@ import com.google.gson.Gson
 import edu.cit.campuscart.R
 import edu.cit.campuscart.databinding.DialogEditProductBinding
 import edu.cit.campuscart.models.Products
+import edu.cit.campuscart.utils.Constants
 import edu.cit.campuscart.utils.RetrofitClient
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -109,7 +110,7 @@ class EditProductDialogFragment : DialogFragment() {
         binding.dropCondition.setSelection(getConditionPosition(product.conditionType))
 
         Glide.with(this)
-            .load("http://192.168.1.59:8080/" + product.imagePath) //NOTE: Local, to change when deployment
+            .load(Constants.BASE_URL + "/" + product.imagePath)
             .placeholder(R.drawable.defaultimage)
             .error(R.drawable.defaultimage)
             .into(binding.selectedImageView)
