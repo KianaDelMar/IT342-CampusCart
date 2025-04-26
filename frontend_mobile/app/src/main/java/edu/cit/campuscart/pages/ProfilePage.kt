@@ -85,10 +85,10 @@ class ProfilePage : BaseActivity() {
                             // Load profile picture using Glide (or Picasso)
                             if (user.profilePhoto.isNotEmpty()) {
                                 Glide.with(this@ProfilePage)
-                                    .load("${Constants.BASE_URL}/uploads/${user.profilePhoto}")
-                                    .placeholder(R.drawable.defaultphoto) // Default image if not available
-                                    .error(R.drawable.defaultphoto) // Fallback if error occurs
-                                    .into(profilepic) // Set to ShapeableImageView
+                                    .load("${Constants.BASE_URL}uploads/${user.profilePhoto}")
+                                    .placeholder(R.drawable.defaultphoto)
+                                    .error(R.drawable.defaultphoto)
+                                    .into(profilepic)
                             } else {
                                 profilepic.setImageResource(R.drawable.defaultphoto) // Set default image
                             }
