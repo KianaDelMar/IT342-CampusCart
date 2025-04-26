@@ -24,7 +24,7 @@ object RetrofitClient {
             .create()
 
         val retrofit = Retrofit.Builder()
-            .baseUrl(Constants.BASE_URL + "/")
+            .baseUrl(Constants.BASE_URL)
             .addConverterFactory(GsonConverterFactory.create(gson)) // use custom Gson
             .client(client)
             .build()
