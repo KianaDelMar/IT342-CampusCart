@@ -86,12 +86,15 @@ class LikePage : BaseActivity() {
 
         val likedNames = PreferenceUtils.getLikedProducts(this)
 
+        showLoadingOverlay()
+
         RetrofitClient.instance.getAllProducts(getLoggedInUsername()).enqueue(object :
             Callback<List<Products>> {
             override fun onResponse(
                 call: Call<List<Products>>,
                 response: Response<List<Products>>
             ) {
+                hideLoadingOverlay()
                 if (response.isSuccessful) {
                     val likedProducts =
                         response.body()?.filter { likedNames.contains(it.name) } ?: emptyList()
@@ -100,6 +103,7 @@ class LikePage : BaseActivity() {
             }
 
             override fun onFailure(call: Call<List<Products>>, t: Throwable) {
+                hideLoadingOverlay()
                 Toast.makeText(this@LikePage, "Failed to load liked items", Toast.LENGTH_SHORT)
                     .show()
             }

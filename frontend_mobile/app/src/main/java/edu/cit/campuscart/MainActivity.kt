@@ -1,4 +1,3 @@
-// MainActivity.kt
 package edu.cit.campuscart
 
 import android.content.Intent
@@ -45,8 +44,13 @@ class MainActivity : BaseActivity() {
         val apiService = RetrofitClient.instance
         val loginRequest = LoginRequest(username, password)
 
+        showLoadingOverlay()
+
         apiService.login(loginRequest).enqueue(object : Callback<LoginResponse> {
             override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
+                // Hide progress bar
+                hideLoadingOverlay()
+
                 if (response.isSuccessful) {
                     val responseBody = response.body()
                     if (responseBody?.message == "Login Successful") {
@@ -62,11 +66,13 @@ class MainActivity : BaseActivity() {
                         Toast.makeText(this@MainActivity, "Invalid credentials", Toast.LENGTH_SHORT).show()
                     }
                 } else {
-                    Toast.makeText(this@MainActivity, "Login failed", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@MainActivity, "Invalid Credentials. Try Again.", Toast.LENGTH_SHORT).show()
                 }
             }
 
             override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
+                // Hide progress bar
+                hideLoadingOverlay()
                 Toast.makeText(this@MainActivity, "Network error", Toast.LENGTH_SHORT).show()
             }
         })

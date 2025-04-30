@@ -15,6 +15,7 @@ import edu.cit.campuscart.BaseActivity
 import edu.cit.campuscart.R
 import edu.cit.campuscart.adapters.ProductAdapters
 import edu.cit.campuscart.forms.AddProductDialogFragment
+import edu.cit.campuscart.fragments.ProductDetailDialogFragment
 import edu.cit.campuscart.fragments.SellerProductDetail
 import edu.cit.campuscart.models.Notification
 import edu.cit.campuscart.models.Products
@@ -96,26 +97,31 @@ class HomePage : BaseActivity() {
         val intent = Intent(this, BrowsePage::class.java)
 
         findViewById<Button>(R.id.btnFood).setOnClickListener {
+            val intent = Intent(this, BrowsePage::class.java)
             intent.putExtra("CATEGORY", "Food")
             startActivity(intent)
         }
 
         findViewById<Button>(R.id.btnClothes).setOnClickListener {
+            val intent = Intent(this, BrowsePage::class.java)
             intent.putExtra("CATEGORY", "Clothes")
             startActivity(intent)
         }
 
         findViewById<Button>(R.id.btnAccessories).setOnClickListener {
+            val intent = Intent(this, BrowsePage::class.java)
             intent.putExtra("CATEGORY", "Accessories")
             startActivity(intent)
         }
 
         findViewById<Button>(R.id.btnElectronics).setOnClickListener {
+            val intent = Intent(this, BrowsePage::class.java)
             intent.putExtra("CATEGORY", "Electronics")
             startActivity(intent)
         }
 
         findViewById<Button>(R.id.btnMerch).setOnClickListener {
+            val intent = Intent(this, BrowsePage::class.java)
             intent.putExtra("CATEGORY", "Merchandise")
             startActivity(intent)
         }
@@ -131,20 +137,29 @@ class HomePage : BaseActivity() {
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerRecentProducts)
         recyclerView.layoutManager = GridLayoutManager(this, 2)
 
+        showLoadingOverlay()
+
         val apiService = RetrofitClient.instance
         val call = apiService.getAllProducts(username)
 
         call.enqueue(object : Callback<List<Products>> {
             override fun onResponse(call: Call<List<Products>>, response: Response<List<Products>>) {
+
+                hideLoadingOverlay()
+
                 if (response.isSuccessful) {
-                    val allProducts = response.body() ?: emptyList()
+                    val approvedProducts = response.body()!!.filter {
+                        it.status.equals("approved", ignoreCase = true)
+                    }
+
+                   // val allProducts = response.body() ?: emptyList()
 
                     // Show the last 10 added products (most recent assumed at end)
-                    val recentProducts = allProducts.takeLast(10).reversed()
+                    val recentProducts = approvedProducts.takeLast(10).reversed()
 
                     val adapter = ProductAdapters(recentProducts.toMutableList()) { product ->
-                        val dialog = SellerProductDetail.newInstance(product)
-                        dialog.show(supportFragmentManager, "ProductDetail")
+                        val dialog = ProductDetailDialogFragment.newInstance(product)
+                        dialog.show(supportFragmentManager, "ProductDetailDialogFragment")
                     }
 
                     recyclerView.adapter = adapter
@@ -152,6 +167,7 @@ class HomePage : BaseActivity() {
             }
 
             override fun onFailure(call: Call<List<Products>>, t: Throwable) {
+                hideLoadingOverlay()
                 Log.e("HomePage", "Failed to load recent products: ${t.message}")
             }
         })

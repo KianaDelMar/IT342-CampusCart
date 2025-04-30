@@ -69,11 +69,13 @@ class ProfilePage : BaseActivity() {
         val txtAddress = findViewById<TextView>(R.id.addressText)
         val profilepic = findViewById<ShapeableImageView>(R.id.profilepic)
 
+        showLoadingOverlay()
         if (userTxt.isNotEmpty()) {
             val apiService = RetrofitClient.instance
             apiService.getUserByUsername(token, userTxt)
                 .enqueue(object : Callback<Seller> {
                     override fun onResponse(call: Call<Seller>, response: Response<Seller>) {
+                        hideLoadingOverlay()
                         if (response.isSuccessful && response.body() != null) {
                             val user = response.body()!!
 
@@ -101,6 +103,7 @@ class ProfilePage : BaseActivity() {
                     }
 
                     override fun onFailure(call: Call<Seller>, t: Throwable) {
+                        hideLoadingOverlay()
                         Toast.makeText(this@ProfilePage, "Network error: ${t.message}", Toast.LENGTH_SHORT).show()
                     }
                 })

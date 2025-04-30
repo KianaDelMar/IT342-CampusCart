@@ -96,9 +96,11 @@ class NotificationPage : BaseActivity() {
     }
 
     private fun fetchNotifications(username: String, token: String) {
+        showLoadingOverlay()
         apiService.getUserNotifications("Bearer $token", username).enqueue(object : Callback<List<Notification>> {
             override fun onResponse(call: Call<List<Notification>>, response: Response<List<Notification>>) {
                 swipeRefreshLayout.isRefreshing = false
+                hideLoadingOverlay()
                 if (response.isSuccessful) {
                     val newNotifications = response.body() ?: emptyList()
                     val existingIds = newNotifications.map { it.id }
@@ -134,6 +136,7 @@ class NotificationPage : BaseActivity() {
 
             override fun onFailure(call: Call<List<Notification>>, t: Throwable) {
                 swipeRefreshLayout.isRefreshing = false
+                hideLoadingOverlay()
                 Toast.makeText(this@NotificationPage, "Failed: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })

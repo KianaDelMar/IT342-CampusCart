@@ -1,6 +1,7 @@
 package edu.cit.campuscart
 
 import android.view.View
+import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
 
 open class BaseActivity : AppCompatActivity() {
@@ -20,5 +21,17 @@ open class BaseActivity : AppCompatActivity() {
                         or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                         or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                 )
+    }
+
+    // Show the loading overlay (with ProgressBar)
+    fun showLoadingOverlay() {
+        val loadingOverlay = findViewById<FrameLayout>(R.id.loadingOverlay)
+        loadingOverlay?.visibility = View.VISIBLE
+    }
+
+    // Hide the loading overlay
+    fun hideLoadingOverlay() {
+        val loadingOverlay = findViewById<FrameLayout>(R.id.loadingOverlay)
+        loadingOverlay?.visibility = View.GONE
     }
 }
