@@ -49,22 +49,46 @@ class RegisterActivity : BaseActivity() {
         }
     }
     private var selectedPhoto: String? = null
+
     private fun registerSeller() {
-        val profilePhoto = selectedPhoto ?: "defaultphoto.jpg"  // If no photo selected, use "defaultphoto.jpg"
+        val usernameInput = username.text.toString().trim()
+        val firstNameInput = firstname.text.toString().trim()
+        val lastNameInput = lastname.text.toString().trim()
+        val addressInput = address.text.toString().trim()
+        val contactNoInput = contactno.text.toString().trim()
+        val emailInput = email.text.toString().trim()
+        val passwordInput = password.text.toString().trim()
+
+        // Validation: Contact number must be exactly 11 digits
+        if (contactNoInput.length != 11 || !contactNoInput.all { it.isDigit() }) {
+            Toast.makeText(this, "Contact Number must be exactly 11 digits", Toast.LENGTH_LONG).show()
+            return
+        }
+
+        // Validation: Password must be at least 8 characters
+        if (passwordInput.length < 8) {
+            Toast.makeText(this, "Password must be at least 8 characters long", Toast.LENGTH_LONG).show()
+            return
+        }
+
+        val profilePhoto = selectedPhoto ?: "defaultphoto.jpg"
 
         val seller = Seller(
-            username = username.text.toString(),
-            firstName = firstname.text.toString(),
-            lastName = lastname.text.toString(),
-            address = address.text.toString(),
-            contactNo = contactno.text.toString(),
-            email = email.text.toString(),
-            password = password.text.toString(),
-            profilePhoto = profilePhoto // Use the determined profile photo
+            username = usernameInput,
+            firstName = firstNameInput,
+            lastName = lastNameInput,
+            address = addressInput,
+            contactNo = contactNoInput,
+            email = emailInput,
+            password = passwordInput,
+            profilePhoto = profilePhoto
         )
+
+        showLoadingOverlay()
         RetrofitClient.instance.registerSeller(seller)
             .enqueue(object : Callback<Void> {
                 override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                    hideLoadingOverlay()
                     if (response.isSuccessful) {
                         Toast.makeText(applicationContext, "Registration Successful!", Toast.LENGTH_LONG).show()
                         startActivity(Intent(this@RegisterActivity, MainActivity::class.java))
@@ -74,6 +98,7 @@ class RegisterActivity : BaseActivity() {
                 }
 
                 override fun onFailure(call: Call<Void>, t: Throwable) {
+                    hideLoadingOverlay()
                     Toast.makeText(applicationContext, "Error: ${t.message}", Toast.LENGTH_LONG).show()
                 }
             })

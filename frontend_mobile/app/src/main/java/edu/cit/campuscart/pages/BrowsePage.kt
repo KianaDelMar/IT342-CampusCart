@@ -14,6 +14,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.PopupWindow
+import android.widget.ProgressBar
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
@@ -40,7 +41,7 @@ class BrowsePage : BaseActivity() {
     private var productList = mutableListOf<Products>()
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout  // Add SwipeRefreshLayout
     private var allProducts = mutableListOf<Products>()
-
+    
     private fun updateNotificationBadgeFromPrefs(badgeTextView: TextView) {
         val sharedPref = getSharedPreferences("CampusCartPrefs", MODE_PRIVATE)
         val json = sharedPref.getString("notificationList", null)
@@ -60,17 +61,12 @@ class BrowsePage : BaseActivity() {
         setContentView(R.layout.activity_browsepage)
 
         val selectedCategory = intent.getStringExtra("CATEGORY")
-
-        if (selectedCategory != null) {
-            filterProductsByCategory(selectedCategory)
-        } else {
-            fetchProducts(getLoggedInUsername())
-        }
+        fetchProducts(getLoggedInUsername(), selectedCategory)
 
         // Initialize SwipeRefreshLayout
         swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout)
         swipeRefreshLayout.setOnRefreshListener {
-            fetchProducts(getLoggedInUsername())
+            fetchProducts(getLoggedInUsername(), selectedCategory)
         }
 
         // Initialize RecyclerView
@@ -85,14 +81,13 @@ class BrowsePage : BaseActivity() {
         val badgeTextView: TextView = findViewById(R.id.notificationBadge)
         updateNotificationBadgeFromPrefs(badgeTextView)
 
-        // ✅ Set up adapter with click listener to show product detail dialog
         productAdapter = ProductAdapters(productList) { selectedProduct ->
             val dialog = ProductDetailDialogFragment.newInstance(selectedProduct)
             dialog.show(supportFragmentManager, "ProductDetailDialog")
         }
         recyclerView.adapter = productAdapter
 
-        fetchProducts(getLoggedInUsername())
+        //fetchProducts(getLoggedInUsername())
 
         supportFragmentManager.setFragmentResultListener("product_added", this) { _, _ ->
             fetchProducts(getLoggedInUsername())
@@ -164,23 +159,32 @@ class BrowsePage : BaseActivity() {
         return sharedPref.getString("loggedInUsername", "") ?: ""
     }
 
-    private fun fetchProducts(username: String) {
+    private fun fetchProducts(username: String, category: String? = null) {
         val apiService = RetrofitClient.instance
         val call = apiService.getAllProducts(username)
+        showLoadingOverlay()
 
         call.enqueue(object : Callback<List<Products>> {
             override fun onResponse(call: Call<List<Products>>, response: Response<List<Products>>) {
+                hideLoadingOverlay()
+
                 if (response.isSuccessful && response.body() != null) {
                     val approvedProducts = response.body()!!.filter {
                         it.status.equals("approved", ignoreCase = true)
                     }
 
+                    val categoryFiltered = category?.let {
+                        approvedProducts.filter { product ->
+                            product.category.equals(it, ignoreCase = true)
+                        }
+                    } ?: approvedProducts
+
                     runOnUiThread {
                         productList.clear()
-                        productList.addAll(approvedProducts)
+                        productList.addAll(categoryFiltered)
 
                         allProducts.clear()
-                        allProducts.addAll(approvedProducts)
+                        allProducts.addAll(categoryFiltered)
 
                         productAdapter.notifyDataSetChanged()
                     }
@@ -188,15 +192,14 @@ class BrowsePage : BaseActivity() {
                     Log.e("BrowsePage", "Failed to load products: ${response.message()}")
                 }
 
-                // Stop the refresh animation after loading
                 swipeRefreshLayout.isRefreshing = false
             }
 
             override fun onFailure(call: Call<List<Products>>, t: Throwable) {
+                hideLoadingOverlay()
+
                 Log.e("BrowsePage", "Error: ${t.message}")
                 Toast.makeText(this@BrowsePage, "Failed to load products", Toast.LENGTH_SHORT).show()
-
-                // Stop the refresh animation on failure
                 swipeRefreshLayout.isRefreshing = false
             }
         })
@@ -212,11 +215,14 @@ class BrowsePage : BaseActivity() {
         }
 
         val bearerToken = "Bearer $token"
+        showLoadingOverlay()
 
         RetrofitClient.instance.getFilteredProducts(
             bearerToken, username, category, condition
         ).enqueue(object : Callback<List<Products>> {
             override fun onResponse(call: Call<List<Products>>, response: Response<List<Products>>) {
+                hideLoadingOverlay()
+
                 if (response.isSuccessful) {
                     val filteredProducts = response.body() ?: emptyList()
                     productAdapter.updateList(filteredProducts)
@@ -226,6 +232,7 @@ class BrowsePage : BaseActivity() {
             }
 
             override fun onFailure(call: Call<List<Products>>, t: Throwable) {
+                hideLoadingOverlay()
                 Toast.makeText(this@BrowsePage, "Network error: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })

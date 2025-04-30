@@ -198,9 +198,12 @@ class AccountSettings : BaseActivity() {
         val loggedInUsername = sharedPref.getString("loggedInUsername", "") ?: ""
         val profilepic = findViewById<ShapeableImageView>(R.id.profilepic)
 
+        showLoadingOverlay()
+
         RetrofitClient.instance.getUserByUsername(token, loggedInUsername)
             .enqueue(object : Callback<Seller> {
                 override fun onResponse(call: Call<Seller>, response: Response<Seller>) {
+                    hideLoadingOverlay()
                     if (response.isSuccessful) {
                         val sellerData = response.body()
                         sellerData?.let {
@@ -213,7 +216,7 @@ class AccountSettings : BaseActivity() {
 
                             if (sellerData.profilePhoto.isNotEmpty()) {
                                 Glide.with(this@AccountSettings)
-                                    .load("${Constants.BASE_URL}/uploads/${sellerData.profilePhoto}")
+                                    .load("${Constants.BASE_URL}uploads/${sellerData.profilePhoto}")
                                     .placeholder(R.drawable.defaultphoto)
                                     .error(R.drawable.defaultphoto)
                                     .into(profilepic)
@@ -227,6 +230,7 @@ class AccountSettings : BaseActivity() {
                 }
 
                 override fun onFailure(call: Call<Seller>, t: Throwable) {
+                    hideLoadingOverlay()
                     Log.e("SellerData", "Failed: ${t.localizedMessage}")
                 }
             })
