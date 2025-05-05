@@ -12,6 +12,7 @@ import AddProductForm from '../Pages/Sell/AddProductForm'
 import toast from 'react-hot-toast';
 import logoWithText from '../assets/img/logo-with-text.png';
 import api from '../config/axiosConfig';
+import { useLoading } from '../contexts/LoadingContext';
 
 
 const MarketplaceHeader = () => {
@@ -22,6 +23,7 @@ const MarketplaceHeader = () => {
   const [anchor, setAnchor] = React.useState(null);
   const open = Boolean(anchor);
   const username = sessionStorage.getItem('username');
+  const { setLoading } = useLoading();
   const [profilePhoto, setProfilePhoto] = useState(''); 
   const [notificationAnchor, setNotificationAnchor] = useState(null);
   const [notifications, setNotifications] = useState([
@@ -160,6 +162,7 @@ const MarketplaceHeader = () => {
 
   useEffect(() => {
     const fetchProfileData = async () => {
+        setLoading(true);
         const username = sessionStorage.getItem('username');
         try {
             const response = await api.get(`/user/getUserRecord/${username}`);
@@ -172,7 +175,9 @@ const MarketplaceHeader = () => {
             }
         } catch (error) {
             console.error('Error fetching user data:', error);
-        }
+        } finally {
+          setLoading(false); 
+      }
     };
 
     fetchProfileData();

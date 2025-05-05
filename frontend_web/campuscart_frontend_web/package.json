@@ -22,7 +22,9 @@
     "react-hot-toast": "^2.5.2",
     "react-router-dom": "^7.4.1",
     "react-scripts": "5.0.1",
-    "web-vitals": "^2.1.4"
+    "sendbird": "^3.1.33",
+    "web-vitals": "^2.1.4",
+    "xlsx": "^0.18.5"
   },
   "scripts": {
     "start": "react-scripts start",

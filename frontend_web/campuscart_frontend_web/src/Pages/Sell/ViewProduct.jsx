@@ -88,7 +88,10 @@ const ViewProduct = () => {
     };
 
     const handleChatRedirect = () => {
-        navigate(`/message`); //navigate(`/message/${sellerUsername}`);
+        console.log('Redirecting to chat:', { userUsername, loggedInUser });
+        if (userUsername && loggedInUser && userUsername !== loggedInUser) {
+            navigate(`/message/${userUsername}`);
+        }
     };
 
     const handleLikeToggle = () => {
@@ -107,17 +110,17 @@ const ViewProduct = () => {
     };
 
     const handleBack = () => {
-        navigate(-1); 
+        navigate('/browse');
     };
 
     if (loading) {
         return (
-            <Box sx={{ 
-                display: 'flex', 
-                justifyContent: 'center', 
-                alignItems: 'center', 
+            <Box sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
                 minHeight: '100vh',
-                bgcolor: '#f5f5f5' 
+                bgcolor: '#f5f5f5'
             }}>
                 <Typography variant="h6">Loading product details...</Typography>
             </Box>
@@ -126,12 +129,12 @@ const ViewProduct = () => {
 
     if (!product) {
         return (
-            <Box sx={{ 
-                display: 'flex', 
-                justifyContent: 'center', 
-                alignItems: 'center', 
+            <Box sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
                 minHeight: '100vh',
-                bgcolor: '#f5f5f5' 
+                bgcolor: '#f5f5f5'
             }}>
                 <Typography variant="h6">Product not found.</Typography>
             </Box>
@@ -139,8 +142,8 @@ const ViewProduct = () => {
     }
 
     return (
-        <Box sx={{ 
-            padding: { xs: '16px', md: '32px' }, 
+        <Box sx={{
+            padding: { xs: '16px', md: '32px' },
             minHeight: '100vh',
             bgcolor: '#f5f5f5',
             position: 'relative'
@@ -229,10 +232,10 @@ const ViewProduct = () => {
                                 {product.name}
                             </Typography>
 
-                            <Typography 
-                                variant="h5" 
-                                sx={{ 
-                                    fontWeight: 'bold', 
+                            <Typography
+                                variant="h5"
+                                sx={{
+                                    fontWeight: 'bold',
                                     color: '#89343b',
                                     mb: 2
                                 }}
@@ -241,9 +244,9 @@ const ViewProduct = () => {
                             </Typography>
 
                             {/* User Info */}
-                            <Box sx={{ 
-                                display: 'flex', 
-                                alignItems: 'center', 
+                            <Box sx={{
+                                display: 'flex',
+                                alignItems: 'center',
                                 mb: 3,
                                 p: 2,
                                 borderRadius: '8px'
@@ -282,6 +285,7 @@ const ViewProduct = () => {
                                         {userUsername}
                                     </Typography>
 
+                                    {/* 
                                     <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
                                         {[...Array(5)].map((_, index) => (
                                             <StarIcon
@@ -303,32 +307,37 @@ const ViewProduct = () => {
                                             5.0 | 10K+ Sold
                                         </Typography>
                                     </Box>
+                                    */}
+
                                 </Box>
                             </Box>
 
-                            {/* Product Description */}
-                            <Typography 
-                                variant="body1" 
-                                sx={{ 
-                                    color: '#555',
-                                    mb: 3,
-                                    lineHeight: 1.6
-                                }}
-                            >
-                                {product.pdtDescription}
-                            </Typography>
-
                             {/* Product Details */}
-                            <Box sx={{ 
+                            <Box sx={{
                                 mb: 3,
                                 p: 2,
                                 bgcolor: '#f8f8f8',
                                 borderRadius: '8px'
                             }}>
+                                {/* Product Description */}
+                                <Typography variant="body1">
+                                    <strong>Description:</strong>{' '}
+                                    <span style={{ color: '#666' }}>
+                                        {product.pdtDescription}
+                                    </span>
+                                </Typography>
+
                                 <Typography variant="body1">
                                     <strong>Condition:</strong>{' '}
                                     <span style={{ color: '#666' }}>
                                         {product.conditionType}
+                                    </span>
+                                </Typography>
+
+                                <Typography variant="body1">
+                                    <strong>Category:</strong>{' '}
+                                    <span style={{ color: '#666' }}>
+                                        {product.category}
                                     </span>
                                 </Typography>
                             </Box>

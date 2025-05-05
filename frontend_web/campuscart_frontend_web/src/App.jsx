@@ -2,10 +2,12 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation, Navigate, useNavigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './contexts/AuthContext'; 
+import { LoadingProvider } from './contexts/LoadingContext';
 
 import Login from './Pages/LoginRegister/StudentLogin';
 import Register from './Pages/LoginRegister/StudentRegister';
 import MarketplaceHeader from './components/MarketplaceHeader';
+import GlobalLoader from './components/GlobalLoader';
 import HomePage from './Pages/Home/HomePage';
 import Profile from './Pages/Profile/UserProfile';
 import Settings from './Pages/Profile/UserAccount';
@@ -21,6 +23,8 @@ import Dashboard from './Pages/Admin/Dashboard';
 import ProductApproval from './Pages/Admin/ProductManagement/ProductApproval';
 import AdminSettings from './Pages/Admin/AdminSettings';
 import ManageProducts from './Pages/Admin/ProductManagement/ManageProducts';
+import UserManagement from './Pages/Admin/UserManagement/UserManagement';
+import ChatPage from './Pages/Chat/ChatPage';
 
 import './App.css';
 
@@ -67,6 +71,7 @@ const App = () => {
   return (
     <>
       <Toaster />
+      <LoadingProvider>
       <AuthProvider>
         <div>
           {!location.pathname.startsWith('/admin') && 
@@ -96,6 +101,8 @@ const App = () => {
             <Route path="/browse/product/:code" element={<ViewProduct section="Browse" />} />
             <Route path="/product/:code" element={<ViewProduct />} />
             <Route path="/profile/:username/product/:code" element={<ViewProduct />} />
+            <Route path="/message" element={<ProtectedUserRoute><ChatPage /></ProtectedUserRoute>} />
+            <Route path="/message/:username" element={<ProtectedUserRoute><ChatPage /></ProtectedUserRoute>} />
 
             {/* Admin Routes */}
             <Route path="/admin/dashboard" element={
@@ -118,10 +125,17 @@ const App = () => {
                 <ManageProducts />
               </ProtectedAdminRoute>
             } />
+            <Route path="/admin/users" element={
+              <ProtectedAdminRoute>
+                <UserManagement />
+              </ProtectedAdminRoute>
+            } />
             
           </Routes>
         </div>
       </AuthProvider>
+      <GlobalLoader />
+</LoadingProvider>
     </>
   );
 };

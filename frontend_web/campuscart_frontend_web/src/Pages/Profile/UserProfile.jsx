@@ -18,7 +18,6 @@ const UserProfile = () => {
     const [profilePhoto, setProfilePhoto] = useState('');
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
-
     const loggedInUser = sessionStorage.getItem('username');
     const navigate = useNavigate();
 
@@ -125,24 +124,9 @@ const UserProfile = () => {
                         </Typography>
                         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mt: 2 }}>
                             <Box display="flex" alignItems="center" sx={{ gap: 1 }}>
-                                <Typography variant="body1" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                    {averageRating.toFixed(1)}
-                                    <Rating
-                                        value={averageRating}
-                                        readOnly
-                                        sx={{
-                                            color: '#FFD700',
-                                            '& .MuiRating-icon': { color: '#FFD700' },
-                                        }}
-                                    />
-                                    <span style={{ opacity: 0.9 }}>({mockReviews.length} Reviews)</span>
-                                </Typography>
-                            </Box>
-
-                            <Box display="flex" alignItems="center" sx={{ gap: 1 }}>
                                 <VerifiedIcon sx={{ color: '#4CAF50' }} />
                                 <Typography variant="body1" sx={{ opacity: 0.9 }}>
-                                    Verified · Very Responsive
+                                    Verified 
                                 </Typography>
                             </Box>
                         </Box>
@@ -191,7 +175,7 @@ const UserProfile = () => {
                             centered
                         >
                             <Tab label="Listings" value="1" />
-                            <Tab label="Reviews" value="2" />
+                            {/*<Tab label="Reviews" value="2" />*/}
                         </TabList>
                     </Box>
                     {/* Listings Tab */}
@@ -372,12 +356,15 @@ const UserProfile = () => {
                         </Paper>
                     </TabPanel>
 
-                    {/* Reviews Tab */}
+                {/*
+                    {/* Reviews Tab 
                     <TabPanel value="2">
                         <SellerReviews />
                     </TabPanel>
+                */}
                 </TabContext>
             </Box>
+            
             {/* Footer Section */}
             <Box sx={{
                 padding: "20px",

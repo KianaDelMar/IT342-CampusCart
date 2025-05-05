@@ -21,6 +21,7 @@ const SellerView = () => {
   const fetchProductDetails = async () => {
     try {
       const response = await api.get(`/product/getProductByCode/${code}`);
+      console.log("Response: ", response.data);
       setProduct(response.data);
     } catch (error) {
       console.error('Error fetching product details:', error);
@@ -323,13 +324,19 @@ const SellerView = () => {
                   </span>
                 </Typography>
                 <Typography variant="body1">
+                  <strong>Feedback:</strong>{' '}
+                  <span style={{ color: '#666' }}>
+                    {product.feedback}
+                  </span>
+                </Typography>
+                <Typography variant="body1">
                   <strong>Condition:</strong>{' '}
                   <span style={{ color: '#666' }}>
                     {product.conditionType}
                   </span>
                 </Typography>
                 <Typography variant="body1">
-                  <strong>Condition:</strong>{' '}
+                  <strong>Category:</strong>{' '}
                   <span style={{ color: '#666' }}>
                     {product.category}
                   </span>

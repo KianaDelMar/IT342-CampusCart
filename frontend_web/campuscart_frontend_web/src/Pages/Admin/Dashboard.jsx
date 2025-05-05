@@ -32,6 +32,7 @@ import {
 } from 'chart.js';
 import axios from 'axios';
 import api from '../../config/axiosConfig';
+import { useLoading } from '../../contexts/LoadingContext';
 
 ChartJS.register(
   ArcElement,
@@ -40,86 +41,23 @@ ChartJS.register(
 );
 
 const Dashboard = () => {
+  const { setLoading } = useLoading();
   const [dashboardData, setDashboardData] = useState({
     stats: {
       
     },
-    recentProducts: [], 
-    recentlySold: [
-      {
-        productCode: 'PRD001',
-        productName: 'Gaming Laptop',
-        userUsername: 'juan_dela_cruz',
-        buyerUsername: 'maria_santos',
-        category: 'Electronics',
-        price: 75000,
-        soldDate: '2024-03-20',
-        imagePath: 'https://picsum.photos/200/300'
-      },
-      {
-        productCode: 'PRD006',
-        productName: 'Wireless Mouse',
-        userUsername: 'pedro_reyes',
-        buyerUsername: 'rosa_cruz',
-        category: 'Accessories',
-        price: 1200,
-        soldDate: '2024-03-19',
-        imagePath: 'https://picsum.photos/200/305'
-      },
-      {
-        productCode: 'PRD008',
-        productName: 'Headphones',
-        userUsername: 'maria_santos',
-        buyerUsername: 'juan_dela_cruz',
-        category: 'Electronics',
-        price: 3500,
-        soldDate: '2024-03-18',
-        imagePath: 'https://picsum.photos/200/306'
-      },
-      {
-        productCode: 'PRD002',
-        productName: 'Mechanical Keyboard',
-        userUsername: 'carlo_garcia',
-        buyerUsername: 'pedro_reyes',
-        category: 'Accessories',
-        price: 5500,
-        soldDate: '2024-03-17',
-        imagePath: 'https://picsum.photos/200/301'
-      },
-      {
-        productCode: 'PRD007',
-        productName: 'Gaming Chair',
-        userUsername: 'rosa_cruz',
-        buyerUsername: 'maria_santos',
-        category: 'Furniture',
-        price: 15000,
-        soldDate: '2024-03-16',
-        imagePath: 'https://picsum.photos/200/306'
-      },
-      {
-        productCode: 'PRD009',
-        productName: 'Gaming Monitor',
-        userUsername: 'juan_dela_cruz',
-        buyerUsername: 'carlo_garcia',
-        category: 'Electronics',
-        price: 25000,
-        soldDate: '2024-03-15',
-        imagePath: 'https://picsum.photos/200/308'
-      }
-    ]
+    recentProducts: []
   });
 
   useEffect(() => {
     const fetchDashboardData = async () => {
+      setLoading(true);
       try {
         // Fetch users data (same as UserManagement.jsx)
         const [adminsResponse, usersResponse] = await Promise.all([
           api.get('/admin/getAllAdmins'),
           api.get('/admin/users')
-        ]);
-
-        console.log('Fetched Users', usersResponse.data);
-        console.log('Admin Response', adminsResponse.data);
+        ]); 
 
         const totalUsers = usersResponse.data.length;
 
@@ -166,6 +104,8 @@ const Dashboard = () => {
 
       } catch (error) {
         console.error('Error fetching dashboard data:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -181,9 +121,9 @@ const Dashboard = () => {
         dashboardData.stats.rejectedProducts,
       ],
       backgroundColor: [
-        '#28a745', // Approved - Green
-        '#ffd700', // Pending - Gold
-        '#dc3545'  // Rejected - Red
+        '#28a745', 
+        '#ff9800', 
+        '#dc3545'  
       ],
       borderWidth: 0
     }]
@@ -491,7 +431,7 @@ const Dashboard = () => {
                           bgcolor: 
                             product.status === 'Approved' ? '#28a745' :
                             product.status === 'Rejected' ? '#dc3545' :
-                            product.status === 'Pending' ? '#007bff' :
+                            product.status === 'Pending' ? '#ff9800' :
                             product.status === 'Sold' ? '#6c757d' :
                             '#757575',
                           color: 'white',
@@ -512,7 +452,7 @@ const Dashboard = () => {
         </Paper>
       </Box>
 
-      {/* Recently Sold Items */}
+      {/* Recently Sold Items 
       <Paper sx={{ 
         p: { xs: 1.5, sm: 2, md: 3 },
         bgcolor: 'white',
@@ -623,6 +563,7 @@ const Dashboard = () => {
           </Table>
         </TableContainer>
       </Paper>
+      */}
     </Box>
   );
 };

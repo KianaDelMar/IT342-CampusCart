@@ -10,6 +10,7 @@ import toast from 'react-hot-toast';
 import ToastManager from '../../components/ToastManager';
 import { useNavigate } from 'react-router-dom';
 import api from '../../config/axiosConfig';
+import { useLoading } from '../../contexts/LoadingContext';
 
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -62,6 +63,7 @@ const UserAccount = (props) => {
     const [errorMessage, setErrorMessage] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
+    const { setLoading } = useLoading();
 
     // State for Change Password
     const [openChangePassword, setOpenChangePassword] = useState(false);
@@ -70,31 +72,45 @@ const UserAccount = (props) => {
     const [confirmPassword, setConfirmPassword] = useState('');
 
     const toggleEditMode = () => {
+        setLoading(true);
         setEditMode((prev) => !prev);
+        setLoading(false);
     };
 
     const handleOpenModal = () => {
+        setLoading(true);
         setOpenModal(true);
+        setLoading(false);
     };
 
     const handleCloseModal = () => {
+        setLoading(true);
         setOpenModal(false);
+        setLoading(false);
     };
 
     const handleOpenConfirmUpdate = () => {
+        setLoading(true);
         setOpenConfirmUpdate(true);
+        setLoading(false);
     };
 
     const handleCloseConfirmUpdate = () => {
+        setLoading(true);
         setOpenConfirmUpdate(false);
+        setLoading(false);
     };
 
     const handleOpenConfirmDelete = () => {
+        setLoading(true);
         setOpenConfirmDelete(true);
+        setLoading(false);
     };
 
     const handleCloseConfirmDelete = () => {
+        setLoading(true);
         setOpenConfirmDelete(false);
+        setLoading(false);
     };
 
     const handleChange = (event, newValue) => {
@@ -112,6 +128,7 @@ const UserAccount = (props) => {
     };
 
     const handleSave = async () => {
+        setLoading(true);
         const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
         if (!emailRegex.test(email)) {
             toast.error('Please enter a valid email address.');
@@ -143,10 +160,13 @@ const UserAccount = (props) => {
             }
         } catch (error) {
             toast.error('Failed to update profile');
+        } finally {
+            setLoading(false);
         }
     };
 
     const handleDeleteAccount = async () => {
+        setLoading(true);
         const username = sessionStorage.getItem('username');
         try {
             const response = await api.delete(`/user/deleteUserRecord/${username}`);
@@ -160,10 +180,13 @@ const UserAccount = (props) => {
         } catch (error) {
             console.error('Error deleting user account:', error);
             showToast('Failed to delete account.', 'error');
+        } finally {
+            setLoading(false);
         }
     };
 
     const handleChangePassword = async () => {
+        setLoading(true);
         if (
             !newPassword ||
             !confirmPassword ||
@@ -222,19 +245,24 @@ const UserAccount = (props) => {
             }
         } catch (error) {
             toast.error('Failed to change password');
-        }
+        } finally {
+            setLoading(false);
+        }           
     };
 
 
     const handleImageChange = (e) => {
+        setLoading(true);
         const file = e.target.files[0];
         if (file) {
             setProfileImage(file);
             setPreviewImage(URL.createObjectURL(file));
         }
+        setLoading(false);
     };
 
-    const handleUploadProfileImage = async () => {
+    const handleUploadProfileImage = async () => {      
+        setLoading(true);
         if (!profileImage) {
             toast.error('Please select an image first');
             return;
@@ -259,10 +287,13 @@ const UserAccount = (props) => {
         } catch (error) {
             console.error('Error uploading profile photo: ', error);
             toast.error('Failed to upload profile photo');
+        } finally {
+            setLoading(false);
         }
     };
 
     useEffect(() => {
+        setLoading(true);
         const fetchProfileData = async () => {
             const username = sessionStorage.getItem('username');
             try {
@@ -285,6 +316,8 @@ const UserAccount = (props) => {
                 }
             } catch (error) {
                 console.error('Error fetching user data:', error);
+            } finally {
+                setLoading(false);
             }
         };
 
