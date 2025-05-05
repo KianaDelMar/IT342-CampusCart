@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "http://localhost:3000")
+//@CrossOrigin(origins = { "http://localhost:3000", "https://campuscartonlinemarketplace.vercel.app" })
 public class GoogleAuthController {
 	@Autowired
     private UserService userService;
