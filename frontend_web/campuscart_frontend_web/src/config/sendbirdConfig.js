@@ -27,6 +27,7 @@ export const createChannel = async (userId, otherUserId) => {
     }
     try {
         const sortedUserIds = [userId, otherUserId].sort();
+        console.log('sortedUserIds:', sortedUserIds, typeof sortedUserIds[0], typeof sortedUserIds[1]);
         console.log('Creating channel with users:', sortedUserIds);
         
         // First check if a channel already exists
@@ -54,6 +55,36 @@ export const createChannel = async (userId, otherUserId) => {
             memberCount: channel.memberCount,
             members: channel.members.map(m => ({ userId: m.userId, nickname: m.nickname }))
         });
+
+        // Ensure connection is open before inviting
+        if (sb.getConnectionState() !== 'OPEN') {
+            await new Promise((resolve, reject) => {
+                sb.connect(userId, (user, error) => {
+                    if (error) {
+                        console.error('Error reconnecting before invite:', error);
+                        reject(error);
+                    } else {
+                        resolve(user);
+                    }
+                });
+            });
+        }
+
+        // Invite the other user if not already a member
+        const otherUser = sortedUserIds.find(id => id !== userId);
+        if (!channel.members.some(m => m.userId === otherUser)) {
+            await new Promise((resolve, reject) => {
+                channel.inviteWithUserIds([otherUser], (response, error) => {
+                    if (error) {
+                        console.error('Error inviting user:', error);
+                        reject(error);
+                    } else {
+                        console.log('User invited:', response);
+                        resolve(response);
+                    }
+                });
+            });
+        }
         return channel;
     } catch (error) {
         console.error('Error creating channel:', {

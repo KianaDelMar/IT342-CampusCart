@@ -71,7 +71,6 @@ const MarketplaceHeader = () => {
     }
   ]);
   const [unreadMessageCount, setUnreadMessageCount] = useState(0);
-  const loggedInUsername = sessionStorage.getItem('username');
 
   const handleClick = (event) => {
     setAnchor(event.currentTarget);
@@ -91,7 +90,7 @@ const MarketplaceHeader = () => {
   };
 
   const handleMessageClick = () => {
-    navigate('/message');
+    navigate('/messages');
   };
   
   const handleAddNewProduct = () => {
@@ -149,7 +148,7 @@ const MarketplaceHeader = () => {
       case location.pathname === '/sell' || location.pathname === '/addnewproduct' || /^\/sell\/product\/\d+$/.test(location.pathname):
         setActiveButton('Sell');
         break;
-      case location.pathname === '/message':
+      case location.pathname === '/messages':
         setActiveButton('Message');
         break;
       case location.pathname === '/profile':
@@ -183,6 +182,19 @@ const MarketplaceHeader = () => {
     fetchProfileData();
 }, []);
 
+  useEffect(() => {
+    const fetchUnreadCount = async () => {
+      if (!username) return;
+      try {
+        const response = await api.get(`/messages/unread/count/${username}`);
+        setUnreadMessageCount(response.data);
+      } catch (error) {
+        setUnreadMessageCount(0);
+      }
+    };
+    fetchUnreadCount();
+  }, [username]);
+
   const handleButtonClick = (label) => {
     setActiveButton(label);
 
@@ -197,7 +209,7 @@ const MarketplaceHeader = () => {
         navigate('/sell');
         break;
       case 'Message':
-        navigate('/message');
+        navigate('/messages');
         break;
       case 'Profile':
         navigate('/profile');

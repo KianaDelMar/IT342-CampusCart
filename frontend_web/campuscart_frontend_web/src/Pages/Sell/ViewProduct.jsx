@@ -9,6 +9,7 @@ import StarIcon from '@mui/icons-material/Star';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import '../../App.css';
 import api from '../../config/axiosConfig';
+import { toast } from 'react-hot-toast';
 
 const ViewProduct = () => {
     const { code } = useParams();
@@ -111,6 +112,15 @@ const ViewProduct = () => {
 
     const handleBack = () => {
         navigate('/browse');
+    };
+
+    const handleStartChat = () => {
+        if (!loggedInUser) {
+            toast.error('Please log in to start a chat');
+            navigate('/login');
+            return;
+        }
+        navigate(`/messages?product=${code}&seller=${userUsername}`);
     };
 
     if (loading) {
@@ -361,8 +371,8 @@ const ViewProduct = () => {
                         }}>
                             <Button
                                 variant="contained"
-                                onClick={handleChatRedirect}
                                 startIcon={<MessageIcon />}
+                                onClick={handleStartChat}
                                 sx={{
                                     bgcolor: '#89343b',
                                     color: 'white',
@@ -375,9 +385,11 @@ const ViewProduct = () => {
                                     },
                                     transition: 'all 0.2s ease-in-out',
                                 }}
+                                disabled={loggedInUser === userUsername}
                             >
-                                Message Seller
+                                Chat with Seller
                             </Button>
+            
                             <IconButton
                                 onClick={handleLikeToggle}
                                 sx={{
