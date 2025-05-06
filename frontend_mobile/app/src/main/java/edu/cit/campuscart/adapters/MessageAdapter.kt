@@ -12,31 +12,51 @@ import edu.cit.campuscart.R
 import java.util.Date
 import java.util.Locale
 
-class MessageAdapter(private val messages: List<BaseMessage>) : RecyclerView.Adapter<MessageAdapter.MessageViewHolder>() {
+class MessageAdapter(private val loggedInUsername: String) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    inner class MessageViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val messageText: TextView = view.findViewById(R.id.messageText)
-        val timestamp: TextView = view.findViewById(R.id.timestamp)
+    private val messages = mutableListOf<BaseMessage>()
 
-        fun bind(message: BaseMessage) {
-            if (message is UserMessage) {
-                messageText.text = message.message
+    override fun getItemViewType(position: Int): Int {
+        return if (messages[position].sender?.userId == loggedInUsername) 1 else 0
+    }
 
-                val time = message.createdAt
-                val sdf = SimpleDateFormat("hh:mm a", Locale.getDefault())
-                timestamp.text = sdf.format(Date(time))
-            }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        return if (viewType == 1) {
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.item_message_right, parent, false)
+            RightMessageViewHolder(view)
+        } else {
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.item_message_left, parent, false)
+            LeftMessageViewHolder(view)
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MessageViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_message, parent, false)
-        return MessageViewHolder(view)
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        val message = messages[position]
+        if (holder is LeftMessageViewHolder) {
+            holder.messageText.text = message.message
+        } else if (holder is RightMessageViewHolder) {
+            holder.messageText.text = message.message
+        }
     }
 
-    override fun onBindViewHolder(holder: MessageViewHolder, position: Int) {
-        holder.bind(messages[position])
+    override fun getItemCount(): Int = messages.size
+
+    fun setMessages(newMessages: List<BaseMessage>) {
+        messages.clear()
+        messages.addAll(newMessages)
+        notifyDataSetChanged()
     }
 
-    override fun getItemCount() = messages.size
+    fun addMessage(message: BaseMessage) {
+        messages.add(message)
+        notifyItemInserted(messages.size - 1)
+    }
+
+    class LeftMessageViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val messageText: TextView = view.findViewById(R.id.textLeft)
+    }
+
+    class RightMessageViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val messageText: TextView = view.findViewById(R.id.textRight)
+    }
 }

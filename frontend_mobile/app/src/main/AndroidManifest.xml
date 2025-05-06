@@ -41,6 +41,7 @@
         <activity android:name=".pages.ProfilePage" />
         <activity android:name=".pages.AccountSettings" />
         <activity android:name=".pages.MessagePage" />
+        <activity android:name=".pages.ChatActivity" />
         <activity android:name=".MyApplication" />
         <meta-data
             android:name="JankMonitoring"
