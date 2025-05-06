@@ -15,6 +15,7 @@ import { Person, Email, Lock, LocationOn, Phone, AccountCircle } from '@mui/icon
 import logo from '../../assets/img/logo-text.png';
 import cit from '../../assets/img/cit-1.jpg';
 import { toast } from 'react-hot-toast';
+import { connectUser } from '../../config/sendbirdConfig';
 
 const Register = () => {
     const [newUser, setNewUser] = useState({
@@ -125,6 +126,13 @@ const Register = () => {
             toast.success('Registration successful!', {
                 duration: 2000
             });
+
+            // Create user in Sendbird
+            try {
+                await connectUser(newUser.username, `${newUser.firstName} ${newUser.lastName}`);
+            } catch (e) {
+                console.error('Sendbird user creation failed:', e);
+            }
 
             // Delay navigation slightly to show toast
             setTimeout(() => {
