@@ -1,176 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { TextField, Button, Typography, Box, MenuItem, Select, FormControl, InputLabel, IconButton } from '@mui/material';
-import { useNavigate } from 'react-router-dom'; 
-import '../../App.css';
-import api from '../../config/axiosConfig';
-import { toast } from "react-hot-toast";
-import CloseIcon from '@mui/icons-material/Close';
-import ClearIcon from '@mui/icons-material/Clear';
-import { useLoading } from '../../contexts/LoadingContext';
-
-
-const UpdateProductForm = ({ product, onUpdateSuccess, setProduct }) => {
-  const [productName, setProductName] = useState(product.name || '');
-  const [description, setDescription] = useState(product.pdtDescription || '');
-  const [quantity, setQuantity] = useState(product.qtyInStock || '');
-  const [price, setPrice] = useState(product.buyPrice || '');
-  const [imageFile, setImageFile] = useState(null);
-  const [imagePreview, setImagePreview] = useState(null);
-  const [imageError, setImageError] = useState(false);
-  const [category, setCategory] = useState(product.category || '');
-  const [status, setStatus] = useState(product.status || '');
-  const [conditionType, setConditionType] = useState(product.conditionType || '');
-  const [originalValues, setOriginalValues] = useState({});
-  const navigate = useNavigate();
-  const { setLoading } = useLoading();
-
-  useEffect(() => {
-    console.log('product passed to form:', product);
-    setProductName(product.name || '');
-    setDescription(product.pdtDescription || '');
-    setQuantity(product.qtyInStock || '');
-    setPrice(product.buyPrice || '');
-    setCategory(product.category || '');
-    setStatus(product.status || '');
-    setConditionType(product.conditionType || '');
-    // Store original values for comparison
-    setOriginalValues({
-      name: product.name,
-      pdtDescription: product.pdtDescription,
-      qtyInStock: product.qtyInStock,
-      buyPrice: product.buyPrice,
-      category: product.category,
-      conditionType: product.conditionType,
-      imagePath: product.imagePath
-    });
-  }, [product]);
-
-  const handleImageChange = (e) => {
-    setLoading(true);
-    const file = e.target.files[0];
-    if (file) {
-      setImageFile(file);
-      setImageError(false);
-      const previewUrl = URL.createObjectURL(file);
-      setImagePreview(previewUrl);
-    } else {
-      setImageError(true);
-    }
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    return () => {
-      if (imagePreview) {
-        URL.revokeObjectURL(imagePreview);
-      }
-    };
-  }, [imagePreview]);
-
-  const handleSubmit = async (e) => {
-    setLoading(true);
-    e.preventDefault();
-
-    // Validate negative numbers
-    if (Number(price) <= 0) {
-      toast.error('Price must be greater than 0');
-      return;
-    }
-
-    if (Number(quantity) <= 0) {
-      toast.error('Quantity must be greater than 0');
-      return;
-    }
-
-    // Check if any values have changed when status is "Approved"
-    const hasChanges = 
-      product.status === "Approved" && (
-        productName !== originalValues.name ||
-        description !== originalValues.pdtDescription ||
-        Number(quantity) !== originalValues.qtyInStock ||
-        Number(price) !== originalValues.buyPrice ||
-        category !== originalValues.category ||
-        conditionType !== originalValues.conditionType ||
-        imageFile !== null // If there's a new image
-      );
-
-      const rejected_hasChanges = 
-      product.status === "Rejected" && (
-        productName !== originalValues.name ||
-        description !== originalValues.pdtDescription ||
-        Number(quantity) !== originalValues.qtyInStock ||
-        Number(price) !== originalValues.buyPrice ||
-        category !== originalValues.category ||
-        conditionType !== originalValues.conditionType ||
-        imageFile !== null // If there's a new image
-      );
-      
-
-    // Determine the new status
-    let newStatus = status;
-    if (product.status === "Pending" || product.status === "Rejected") {
-      newStatus = "Pending"; // Keep as Pending
-    } else if (product.status === "Approved") {
-      if (status === "Sold") {
-        newStatus = "Sold"; // Allow change to Sold
-      } else if (hasChanges) {
-        newStatus = "Pending"; // Change to Pending if there are changes
-      }
-    }
-
-    try {
-      const formData = new FormData();
-      
-      const productData = {
-        name: productName,
-        pdtDescription: description,
-        qtyInStock: quantity,
-        buyPrice: price,
-        category,
-        status: newStatus,
-        conditionType: conditionType,
-      };
-
-      formData.append('product', new Blob([JSON.stringify(productData)], {
-        type: 'application/json'
-      }));
-
-      if (imageFile) {
-        formData.append('imagePath', imageFile);
-      }
-
-      const response = await api.put(`/product/putProductDetails/${product.code}`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-
-      if (response.status === 200) {
-        if (hasChanges && product.status === "Approved") {
-          toast.success('Product updated successfully and status changed to Pending');
-        } else if (rejected_hasChanges && product.status === "Rejected") {
-          toast.success('Product updated resubmitted successfully and status changed to Pending');
-        } else {
-          toast.success('Product updated successfully');
-        }
-
-        if (typeof onUpdateSuccess === 'function') {
-          onUpdateSuccess();
-        }
-        const updatedProduct = await api.get(`/product/getProductByCode/${product.code}`);
-        setProduct(updatedProduct.data);
-      }
-    } catch (error) {
-      console.error('Error updating product:', error);
-      toast.error(error.response?.data?.message || 'Failed to update product');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <Box>
+<Box>
       {/* Close Button */}
       <IconButton
         onClick={() => onUpdateSuccess()}
@@ -232,20 +60,10 @@ const UpdateProductForm = ({ product, onUpdateSuccess, setProduct }) => {
             required
             fullWidth
             label="Product Name"
-            value={productName}
-            onChange={(e) => setProductName(e.target.value)}
-            InputLabelProps={{ shrink: true }}
-            InputProps={{
-              endAdornment: productName && (
-                <IconButton
-                  size="small"
-                  onClick={() => setProductName('')}
-                  sx={{ color: '#89343b' }}
-                >
-                  <ClearIcon />
-                </IconButton>
-              ),
-            }}
+            value={editData.name}
+            onChange={(e) => setEditData({ ...editData, name: e.target.value })}
+            error={!!errors.name}
+            helperText={errors.name}
           />
           <TextField
             margin="normal"
@@ -253,21 +71,10 @@ const UpdateProductForm = ({ product, onUpdateSuccess, setProduct }) => {
             fullWidth
             type="number"
             label="Price"
-            value={price}
-            onChange={(e) => setPrice(e.target.value)}
-            InputLabelProps={{ shrink: true }}
-            inputProps={{ min: "1" }}
-            InputProps={{
-              endAdornment: price && (
-                <IconButton
-                  size="small"
-                  onClick={() => setPrice('')}
-                  sx={{ color: '#89343b' }}
-                >
-                  <ClearIcon />
-                </IconButton>
-              ),
-            }}
+            value={editData.buyPrice}
+            onChange={(e) => setEditData({ ...editData, buyPrice: e.target.value })}
+            error={!!errors.buyPrice}
+            helperText={errors.buyPrice}
           />
         </Box>
 
@@ -278,30 +85,19 @@ const UpdateProductForm = ({ product, onUpdateSuccess, setProduct }) => {
           label="Description"
           multiline
           rows={3}
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          InputLabelProps={{ shrink: true }}
-          InputProps={{
-            endAdornment: description && (
-              <IconButton
-                size="small"
-                onClick={() => setDescription('')}
-                sx={{ color: '#89343b', position: 'absolute', right: 8, top: 8 }}
-              >
-                <ClearIcon />
-              </IconButton>
-            ),
-          }}
+          value={editData.pdtDescription}
+          onChange={(e) => setEditData({ ...editData, pdtDescription: e.target.value })}
+          error={!!errors.pdtDescription}
+          helperText={errors.pdtDescription}          
         />
 
         <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2 }}>
-          <FormControl fullWidth margin="normal">
+          <FormControl fullWidth margin="normal" required error={!!errors.category}>
             <InputLabel shrink>Category</InputLabel>
             <Select
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              required
-              displayEmpty
+              value={editData.category}
+              label="Category"
+              onChange={(e) => setEditData({ ...editData, category: e.target.value })}
               sx={{ 
                 color: category ? 'inherit' : '#A9A9A9',
                 '& .MuiSelect-icon': {
@@ -309,7 +105,6 @@ const UpdateProductForm = ({ product, onUpdateSuccess, setProduct }) => {
                 },
               }}
             >
-              <MenuItem value="" disabled>Select a category</MenuItem>
               <MenuItem value="Food">Food</MenuItem>
               <MenuItem value="Clothes">Clothes</MenuItem>
               <MenuItem value="Accessories">Accessories</MenuItem>
@@ -323,21 +118,19 @@ const UpdateProductForm = ({ product, onUpdateSuccess, setProduct }) => {
             </Select>
           </FormControl>
 
-          <FormControl fullWidth margin="normal">
+          <FormControl fullWidth margin="normal"  required error={!!errors.conditionType}>
             <InputLabel shrink>Condition</InputLabel>
             <Select
-              value={conditionType}
-              onChange={(e) => setConditionType(e.target.value)}
-              required
-              displayEmpty
+              value={editData.conditionType}
+              label="Condition"
+              onChange={(e) => setEditData({ ...editData, conditionType: e.target.value })}
               sx={{ 
-                color: conditionType ? 'inherit' : '#A9A9A9',
+                color: editData.conditionType ? 'inherit' : '#A9A9A9',
                 '& .MuiSelect-icon': {
                   color: '#89343b',
                 },
               }}
             >
-              <MenuItem value="" disabled>Select condition</MenuItem>
               <MenuItem value="Brand New">Brand New</MenuItem>
               <MenuItem value="Pre-Loved">Pre-Loved</MenuItem>
               <MenuItem value="None">None</MenuItem>
@@ -502,7 +295,33 @@ const UpdateProductForm = ({ product, onUpdateSuccess, setProduct }) => {
         </Button>
       </Box>
     </Box>
-  );
-};
 
-export default UpdateProductForm;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

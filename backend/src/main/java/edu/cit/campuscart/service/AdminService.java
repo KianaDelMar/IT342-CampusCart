@@ -121,6 +121,7 @@ public class AdminService {
                 details.put("product", product);
                 details.put("productName", product.getName());
                 details.put("productCode", product.getCode());
+                details.put("description", product.getPdtDescription());
                 details.put("category", product.getCategory());
                 details.put("status", product.getStatus());
                 details.put("image", product.getImagePath());
@@ -149,10 +150,9 @@ public class AdminService {
 
         existingProduct.setName(updatedProduct.getName());
         existingProduct.setPdtDescription(updatedProduct.getPdtDescription());
-        existingProduct.setQtyInStock(updatedProduct.getQtyInStock());
         existingProduct.setBuyPrice(updatedProduct.getBuyPrice());
         existingProduct.setCategory(updatedProduct.getCategory());
-        existingProduct.setStatus(updatedProduct.getStatus());
+        existingProduct.setConditionType(updatedProduct.getConditionType());
         
         return productRepo.save(existingProduct);
     }
@@ -208,19 +208,20 @@ public class AdminService {
         return userRepo.save(user);
     }
     
-    // Admin deletes a users
-    public String deleteUser(String username) {
+    // Admin deletes a seller
+    public String deleteSeller(String username) {
         if (userRepo.existsById(username)) {
             userRepo.deleteById(username);
-            return "User " + username + " successfully deleted";
+            return "Seller " + username + " successfully deleted";
         } else {
-            throw new NoSuchElementException("User with username: " + username + " is not found");
+            throw new NoSuchElementException("Seller with username: " + username + " is not found");
         }
     }
     
     //DELETE ADMIN ACCOUNT
   	@Transactional
   	public String deleteAdmin(String username) {
+        System.out.println("Attempting to delete admin: " + username);
   		String msg = "";
   		if(adminRepo.findByUsername(username) != null) {
   			adminRepo.deleteByUsername(username);
@@ -233,22 +234,19 @@ public class AdminService {
   	}
     
     public String deleteUser(String role, String username) throws NameNotFoundException {
+        System.out.println("Deleting user: " + role + " " + username);
         if ("admin".equalsIgnoreCase(role)) {
-            AdminEntity admin = getAdminByUsername(username);
-            if (admin == null) {
-                throw new NameNotFoundException("Admin with username '" + username + "' not found.");
-            }
             deleteAdmin(username);
             return "Admin with username '" + username + "' has been deleted successfully.";
-        } else if ("user".equalsIgnoreCase(role)) {
-            UserEntity user = getUserByUsername(username);
-            if (user == null) {
-                throw new NameNotFoundException("User with username '" + username + "' not found.");
+        } else if ("seller".equalsIgnoreCase(role)) {
+            UserEntity seller = getUserByUsername(username);
+            if (seller == null) {
+                throw new NameNotFoundException("Seller with username '" + username + "' not found.");
             }
-            deleteUser(username);
-            return "User with username '" + username + "' has been deleted successfully.";
+            deleteSeller(username);
+            return "Seller with username '" + username + "' has been deleted successfully.";
         } else {
-            throw new IllegalArgumentException("Invalid role. Use 'admin' or 'user'.");
+            throw new IllegalArgumentException("Invalid role. Use 'admin' or 'seller'.");
         }
     }
     

@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
+import {
+  Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
   Paper, Box, TextField, Checkbox, TableSortLabel, Menu, MenuItem, FormControl,
-  InputLabel, Select, Chip, Snackbar, Alert, Breadcrumbs, Link, Typography, 
-  Button, IconButton, TablePagination, Grid,
+  InputLabel, Select, Chip, Snackbar, Alert, Breadcrumbs, Link, Typography,
+  Button, IconButton, TablePagination, Grid, Dialog, DialogTitle, DialogContent, DialogActions
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import {
@@ -14,13 +15,14 @@ import {
   Delete as DeleteIcon,
   Add as AddIcon,
 } from '@mui/icons-material';
-//import UpdateProductModal from './UpdateProductModal';
+import UpdateProductModal from './UpdateProductModal';
 import ViewProductAdmin from './ViewProductAdmin';
 import ToastManager from '../../../components/ToastManager';
 import api from '../../../config/axiosConfig';
+import { useLoading } from '../../../contexts/LoadingContext';
 
-
-const ProductSellers = () => {
+const ManageProducts = () => {
+  const { setLoading } = useLoading();
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [selectedProducts, setSelectedProducts] = useState([]);
@@ -36,20 +38,25 @@ const ProductSellers = () => {
   const [updateModalOpen, setUpdateModalOpen] = useState(false);
   const [filters, setFilters] = useState({
     category: '',
-    stockRange: { min: '', max: '' },
     priceRange: { min: '', max: '' }
   });
   const [toasts, setToasts] = useState([]);
   const [viewModalOpen, setViewModalOpen] = useState(false);
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
+  const [productToDelete, setProductToDelete] = useState(null);
+  const [confirmBulkDeleteOpen, setConfirmBulkDeleteOpen] = useState(false);
 
   useEffect(() => {
     const fetchProducts = async () => {
+      setLoading(true);
       try {
-        const response = await api.get('/admin/products-with-sellers');
+        const response = await api.get('/admin/products-with-users');
         setProducts(response.data);
         setFilteredProducts(response.data);
       } catch (err) {
         console.error('Failed to fetch product data:', err);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -64,12 +71,9 @@ const ProductSellers = () => {
 
     const sortedProducts = [...filteredProducts].sort((a, b) => {
       let aValue, bValue;
-      
+
       // Handle specific properties
-      if (property === 'stock') {
-        aValue = Number(a.product.qtyInStock);
-        bValue = Number(b.product.qtyInStock);
-      } else if (property === 'price') {
+      if (property === 'price') {
         aValue = Number(a.product.buyPrice);
         bValue = Number(b.product.buyPrice);
       } else {
@@ -83,7 +87,7 @@ const ProductSellers = () => {
         bValue = bValue.toLowerCase();
       }
 
-      return newOrder === 'asc' 
+      return newOrder === 'asc'
         ? (aValue < bValue ? -1 : 1)
         : (aValue > bValue ? -1 : 1);
     });
@@ -94,16 +98,16 @@ const ProductSellers = () => {
   const handleSearch = (e) => {
     const query = e.target.value.toLowerCase();
     setSearchQuery(query);
-    
+
     let filtered = [...products];
     if (query) {
       filtered = filtered.filter(item => {
         const words = item.product.name.split(' ');
         return words.some(word => word.toLowerCase().startsWith(query)) ||
-               item.sellerUsername.toLowerCase().includes(query);
+          item.userUsername.toLowerCase().includes(query);
       });
     }
-    
+
     setFilteredProducts(filtered);
   };
 
@@ -112,40 +116,28 @@ const ProductSellers = () => {
 
     // Search filter
     if (query) {
-      filtered = filtered.filter(item => 
+      filtered = filtered.filter(item =>
         item.product.code.toString().toLowerCase().includes(query.toLowerCase()) ||
         item.product.name.toLowerCase().includes(query.toLowerCase()) ||
-        item.sellerUsername.toLowerCase().includes(query.toLowerCase())
+        item.userUsername.toLowerCase().includes(query.toLowerCase())
       );
     }
 
     // Category filter
     if (currentFilters?.category) {
-      filtered = filtered.filter(item => 
+      filtered = filtered.filter(item =>
         item.product.category === currentFilters.category
-      );
-    }
-
-    // Stock range filter
-    if (currentFilters?.stockRange?.min !== '' && currentFilters?.stockRange?.min !== null) {
-      filtered = filtered.filter(item => 
-        item.product.qtyInStock >= Number(currentFilters.stockRange.min)
-      );
-    }
-    if (currentFilters?.stockRange?.max !== '' && currentFilters?.stockRange?.max !== null) {
-      filtered = filtered.filter(item => 
-        item.product.qtyInStock <= Number(currentFilters.stockRange.max)
       );
     }
 
     // Price range filter
     if (currentFilters?.priceRange?.min !== '' && currentFilters?.priceRange?.min !== null) {
-      filtered = filtered.filter(item => 
+      filtered = filtered.filter(item =>
         item.product.buyPrice >= Number(currentFilters.priceRange.min)
       );
     }
     if (currentFilters?.priceRange?.max !== '' && currentFilters?.priceRange?.max !== null) {
-      filtered = filtered.filter(item => 
+      filtered = filtered.filter(item =>
         item.product.buyPrice <= Number(currentFilters.priceRange.max)
       );
     }
@@ -166,9 +158,9 @@ const ProductSellers = () => {
 
   const handleSelectOne = (event, product) => {
     if (!product?.product?.code) return;
-    
+
     const productCode = product.product.code;
-    setSelectedProducts(prev => 
+    setSelectedProducts(prev =>
       event.target.checked
         ? [...prev, productCode]
         : prev.filter(code => code !== productCode)
@@ -176,6 +168,7 @@ const ProductSellers = () => {
   };
 
   const handleBulkDelete = async () => {
+    setLoading(true);
     try {
       // Send the array of product codes to delete
       await api.delete('/admin/delete-products', {
@@ -183,117 +176,71 @@ const ProductSellers = () => {
       });
 
       // Update the local state after successful deletion
-      const remainingProducts = products.filter(item => 
+      const remainingProducts = products.filter(item =>
         !selectedProducts.includes(item.product.code)
       );
       setProducts(remainingProducts);
       setFilteredProducts(remainingProducts);
       setSelectedProducts([]);
-      
+
       showToast(`${selectedProducts.length} products have been deleted`, 'success');
     } catch (error) {
       console.error('Failed to delete products:', error);
       showToast(error.response?.data?.message || 'Failed to delete products', 'error');
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleProductAction = async (action, product) => {
+  const handleProductAction = async (action, product) => {  
     switch (action) {
       case 'edit':
         setSelectedProduct(product);
         setUpdateModalOpen(true);
         break;
-      case 'delete':
-        try {
-          await api.delete(`/admin/deleteproducts/${product.product.code}`);
-          const updatedProducts = products.filter(p => p.product.code !== product.product.code);
-          setProducts(updatedProducts);
-          setFilteredProducts(updatedProducts);
-          showToast(`Product ${product.product.name} has been deleted`, 'success');
-        } catch (error) {
-          console.error('Failed to delete product:', error);
-          showToast(error.response?.data?.message || 'Failed to delete product', 'error');
-        }
-        break;
+        case 'delete':
+          setProductToDelete(product);
+          setConfirmDeleteOpen(true);
+          break;
       default:
         break;
     }
     setActionAnchorEl(null);
   };
 
-  const handleAddProduct = async (formData) => {
+  const confirmDelete = async () => {
+    setLoading(true);
     try {
-      const response = await api.post(
-        '/admin/postproduct',
-        formData,
-        {
-          headers: {
-            'Content-Type': undefined,
-            'Accept': 'application/json'
-          },
-        }
-      );
-
-      if (response.status === 200 || response.status === 201) {
-        // Refresh the products list after adding
-        const productsResponse = await api.get('/admin/products-with-sellers');
-        const newProducts = productsResponse.data;
-        
-        // Make sure we have valid data before updating state
-        if (Array.isArray(newProducts) && newProducts.every(item => item?.product?.code)) {
-          setProducts(newProducts);
-          setFilteredProducts(newProducts);
-          
-          showToast('Product added successfully', 'success');
-          
-          setAddModalOpen(false);
-        }
-      }
+      await api.delete(`/admin/deleteproducts/${productToDelete.product.code}`);
+      const updatedProducts = products.filter(p => p.product.code !== productToDelete.product.code);
+      setProducts(updatedProducts);
+      setFilteredProducts(updatedProducts);
+      showToast(`Product ${productToDelete.product.name} has been deleted`, 'success');
     } catch (error) {
-      console.error('Error adding product:', error);
-      showToast(error.response?.data?.message || 'Failed to add product', 'error');
+      console.error('Failed to delete product:', error);
+      showToast(error.response?.data?.message || 'Failed to delete product', 'error');
+    } finally {
+      setLoading(false);
+      setConfirmDeleteOpen(false);
+      setProductToDelete(null);
     }
   };
 
   const handleEditProduct = async (updatedProducts) => {
+    setLoading(true);
     try {
       // Update state with the fresh data
       setProducts(updatedProducts);
       setFilteredProducts(updatedProducts);
       setUpdateModalOpen(false);
       setSelectedProduct(null);
-      
+
       showToast('Product updated successfully', 'success');
     } catch (error) {
       console.error('Error updating product data:', error);
       showToast(error.response?.data?.message || 'Error updating product data. Please try again.', 'error');
-    }
-  };
-
-  const handleDeleteProducts = async (productsToDelete) => {
-    try {
-      const productCodes = Array.isArray(productsToDelete) 
-        ? productsToDelete.map(p => p.product.code)
-        : [productsToDelete.product.code];
-
-      // Delete each product one by one
-      await Promise.all(
-        productCodes.map(code => 
-          api.delete(`/admin/deleteproducts/${code}`)
-        )
-      );
-
-      const updatedProducts = products.filter(p => 
-        !productCodes.includes(p.product.code)
-      );
-      
-      setProducts(updatedProducts);
-      setFilteredProducts(updatedProducts);
-      setSelectedProducts([]);
-      showToast(`${productCodes.length > 1 ? 'Products' : 'Product'} deleted successfully`, 'success');
-    } catch (error) {
-      console.error('Failed to delete products:', error);
-      showToast('Failed to delete products', 'error');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -318,7 +265,6 @@ const ProductSellers = () => {
     const handleReset = () => {
       const resetFilters = {
         category: '',
-        stockRange: { min: '', max: '' },
         priceRange: { min: '', max: '' }
       };
       setTempFilters(resetFilters);
@@ -344,37 +290,18 @@ const ProductSellers = () => {
               label="Category"
               onChange={(e) => setTempFilters(prev => ({ ...prev, category: e.target.value }))}
             >
-              <MenuItem value="">All</MenuItem>
-              <MenuItem value="Electronics">Electronics</MenuItem>
-              <MenuItem value="Accessories">Accessories</MenuItem>
-              <MenuItem value="Clothing">Clothing</MenuItem>
-              <MenuItem value="Books">Books</MenuItem>
+                <MenuItem value="Food">Food</MenuItem>
+                <MenuItem value="Clothes">Clothes</MenuItem>
+                <MenuItem value="Accessories">Accessories</MenuItem>
+                <MenuItem value="Stationery or Arts and Crafts">Stationery / Arts and Crafts</MenuItem>
+                <MenuItem value="Merchandise">Merchandise</MenuItem>
+                <MenuItem value="Supplies">Supplies</MenuItem>
+                <MenuItem value="Electronics">Electronics</MenuItem>
+                <MenuItem value="Beauty">Beauty</MenuItem>
+                <MenuItem value="Books">Books</MenuItem>
+                <MenuItem value="Other">Other</MenuItem>
             </Select>
           </FormControl>
-          
-          <Typography variant="subtitle2" sx={{ mt: 1, mb: 1 }}>Stock Range</Typography>
-          <Box sx={{ display: 'flex', gap: 1 }}>
-            <TextField
-              size="small"
-              type="number"
-              label="Min"
-              value={tempFilters.stockRange?.min}
-              onChange={(e) => setTempFilters(prev => ({
-                ...prev,
-                stockRange: { ...prev.stockRange, min: e.target.value }
-              }))}
-            />
-            <TextField
-              size="small"
-              type="number"
-              label="Max"
-              value={tempFilters.stockRange?.max}
-              onChange={(e) => setTempFilters(prev => ({
-                ...prev,
-                stockRange: { ...prev.stockRange, max: e.target.value }
-              }))}
-            />
-          </Box>
 
           <Typography variant="subtitle2" sx={{ mt: 1, mb: 1 }}>Price Range</Typography>
           <Box sx={{ display: 'flex', gap: 1 }}>
@@ -401,10 +328,10 @@ const ProductSellers = () => {
           </Box>
         </MenuItem>
         <MenuItem sx={{ gap: 1, justifyContent: 'flex-end', pt: 2 }}>
-          <Button 
+          <Button
             variant="outlined"
             onClick={handleReset}
-            sx={{ 
+            sx={{
               borderColor: '#89343b',
               color: '#89343b',
               '&:hover': {
@@ -415,10 +342,10 @@ const ProductSellers = () => {
           >
             Reset
           </Button>
-          <Button 
+          <Button
             variant="contained"
             onClick={handleApply}
-            sx={{ 
+            sx={{
               bgcolor: '#89343b',
               '&:hover': { bgcolor: '#6d2931' }
             }}
@@ -442,26 +369,27 @@ const ProductSellers = () => {
       severity,
       open: true
     };
-    
+
     setToasts(current => [newToast, ...current].slice(0, 2));
   };
 
   const handleClose = (id) => {
-    setToasts(current => 
-      current.map(toast => 
+    setToasts(current =>
+      current.map(toast =>
         toast.id === id ? { ...toast, open: false } : toast
       )
     );
   };
 
-  if (!products.length) {
-    return <div style={styles.loading}>Loading...</div>;
-  }
-
   return (
-    <Box sx={{ padding: 3 }}>
+    <Box sx={{ padding: 3, backgroundColor: '#fff3e0' }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h4" sx={{ color: '#89343b' }}>
+        <Typography variant="h4" sx={{
+          color: '#89343b',
+          mb: 3,
+          fontWeight: 600,
+          fontSize: '2rem'
+        }}>
           Product Management
         </Typography>
         <Box sx={{ display: 'flex', gap: 2 }}>
@@ -471,7 +399,7 @@ const ProductSellers = () => {
               color="error"
               startIcon={<DeleteIcon sx={{ color: 'white' }} />}
               onClick={handleBulkDelete}
-              sx={{ 
+              sx={{
                 '& .MuiButton-startIcon': {
                   margin: 0,
                   marginRight: '8px',
@@ -492,23 +420,24 @@ const ProductSellers = () => {
           size="small"
           value={searchQuery}
           onChange={handleSearch}
-          sx={{ 
-            flexGrow: 1,
+          sx={{
+            width: '300px',
             '& .MuiOutlinedInput-root': {
               backgroundColor: 'white',
+              borderRadius: 1,
               '& fieldset': {
-                borderColor: 'transparent'
+                borderColor: '#e0e0e0',
               },
               '&:hover fieldset': {
-                borderColor: 'transparent'
+                borderColor: '#89343b',
               },
               '&.Mui-focused fieldset': {
-                borderColor: 'transparent'
-              }
-            }
+                borderColor: '#89343b',
+              },
+            },
           }}
           InputProps={{
-            startAdornment: <SearchIcon sx={{ color: 'action.active', mr: 1 }} />,
+            startAdornment: <SearchIcon sx={{ color: '#89343b', mr: 1 }} />,
           }}
         />
 
@@ -516,9 +445,9 @@ const ProductSellers = () => {
           variant="contained"
           startIcon={<FilterListIcon />}
           onClick={(e) => setFilterAnchorEl(e.currentTarget)}
-          sx={{ 
+          sx={{
             bgcolor: '#ffd700',
-            color: 'black',
+            color: '#89343b',
             '&:hover': {
               bgcolor: '#ffcd00'
             },
@@ -534,15 +463,31 @@ const ProductSellers = () => {
         </Button>
       </Box>
 
-      <TableContainer component={Paper} sx={{ mt: 3, height: 'calc(100vh - 250px)' }}>
-        <Table stickyHeader>
+      <TableContainer sx={{
+        backgroundColor: 'white',
+        borderRadius: 1,
+        border: '1px solid #e0e0e0',
+        maxHeight: 'calc(100vh - 280px)',
+        '&::-webkit-scrollbar': {
+          width: '8px',
+          height: '8px'
+        },
+        '&::-webkit-scrollbar-track': {
+          background: '#f1f1f1'
+        },
+        '&::-webkit-scrollbar-thumb': {
+          background: '#89343b',
+          borderRadius: '4px'
+        }
+      }}>        
+      <Table stickyHeader>
           <TableHead>
-            <TableRow sx={{ 
-              '& th': { 
-                bgcolor: '#f5f5f5', 
+            <TableRow sx={{
+              '& th': {
+                bgcolor: '#fff3e0',
                 fontWeight: 'bold',
                 fontSize: '0.875rem',
-                color: 'rgba(0, 0, 0, 0.87)',
+                color: '#89343b',
                 '& .MuiTableSortLabel-root': {
                   fontSize: '0.875rem',
                   display: 'flex',
@@ -554,16 +499,30 @@ const ProductSellers = () => {
                 '& .MuiTableSortLabel-icon': {
                   opacity: 1,
                 }
-              } 
+              }
             }}>
-              <TableCell padding="checkbox" className="select-column">
+              <TableCell padding="checkbox" className="select-column"
+                sx={{
+                  bgcolor: '#fff3e0',
+                  color: '#89343b',
+                  fontWeight: 600,
+                  borderBottom: '2px solid #89343b'
+                }}
+              >
                 <Checkbox
                   indeterminate={selectedProducts.length > 0 && selectedProducts.length < filteredProducts.length}
                   checked={selectedProducts.length === filteredProducts.length && filteredProducts.length > 0}
                   onChange={handleSelectAll}
                 />
               </TableCell>
-              <TableCell>
+              <TableCell
+                sx={{
+                  bgcolor: '#fff3e0',
+                  color: '#89343b',
+                  fontWeight: 600,
+                  borderBottom: '2px solid #89343b'
+                }}
+              >
                 <TableSortLabel
                   active={orderBy === 'code'}
                   direction={orderBy === 'code' ? order : 'asc'}
@@ -572,7 +531,13 @@ const ProductSellers = () => {
                   Code
                 </TableSortLabel>
               </TableCell>
-              <TableCell>
+              <TableCell sx={{
+                bgcolor: '#fff3e0',
+                color: '#89343b',
+                fontWeight: 600,
+                borderBottom: '2px solid #89343b'
+              }}
+              >
                 <TableSortLabel
                   active={orderBy === 'name'}
                   direction={orderBy === 'name' ? order : 'asc'}
@@ -581,17 +546,22 @@ const ProductSellers = () => {
                   Product Name
                 </TableSortLabel>
               </TableCell>
-              <TableCell>Description</TableCell>
-              <TableCell>
-                <TableSortLabel
-                  active={orderBy === 'stock'}
-                  direction={orderBy === 'stock' ? order : 'asc'}
-                  onClick={() => handleSort('stock')}
-                >
-                  Stock
-                </TableSortLabel>
+              <TableCell sx={{
+                bgcolor: '#fff3e0',
+                color: '#89343b',
+                fontWeight: 600,
+                borderBottom: '2px solid #89343b'
+              }}
+              >Description
               </TableCell>
-              <TableCell>
+              
+              <TableCell sx={{
+                bgcolor: '#fff3e0',
+                color: '#89343b',
+                fontWeight: 600,
+                borderBottom: '2px solid #89343b'
+              }}
+              >
                 <TableSortLabel
                   active={orderBy === 'price'}
                   direction={orderBy === 'price' ? order : 'asc'}
@@ -600,8 +570,20 @@ const ProductSellers = () => {
                   Price
                 </TableSortLabel>
               </TableCell>
-              <TableCell>Category</TableCell>
-              <TableCell>
+              <TableCell sx={{
+                bgcolor: '#fff3e0',
+                color: '#89343b',
+                fontWeight: 600,
+                borderBottom: '2px solid #89343b'
+              }}
+              >Category</TableCell>
+              <TableCell sx={{
+                bgcolor: '#fff3e0',
+                color: '#89343b',
+                fontWeight: 600,
+                borderBottom: '2px solid #89343b'
+              }}
+              >
                 <TableSortLabel
                   active={orderBy === 'seller'}
                   direction={orderBy === 'seller' ? order : 'asc'}
@@ -611,17 +593,23 @@ const ProductSellers = () => {
                   Seller
                 </TableSortLabel>
               </TableCell>
-              <TableCell>Actions</TableCell>
+              <TableCell sx={{
+                bgcolor: '#fff3e0',
+                color: '#89343b',
+                fontWeight: 600,
+                borderBottom: '2px solid #89343b'
+              }}
+              >Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {paginatedProducts.map((item, index) => (
-              <TableRow 
+              <TableRow
                 key={index}
                 onClick={(e) => handleRowClick(e, item)}
-                sx={{ 
+                sx={{
                   cursor: 'pointer',
-                  '&:hover': { 
+                  '&:hover': {
                     backgroundColor: '#fafafa',
                     transition: 'background-color 0.2s ease'
                   }
@@ -636,7 +624,7 @@ const ProductSellers = () => {
                 <TableCell sx={{ py: 1 }}>{item.product.code}</TableCell>
                 <TableCell sx={{ py: 1 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                    <img 
+                    <img
                       src={`http://localhost:8080/${item.product.imagePath}`}
                       alt={item.product.name}
                       style={{ width: 50, height: 50, objectFit: 'cover' }}
@@ -645,12 +633,11 @@ const ProductSellers = () => {
                   </Box>
                 </TableCell>
                 <TableCell sx={{ py: 1 }}>{item.product.pdtDescription}</TableCell>
-                <TableCell sx={{ py: 1 }}>{item.product.qtyInStock}</TableCell>
                 <TableCell sx={{ py: 1 }}>₱{item.product.buyPrice}</TableCell>
                 <TableCell sx={{ py: 1 }}>{item.product.category}</TableCell>
-                <TableCell sx={{ py: 1 }}>{item.sellerUsername}</TableCell>
+                <TableCell sx={{ py: 1 }}>{item.userUsername}</TableCell>
                 <TableCell className="actions-column">
-                  <IconButton 
+                  <IconButton
                     onClick={(e) => {
                       e.stopPropagation(); // Prevent row click
                       setSelectedProduct(item);
@@ -678,7 +665,7 @@ const ProductSellers = () => {
         }}
         rowsPerPageOptions={[10, 25, 50]}
         sx={{
-          backgroundColor: '#f4f4f4',
+          backgroundColor: '#fff3e0',
           borderTop: '2px solid #ddd',
           '& .MuiTablePagination-selectIcon': { color: '#555' },
           '& .MuiTablePagination-caption': { color: '#555' },
@@ -701,7 +688,7 @@ const ProductSellers = () => {
         <MenuItem onClick={() => handleProductAction('edit', selectedProduct)}>
           <EditIcon sx={{ mr: 1 }} /> Edit Product
         </MenuItem>
-        <MenuItem 
+        <MenuItem
           onClick={() => handleProductAction('delete', selectedProduct)}
           sx={{ color: 'error.main' }}
         >
@@ -709,14 +696,13 @@ const ProductSellers = () => {
         </MenuItem>
       </Menu>
 
-      {/*
+
       <UpdateProductModal
         open={updateModalOpen}
         onClose={() => setUpdateModalOpen(false)}
         product={selectedProduct?.product}
         onSave={handleEditProduct}
       />
-      */}
 
       <ViewProductAdmin
         open={viewModalOpen}
@@ -725,6 +711,26 @@ const ProductSellers = () => {
       />
 
       <ToastManager toasts={toasts} handleClose={handleClose} />
+
+      <Dialog
+  open={confirmDeleteOpen}
+  onClose={() => setConfirmDeleteOpen(false)}
+>
+  <DialogTitle>Confirm Deletion</DialogTitle>
+  <DialogContent>
+    <Typography>
+      Are you sure you want to delete{' '}
+      <strong>{productToDelete?.product?.name}</strong>?
+    </Typography>
+  </DialogContent>
+  <DialogActions>
+    <Button onClick={() => setConfirmDeleteOpen(false)}>Cancel</Button>
+    <Button onClick={confirmDelete} color="error" variant="contained">
+      Delete
+    </Button>
+  </DialogActions>
+</Dialog>
+
     </Box>
   );
 };
@@ -775,11 +781,6 @@ const styles = {
     color: '#007bff',
     fontWeight: 'bold',
   },
-  loading: {
-    textAlign: 'center',
-    color: '#555',
-    padding: '20px',
-  },
   error: {
     textAlign: 'center',
     color: '#d9534f',
@@ -787,4 +788,4 @@ const styles = {
   },
 };
 
-export default ProductSellers;
+export default ManageProducts;

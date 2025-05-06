@@ -2,13 +2,15 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import api from '../../config/axiosConfig';
 import { TextField, Button, Typography, Box, MenuItem, Select, FormControl, InputLabel, Modal, Snackbar, Alert, IconButton } from '@mui/material';
-import { useNavigate } from 'react-router-dom'; 
+import { useNavigate } from 'react-router-dom';
 import '../../App.css';
 import { toast } from "react-hot-toast";
 import CloseIcon from '@mui/icons-material/Close';
 import ClearIcon from '@mui/icons-material/Clear';
+import { useLoading } from '../../contexts/LoadingContext';
 
-const AddProductForm = ({ open, handleClose }) => { 
+
+const AddProductForm = ({ open, handleClose }) => {
   const [productName, setProductName] = useState('');
   const [description, setDescription] = useState('');
   const [quantity, setQuantity] = useState('');
@@ -19,30 +21,33 @@ const AddProductForm = ({ open, handleClose }) => {
   const [category, setCategory] = useState('');
   const [conditionType, setConditionType] = useState('');
   const [userUsername, setUserUsername] = useState('');
-  const [userInfo, setUserInfo] = useState(null); 
+  const [userInfo, setUserInfo] = useState(null);
   const navigate = useNavigate();
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: '',
     severity: 'success'
   });
-  const [status, setStatus] = useState('');
+  const [status, setStatus] = useState('Pending');
+  const { setLoading } = useLoading();
 
   useEffect(() => {
+    setLoading(true);
     const username = sessionStorage.getItem('username');
     if (username) {
-      setUserUsername(username); 
+      setUserUsername(username);
       api.get(`/user/getUsername/${username}`)
         .then(response => {
-          setUserInfo(response.data); 
+          setUserInfo(response.data);
         })
         .catch(error => {
           console.error('Error fetching user information:', error);
           alert('Could not retrieve user data');
         });
     } else {
-      navigate('/login');  
+      navigate('/login');
     }
+    setLoading(false);
   }, [navigate]);
 
   const handleCloseSnackbar = () => {
@@ -50,27 +55,23 @@ const AddProductForm = ({ open, handleClose }) => {
   };
 
   const handleSubmit = async (e) => {
+    setLoading(true);
     e.preventDefault();
     console.log('Form submitted with image:', imageFile); // Debug log
 
     // Validate negative numbers
     if (Number(price) <= 0) {
-        toast.error('Price must be greater than 0');
-        return;
+      toast.error('Price must be greater than 0');
+      return;
     }
 
-    if (Number(quantity) <= 0) {
-        toast.error('Quantity must be greater than 0');
-        return;
-    }
-
-    if (!productName || !description || !quantity || !price || !category || !conditionType || !imageFile || !status) {
-        if (!imageFile) {
-            setImageError(true);
-            console.log('Image file missing'); // Debug log
-        }
-        toast.error('All fields must be filled in');
-        return;
+    if (!productName || !description || !price || !category || !conditionType || !imageFile || !status) {
+      if (!imageFile) {
+        setImageError(true);
+        console.log('Image file missing'); // Debug log
+      }
+      toast.error('All fields must be filled in');
+      return;
     }
 
     const formData = new FormData();
@@ -81,7 +82,7 @@ const AddProductForm = ({ open, handleClose }) => {
     formData.append('category', category);
     formData.append('status', status);
     formData.append('conditionType', conditionType);
-    formData.append('user_username', userUsername); 
+    formData.append('user_username', userUsername);
 
     if (imageFile) {
       console.log('Appending image to formData:', imageFile); // Debug log
@@ -100,7 +101,7 @@ const AddProductForm = ({ open, handleClose }) => {
       console.log('Sending formData to backend'); // Debug log
       await api.post('/product/postproduct', formData, {
         headers: {
-          'Content-Type': 'multipart/form-data',  
+          'Content-Type': 'multipart/form-data',
         }
       });
 
@@ -115,15 +116,18 @@ const AddProductForm = ({ open, handleClose }) => {
       setStatus('');
 
       toast.success('Product added successfully!');
-      handleClose(); 
-      navigate('/profile');  
+      handleClose();
+      navigate('/profile');
     } catch (error) {
       console.error('Error adding product:', error);
       toast.error(error.response?.data?.message || 'Failed to add product');
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleImageChange = (e) => {
+    setLoading(true);
     const file = e.target.files[0];
     console.log('Selected file:', file); // Debug log
     if (file) {
@@ -136,13 +140,16 @@ const AddProductForm = ({ open, handleClose }) => {
       console.log('No file selected'); // Debug log
       setImageError(true);
     }
+    setLoading(false);
   };
 
-  useEffect(() => {
+    useEffect(() => {
+      setLoading(true);
     return () => {
       if (imagePreview) {
-        URL.revokeObjectURL(imagePreview);
+        URL.revokeObjectURL(imagePreview);  
       }
+      setLoading(false);
     };
   }, [imagePreview]);
 
@@ -196,10 +203,10 @@ const AddProductForm = ({ open, handleClose }) => {
           </IconButton>
 
           <Box sx={{ mb: 3, textAlign: 'center' }}>
-            <Typography 
-              variant="h4" 
-              sx={{ 
-                fontWeight: 'bold', 
+            <Typography
+              variant="h4"
+              sx={{
+                fontWeight: 'bold',
                 color: '#89343b',
                 mb: 1,
                 background: 'linear-gradient(45deg, #89343b 30%, #ffd700 90%)',
@@ -214,8 +221,8 @@ const AddProductForm = ({ open, handleClose }) => {
             </Typography>
           </Box>
 
-          <Box 
-            component="form" 
+          <Box
+            component="form"
             onSubmit={handleSubmit}
             sx={{
               '& .MuiTextField-root, & .MuiFormControl-root': {
@@ -310,7 +317,7 @@ const AddProductForm = ({ open, handleClose }) => {
                   onChange={(e) => setCategory(e.target.value)}
                   required
                   displayEmpty
-                  sx={{ 
+                  sx={{
                     color: category ? 'inherit' : '#A9A9A9',
                     '& .MuiSelect-icon': {
                       color: '#89343b',
@@ -338,7 +345,7 @@ const AddProductForm = ({ open, handleClose }) => {
                   onChange={(e) => setConditionType(e.target.value)}
                   required
                   displayEmpty
-                  sx={{ 
+                  sx={{
                     color: conditionType ? 'inherit' : '#A9A9A9',
                     '& .MuiSelect-icon': {
                       color: '#89343b',
@@ -353,7 +360,8 @@ const AddProductForm = ({ open, handleClose }) => {
               </FormControl>
             </Box>
 
-            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2 }}>
+            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr' }, gap: 2 }}>
+              {/*
               <TextField
                 margin="normal"
                 required
@@ -365,7 +373,19 @@ const AddProductForm = ({ open, handleClose }) => {
                 InputLabelProps={{ shrink: true }}
                 inputProps={{ min: "1" }}
               />
+              */}
 
+              <TextField
+                margin="normal"
+                fullWidth
+                label="Status"
+                value={status}
+                InputProps={{ readOnly: true }}
+                InputLabelProps={{ shrink: true }}
+                sx={{ bgcolor: '#f5f5f5' }}
+              />
+
+              {/*
               <FormControl fullWidth margin="normal">
                 <InputLabel shrink>Status</InputLabel>
                 <Select
@@ -373,7 +393,7 @@ const AddProductForm = ({ open, handleClose }) => {
                   onChange={(e) => setStatus(e.target.value)}
                   required
                   displayEmpty
-                  sx={{ 
+                  sx={{
                     color: status ? 'inherit' : '#A9A9A9',
                     '& .MuiSelect-icon': {
                       color: '#89343b',
@@ -384,8 +404,10 @@ const AddProductForm = ({ open, handleClose }) => {
                   <MenuItem value="Pending">Pending</MenuItem>
                 </Select>
               </FormControl>
+              */}
             </Box>
 
+            {/*
             <TextField
               margin="normal"
               fullWidth
@@ -396,7 +418,8 @@ const AddProductForm = ({ open, handleClose }) => {
               }}
               InputLabelProps={{ shrink: true }}
               sx={{ bgcolor: '#f5f5f5' }}
-            />
+            /> 
+            */}
 
             <FormControl fullWidth margin="normal" error={imageError}>
               <InputLabel shrink htmlFor="image-upload">Product Image</InputLabel>
@@ -500,12 +523,12 @@ const AddProductForm = ({ open, handleClose }) => {
               type="submit"
               variant="contained"
               fullWidth
-              sx={{ 
-                mt: 3, 
+              sx={{
+                mt: 3,
                 mb: 2,
                 py: 1.5,
                 bgcolor: '#89343b',
-                '&:hover': { 
+                '&:hover': {
                   bgcolor: '#6d2a2f',
                   transform: 'translateY(-2px)',
                   boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
@@ -518,14 +541,14 @@ const AddProductForm = ({ open, handleClose }) => {
           </Box>
         </Box>
       </Modal>
-      <Snackbar 
-        open={snackbar.open} 
-        autoHideDuration={3000} 
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={3000}
         onClose={handleCloseSnackbar}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
       >
-        <Alert 
-          onClose={handleCloseSnackbar} 
+        <Alert
+          onClose={handleCloseSnackbar}
           severity={snackbar.severity}
           sx={{
             backgroundColor: snackbar.severity === 'success' ? '#89343b' : undefined,

@@ -52,7 +52,7 @@ public class ProductService {
 	}
 	
 	// Create a new product and associate it with a seller
-	public void postProduct(String name, String pdtDescription, int qtyInStock, float buyPrice, String imagePath, String category, String status, String conditionType, String userUsername) throws NoSuchElementException {
+	public void postProduct(String name, String pdtDescription, float buyPrice, String imagePath, String category, String status, String conditionType, String userUsername) throws NoSuchElementException {
 		// Find the seller by username
 		Optional<UserEntity> userOpt = userRepo.findById(userUsername);
 		if (userOpt.isEmpty()) {
@@ -63,7 +63,6 @@ public class ProductService {
 		ProductEntity productentity = new ProductEntity();
 		productentity.setName(name);
 		productentity.setPdtDescription(pdtDescription);
-		productentity.setQtyInStock(qtyInStock);
 		productentity.setBuyPrice(buyPrice);
 		productentity.setImagePath(imagePath);
 		productentity.setCategory(category);

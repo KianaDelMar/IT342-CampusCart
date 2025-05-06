@@ -35,7 +35,7 @@ import edu.cit.campuscart.service.ProductService;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@CrossOrigin(origins = "http://localhost:3000")
+//@CrossOrigin(origins = { "http://localhost:3000", "https://campuscartonlinemarketplace.vercel.app" })
 @RestController
 @RequestMapping(method = RequestMethod.GET, path = "/api/product")
 public class ProductController {
@@ -226,7 +226,7 @@ public class ProductController {
 		
 	@PostMapping("/postproduct")
 	public ResponseEntity<String> postProduct(@RequestParam("name") String name,
-			@RequestParam("pdtDescription") String description, @RequestParam("qtyInStock") int quantity,
+			@RequestParam("pdtDescription") String description,
 			@RequestParam("buyPrice") float price, @RequestParam("image") MultipartFile image,
 			@RequestParam("category") String category, @RequestParam("status") String status,
 			@RequestParam("conditionType") String conditionType,
@@ -248,7 +248,7 @@ public class ProductController {
 
 		// Call the service method to save product with associated user
 		try {
-			pserv.postProduct(name, description, quantity, price, imagePath, category, status, conditionType,
+			pserv.postProduct(name, description, price, imagePath, category, status, conditionType,
 					userUsername);
 		} catch (NoSuchElementException e) {
 			return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);

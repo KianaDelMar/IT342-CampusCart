@@ -25,7 +25,7 @@ import edu.cit.campuscart.entity.UserEntity;
 import edu.cit.campuscart.service.AdminService;
 import edu.cit.campuscart.util.JwtUtil;
 
-@CrossOrigin(origins = "http://localhost:3000")
+//@CrossOrigin(origins = { "http://localhost:3000", "https://campuscartonlinemarketplace.vercel.app" })
 @RestController
 @RequestMapping("/api/admin")
 public class AdminController {
@@ -199,7 +199,7 @@ public class AdminController {
     @DeleteMapping("/users/{username}")
     public ResponseEntity<String> deleteUser(@PathVariable String username) {
         try {
-            String message = adminService.deleteUser(username);
+            String message = adminService.deleteSeller(username);
             return new ResponseEntity<>(message, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);

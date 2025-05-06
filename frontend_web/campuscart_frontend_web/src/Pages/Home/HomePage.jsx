@@ -215,7 +215,7 @@ function HomePage() {
       {/* Recently Listed Products */}
       <Box sx={{ mt: 4, mb: 3, px: 2 }}>
         <Typography variant="h5" sx={{ fontWeight: "bold", mb: 2, ml: 2 }}>
-          Recently Listed
+          Recent Listing from Others
         </Typography>
         <Box
           sx={{

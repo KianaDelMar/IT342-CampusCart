@@ -9,17 +9,17 @@ import { Search as SearchIcon, CheckCircle, Cancel, AccessTime } from '@mui/icon
 import axios from 'axios';
 import api from '../../../config/axiosConfig';
 import ToastManager from '../../../components/ToastManager';
+import { useLoading } from '../../../contexts/LoadingContext'; 
 
 const columns = [
   { id: 'user', label: 'Username', minWidth: 170, sortable: true },
   { id: 'image', label: 'Image', minWidth: 120, sortable: false },
   { id: 'productName', label: 'Product Name', minWidth: 170, sortable: true },
-  { id: 'productCode', label: 'Product Code', minWidth: 100, sortable: true },
   { id: 'category', label: 'Category', minWidth: 170, sortable: true },
   { id: 'status', label: 'Approval Status', minWidth: 170, sortable: false },
 ];
 
-const createData = (productName, user, productCode, category, status, image) => {
+const createData = (productName, user, productCode, category, status, image, feedback, description) => {
   const formatStatus = (status) => {
     if (status === 'approved') return 'Approved';
     if (status === 'rejected') return 'Rejected';
@@ -30,14 +30,14 @@ const createData = (productName, user, productCode, category, status, image) => 
 
   const imageUrl = image ? `http://localhost:8080/${image}` : null;
 
-  return { productName, user, productCode, category, status: formatStatus(status), image: imageUrl };
+  return { productName, user, productCode, category, status: formatStatus(status), image: imageUrl, feedback, description };
 };
 
 const ProductApproval = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const { setLoading } = useLoading();
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
   const [summary, setSummary] = useState({ pending: 0, approved: 0, rejected: 0 });
@@ -48,13 +48,14 @@ const ProductApproval = () => {
   const [openModal, setOpenModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [toasts, setToasts] = useState([]);
+  const [openRejectDialog, setOpenRejectDialog] = useState(false);
+  const [rejectFeedback, setRejectFeedback] = useState('');
 
   useEffect(() => {
     const fetchProducts = async () => {
       setLoading(true);
       try {
         const response = await api.get('/product/pendingApproval');
-        console.log("Products: ", response.data)
         const productData = response.data.map((product) =>
           createData(
             product.productName,
@@ -62,7 +63,9 @@ const ProductApproval = () => {
             product.productCode,
             product.category,
             product.status,
-            product.image
+            product.image,
+            product.feedback,
+            product.description
           )
         );
         setProducts(productData);
@@ -76,30 +79,38 @@ const ProductApproval = () => {
     fetchProducts();
   }, []);
 
-  const handleProductClick = (product) => {
-    setSelectedProduct(product); 
-    setOpenModal(true); 
+  const handleProductClick = (product) => { 
+    setLoading(true);
+    setSelectedProduct(product);
+    setOpenModal(true);
+    setLoading(false);
   };
 
   const handleCloseModal = () => {
-    setOpenModal(false); 
+    setLoading(true);
+    setOpenModal(false);
+    setLoading(false);
   };
 
   const handleApproveInModal = async () => {
+    setLoading(true);
     if (selectedProduct) {
       await handleApprove(selectedProduct.productCode);
       handleCloseModal(); // Close modal after approval
     }
+    setLoading(false);
   };
 
-  const handleRejectInModal = async () => {
+  const handleRejectInModal = () => {
+    setLoading(true);
     if (selectedProduct) {
-      await handleReject(selectedProduct.productCode);
-      handleCloseModal(); // Close modal after rejection
+      setOpenModal(false); // Close the product details modal
+      setOpenRejectDialog(true); // Open the rejection feedback dialog
     }
+    setLoading(false);
   };
 
-  const updateSummary = (data) => {
+  const updateSummary = (data) => { 
     const approved = data.filter(p => p.status === 'Approved').length;
     const rejected = data.filter(p => p.status === 'Rejected').length;
     const pending = data.filter(p => p.status === 'Pending').length;
@@ -108,6 +119,7 @@ const ProductApproval = () => {
   };
 
   const handleApprove = async (productCode) => {
+    setLoading(true);
     try {
       const response = await api.post('/product/approve', { productCode });
       showToast('Product approved successfully!', 'success');
@@ -123,12 +135,23 @@ const ProductApproval = () => {
       });
     } catch (error) {
       showToast('Error approving product', 'error');
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleReject = async (productCode) => {
+    setLoading(true);
+    if (!rejectFeedback.trim()) {
+      showToast('Please provide feedback for rejection', 'error');
+      return;
+    }
+
     try {
-      const response = await api.post('/product/reject', { productCode });
+      const response = await api.post('/product/reject', {
+        productCode,
+        feedback: rejectFeedback
+      });
       showToast('Product rejected successfully!', 'success');
 
       setProducts((prevProducts) => {
@@ -140,13 +163,34 @@ const ProductApproval = () => {
         updateSummary(updatedProducts);
         return updatedProducts;
       });
+
+      setOpenRejectDialog(false);
+      setRejectFeedback('');
     } catch (error) {
       showToast('Error rejecting product', 'error');
-    }
+    } finally {
+      setLoading(false);
+    } 
+  };
+
+  const handleRejectClick = (productCode) => {
+    setLoading(true);
+    setSelectedProduct(products.find(p => p.productCode === productCode));
+    setOpenRejectDialog(true);
+    setLoading(false);
+  };
+
+  const handleCloseRejectDialog = () => {
+    setLoading(true);
+    setOpenRejectDialog(false);
+    setRejectFeedback('');
+    setLoading(false);
   };
 
   const handleChangePage = (event, newPage) => {
+    setLoading(true);
     setPage(newPage);
+    setLoading(false);
   };
 
   const handleChangeRowsPerPage = (event) => {
@@ -180,69 +224,6 @@ const ProductApproval = () => {
 
       return matchesSearch && matchesStatus;
     });
-  };
-
-  const getStatusChipProps = (status) => {
-    const props = {
-      label: status === 'Blocked' || status === 'Block' ? 'Blocked' : status,
-      sx: {
-        width: '80px',
-        height: '24px',
-        color: 'white',
-        fontWeight: 500,
-        '& .MuiChip-label': {
-          color: 'white',
-          padding: 0,
-          display: 'flex',
-          width: '100%',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontSize: '15px',
-          marginTop: '18px'
-        }
-      }
-    };
-
-    switch (status) {
-      case 'Pending':
-        return {
-          ...props,
-          sx: {
-            ...props.sx,
-            bgcolor: '#28a745',
-            '&:hover': { bgcolor: '#28a745' }
-          }
-        };
-        case 'Sold':
-          return {
-            ...props,
-            sx: {
-              ...props.sx,
-              bgcolor: '#a9a9b0',
-              '&:hover': { bgcolor: '#a9a9b0' }
-            }
-          };
-      case 'Approved':
-        return {
-          ...props,
-          sx: {
-            ...props.sx,
-            bgcolor: '#007bff',
-            '&:hover': { bgcolor: '#007bff' }
-          }
-        };
-      case 'Rejected':
-        return {
-          ...props,
-          sx: {
-            ...props.sx,
-            bgcolor: '#dc3545',
-            '&:hover': { bgcolor: '#dc3545' }
-          }
-        };
-      default:
-        return props;
-    }
   };
 
   const handleRequestSort = (event, property) => {
@@ -287,12 +268,12 @@ const ProductApproval = () => {
   };
 
   return (
-    <Box sx={{ 
+    <Box sx={{
       padding: 3,
-      backgroundColor: '#fff3e0', // Cream background color
+      backgroundColor: '#fff3e0', 
       minHeight: '100vh'
     }}>
-      <Typography variant="h4" sx={{ 
+      <Typography variant="h4" sx={{
         color: '#89343b',
         mb: 3,
         fontWeight: 600,
@@ -302,7 +283,7 @@ const ProductApproval = () => {
       </Typography>
 
       {/* Filter Section */}
-      <Box sx={{ 
+      <Box sx={{
         mb: 3,
         display: 'flex',
         gap: 2
@@ -387,13 +368,13 @@ const ProductApproval = () => {
       </Box>
 
       {/* Summary Cards */}
-      <Box sx={{ 
+      <Box sx={{
         display: 'grid',
         gridTemplateColumns: 'repeat(4, 1fr)',
         gap: 2,
         mb: 3
       }}>
-        <Card sx={{ 
+        <Card sx={{
           p: 2,
           bgcolor: '#fff9c4',
           borderRadius: 1,
@@ -402,7 +383,7 @@ const ProductApproval = () => {
           <Typography variant="h4" sx={{ color: '#89343b', fontWeight: 600 }}>{summary.pending}</Typography>
           <Typography variant="subtitle1" sx={{ color: '#89343b' }}>Pending</Typography>
         </Card>
-        <Card sx={{ 
+        <Card sx={{
           p: 2,
           bgcolor: '#c8e6c9',
           borderRadius: 1,
@@ -411,7 +392,7 @@ const ProductApproval = () => {
           <Typography variant="h4" sx={{ color: '#2e7d32', fontWeight: 600 }}>{summary.approved}</Typography>
           <Typography variant="subtitle1" sx={{ color: '#2e7d32' }}>Approved</Typography>
         </Card>
-        <Card sx={{ 
+        <Card sx={{
           p: 2,
           bgcolor: '#ffcdd2',
           borderRadius: 1,
@@ -420,7 +401,7 @@ const ProductApproval = () => {
           <Typography variant="h4" sx={{ color: '#c62828', fontWeight: 600 }}>{summary.rejected}</Typography>
           <Typography variant="subtitle1" sx={{ color: '#c62828' }}>Rejected</Typography>
         </Card>
-        <Card sx={{ 
+        <Card sx={{
           p: 2,
           bgcolor: '#e0e0e0',
           borderRadius: 1,
@@ -432,7 +413,7 @@ const ProductApproval = () => {
       </Box>
 
       {/* Product Table */}
-      <TableContainer sx={{ 
+      <TableContainer sx={{
         backgroundColor: 'white',
         borderRadius: 1,
         border: '1px solid #e0e0e0',
@@ -485,9 +466,9 @@ const ProductApproval = () => {
                   )}
                 </TableCell>
               ))}
-              <TableCell 
-                align="left" 
-                sx={{ 
+              <TableCell
+                align="left"
+                sx={{
                   bgcolor: '#fff3e0',
                   color: '#89343b',
                   fontWeight: 600,
@@ -502,15 +483,15 @@ const ProductApproval = () => {
             {sortData(filterProducts(products))
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row, index) => (
-                <TableRow 
-                  hover 
+                <TableRow
+                  hover
                   role="checkbox"
                   tabIndex={-1}
-                  key={index} 
+                  key={index}
                   onClick={() => handleProductClick(row)}
-                  sx={{ 
+                  sx={{
                     cursor: 'pointer',
-                    '&:hover': { 
+                    '&:hover': {
                       backgroundColor: '#fff8e1'
                     }
                   }}
@@ -521,7 +502,7 @@ const ProductApproval = () => {
                     if (column.id === 'image') {
                       return (
                         <TableCell key={column.id} align="left">
-                          <Box sx={{ 
+                          <Box sx={{
                             width: 50,
                             height: 50,
                             borderRadius: 1,
@@ -529,14 +510,14 @@ const ProductApproval = () => {
                             border: '1px solid #e0e0e0'
                           }}>
                             {row.image && (
-                              <img 
-                                src={row.image} 
-                                alt={row.productName} 
-                                style={{ 
-                                  width: '100%', 
-                                  height: '100%', 
-                                  objectFit: 'cover' 
-                                }} 
+                              <img
+                                src={row.image}
+                                alt={row.productName}
+                                style={{
+                                  width: '100%',
+                                  height: '100%',
+                                  objectFit: 'cover'
+                                }}
                               />
                             )}
                           </Box>
@@ -550,11 +531,11 @@ const ProductApproval = () => {
                           <Chip
                             label={value}
                             sx={{
-                              bgcolor: 
+                              bgcolor:
                                 value === 'Approved' ? '#28a745' :
-                                value === 'Rejected' ? '#dc3545' :
-                                value === 'Pending' ? '#ff9800' :
-                                '#757575',
+                                  value === 'Rejected' ? '#dc3545' :
+                                    value === 'Pending' ? '#ff9800' :
+                                      '#757575',
                               color: 'white',
                               fontWeight: 500,
                               minWidth: '90px'
@@ -575,7 +556,7 @@ const ProductApproval = () => {
                       variant="outlined"
                       color="success"
                       startIcon={<CheckCircle />}
-                      disabled={row.status === 'Approved' || row.status === 'Sold'}
+                      disabled={row.status === 'Approved' || row.status === 'Sold' || row.status === 'Rejected'}
                       onClick={(e) => {
                         e.stopPropagation();
                         handleApprove(row.productCode);
@@ -599,7 +580,7 @@ const ProductApproval = () => {
                       disabled={row.status === 'Rejected' || row.status === 'Sold'}
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleReject(row.productCode);
+                        handleRejectClick(row.productCode);
                       }}
                       sx={{
                         borderRadius: 1,
@@ -643,166 +624,258 @@ const ProductApproval = () => {
       />
 
       {/* Enhanced Product Details Modal */}
-            <Dialog 
-              open={openModal} 
-              onClose={handleCloseModal}
-              maxWidth="md"
-              fullWidth
-              PaperProps={{
-                sx: {
-                  borderRadius: '12px',
-                  padding: '16px'
-                }
-              }}
-            >
-              <DialogTitle sx={{ 
-                borderBottom: '1px solid #e0e0e0',
-                pb: 2,
-                fontSize: '1.5rem',
-                fontWeight: 600
-              }}>
-                Product Details
-              </DialogTitle>
-              <DialogContent sx={{ mt: 2, height: '300px' }}>
-                {selectedProduct && (
-                  <Grid container spacing={3} sx={{ height: '100%' }}>
-                    {/* Product Image */}
-                    <Grid item xs={12} md={4} sx={{ height: '100%' }}>
-                      <Box sx={{ 
+      <Dialog
+        open={openModal}
+        onClose={handleCloseModal}
+        maxWidth="md"
+        fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: '12px',
+            padding: '16px',
+            maxHeight: '90vh'
+          }
+        }}
+      >
+        <DialogTitle sx={{
+          borderBottom: '1px solid #e0e0e0',
+          pb: 2,
+          fontSize: '1.5rem',
+          fontWeight: 600
+        }}>
+          Product Details
+        </DialogTitle>
+        <DialogContent sx={{ mt: 2, height: '300px' }}>
+          {selectedProduct && (
+            <Grid container spacing={3} sx={{ height: '100%' }}>
+              {/* Product Image */}
+              <Grid item xs={12} md={4} sx={{ height: '100%' }}>
+                <Box sx={{
+                  width: '100%',
+                  height: '100%',
+                  borderRadius: '8px',
+                  overflow: 'hidden',
+                  border: '1px solid #e0e0e0'
+                }}>
+                  {selectedProduct.image ? (
+                    <img
+                      src={selectedProduct.image}
+                      alt={selectedProduct.productName}
+                      style={{
                         width: '100%',
                         height: '100%',
-                        borderRadius: '8px',
-                        overflow: 'hidden',
-                        border: '1px solid #e0e0e0'
-                      }}>
-                        {selectedProduct.image ? (
-                          <img 
-                            src={selectedProduct.image} 
-                            alt={selectedProduct.productName}
-                            style={{
-                              width: '100%',
-                              height: '100%',
-                              objectFit: 'cover'
-                            }}
-                          />
-                        ) : (
-                          <Box sx={{ 
-                            width: '100%',
-                            height: '100%',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            bgcolor: '#f5f5f5'
-                          }}>
-                            <Typography color="text.secondary">
-                              No image available
-                            </Typography>
-                          </Box>
-                        )}
-                      </Box>
+                        objectFit: 'cover'
+                      }}
+                    />
+                  ) : (
+                    <Box sx={{
+                      width: '100%',
+                      height: '100%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      bgcolor: '#f5f5f5'
+                    }}>
+                      <Typography color="text.secondary">
+                        No image available
+                      </Typography>
+                    </Box>
+                  )}
+                </Box>
+              </Grid>
+
+              {/* Product Details */}
+              <Grid item xs={12} md={8} sx={{ height: '270px' }}>
+                <Box sx={{
+                  p: 2,
+                  bgcolor: '#f8f9fa',
+                  borderRadius: '8px',
+                  border: '1px solid #e0e0e0',
+                  height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column'
+                }}>
+                  <Typography variant="h6" sx={{ color: '#1a237e', mb: 1 }}>
+                    {selectedProduct.productName}
+                  </Typography>
+                  <Typography variant="subtitle2" color="text.secondary">
+                      Description
+                  </Typography>
+                  <Typography variant="body1" sx={{ color: '#000000', mb: 3 }}>
+                    {selectedProduct.description}
+                  </Typography>
+
+                  <Grid container spacing={3}>
+                    <Grid item xs={6}>
+                      <Typography variant="subtitle2" color="text.secondary">
+                        Product Code
+                      </Typography>
+                      <Typography variant="body1" sx={{ mb: 2, fontWeight: 500 }}>
+                        {selectedProduct.productCode}
+                      </Typography>
                     </Grid>
-      
-                    {/* Product Details */}
-                    <Grid item xs={12} md={8} sx={{ height: '270px' }}>
-                      <Box sx={{ 
-                        p: 2, 
-                        bgcolor: '#f8f9fa',
-                        borderRadius: '8px',
-                        border: '1px solid #e0e0e0',
-                        height: '100%',
-                        display: 'flex',
-                        flexDirection: 'column'
-                      }}>
-                        <Typography variant="h6" sx={{ color: '#1a237e', mb: 3 }}>
-                          {selectedProduct.productName}
-                        </Typography>
-                        
-                        <Grid container spacing={3}>
-                          <Grid item xs={6}>
-                            <Typography variant="subtitle2" color="text.secondary">
-                              Product Code
-                            </Typography>
-                            <Typography variant="body1" sx={{ mb: 2, fontWeight: 500 }}>
-                              {selectedProduct.productCode}
-                            </Typography>
-                          </Grid>
-                          
-                          <Grid item xs={6}>
-                            <Typography variant="subtitle2" color="text.secondary">
-                              Category
-                            </Typography>
-                            <Typography variant="body1" sx={{ mb: 2, fontWeight: 500 }}>
-                              {selectedProduct.category}
-                            </Typography>
-                          </Grid>
-                          
-                          <Grid item xs={6}>
-                            <Typography variant="subtitle2" color="text.secondary">
-                              Seller
-                            </Typography>
-                            <Typography variant="body1" sx={{ mb: 2, fontWeight: 500 }}>
-                              {selectedProduct.user}
-                            </Typography>
-                          </Grid>
-                          
-                          <Grid item xs={6}>
-                            <Typography variant="subtitle2" color="text.secondary">
-                              Status
-                            </Typography>
-                            <Typography variant="body1" sx={{ mb: 2, fontWeight: 500 }}>
-                              {selectedProduct.status}
-                            </Typography>
-                          </Grid>
-                        </Grid>
+
+                    <Grid item xs={6}>
+                      <Typography variant="subtitle2" color="text.secondary">
+                        Category
+                      </Typography>
+                      <Typography variant="body1" sx={{ mb: 2, fontWeight: 500 }}>
+                        {selectedProduct.category}
+                      </Typography>
+                    </Grid>
+
+                    <Grid item xs={6}>
+                      <Typography variant="subtitle2" color="text.secondary">
+                        Seller
+                      </Typography>
+                      <Typography variant="body1" sx={{ mb: 2, fontWeight: 500 }}>
+                        {selectedProduct.user}
+                      </Typography>
+                    </Grid>
+
+                    <Grid item xs={6}>
+                      <Typography variant="subtitle2" color="text.secondary">
+                        Status
+                      </Typography>
+                      <Box sx={{ mb: 2 }}>
+                        <Chip
+                          label={selectedProduct.status}
+                          sx={{
+                            bgcolor:
+                              selectedProduct.status === 'Approved' ? '#28a745' :
+                                selectedProduct.status === 'Rejected' ? '#dc3545' :
+                                  selectedProduct.status === 'Pending' ? '#ff9800' :
+                                    '#757575',
+                            color: 'white',
+                            fontWeight: 500
+                          }}
+                        />
                       </Box>
                     </Grid>
                   </Grid>
-                )}
-              </DialogContent>
-              <DialogActions sx={{ 
-                borderTop: '1px solid #e0e0e0',
-                pt: 2,
-                px: 3 
-              }}>
-                <Button 
-                  onClick={handleCloseModal} 
-                  variant="outlined"
-                  sx={{ 
-                    borderColor: '#89343b',
-                    color: '#89343b',
-                    '&:hover': {
-                      borderColor: '#6d2931',
-                      backgroundColor: 'rgba(137, 52, 59, 0.04)'
-                    }
-                  }}
-                >
-                  Close
-                </Button>
-                <Button 
-                  onClick={handleApproveInModal}
-                  variant="contained"
-                  color="success"
-                  sx={{ ml: 1 }}
-                  disabled={selectedProduct?.status === 'Approved' || selectedProduct?.status === 'Sold'}
-                >
-                  Approve
-                </Button>
-                <Button 
-                  onClick={handleRejectInModal}
-                  variant="contained"
-                  color="error"
-                  sx={{ ml: 1 }}
-                  disabled={selectedProduct?.status === 'Rejected' || selectedProduct?.status === 'Sold'}
-                >
-                  Reject
-                </Button>
-              </DialogActions>
-            </Dialog>
+                </Box>
+              </Grid>
+            </Grid>
+          )}
+        </DialogContent>
+        <DialogActions sx={{
+          borderTop: '1px solid #e0e0e0',
+          pt: 2,
+          px: 3
+        }}>
+          <Button
+            onClick={handleCloseModal}
+            variant="outlined"
+            sx={{
+              borderColor: '#89343b',
+              color: '#89343b',
+              '&:hover': {
+                borderColor: '#6d2931',
+                backgroundColor: 'rgba(137, 52, 59, 0.04)'
+              }
+            }}
+          >
+            Close
+          </Button>
+          <Button
+            onClick={handleApproveInModal}
+            variant="contained"
+            color="success"
+            sx={{ ml: 1 }}
+            disabled={selectedProduct?.status === 'Approved' || selectedProduct?.status === 'Sold' || selectedProduct?.status === 'Rejected'}
+          >
+            Approve
+          </Button>
+          <Button
+            onClick={handleRejectInModal}
+            variant="contained"
+            color="error"
+            sx={{ ml: 1 }}
+            disabled={selectedProduct?.status === 'Rejected' || selectedProduct?.status === 'Sold'}
+          >
+            Reject
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Reject Confirmation Dialog */}
+      <Dialog
+        open={openRejectDialog}
+        onClose={handleCloseRejectDialog}
+        maxWidth="sm"
+        fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: '12px',
+            padding: '16px'
+          }
+        }}
+      >
+        <DialogTitle sx={{
+          borderBottom: '1px solid #e0e0e0',
+          pb: 2,
+          fontSize: '1.5rem',
+          fontWeight: 600,
+          color: '#dc3545'
+        }}>
+          Reject Product
+        </DialogTitle>
+        <DialogContent sx={{ mt: 2 }}>
+          <Typography variant="body1" sx={{ mb: 2 }}>
+            Are you sure you want to reject this product?
+          </Typography>
+          <Typography variant="subtitle2" sx={{ mb: 1, color: '#666' }}>
+            Product: {selectedProduct?.productName}
+          </Typography>
+          <Typography variant="subtitle2" sx={{ mb: 1, color: '#666' }}>
+            Seller: {selectedProduct?.user}
+          </Typography>
+          <TextField
+            fullWidth
+            multiline
+            rows={4}
+            label="Rejection Feedback"
+            value={rejectFeedback}
+            onChange={(e) => setRejectFeedback(e.target.value)}
+            placeholder="Please provide feedback for rejection..."
+            sx={{ mt: 2 }}
+          />
+        </DialogContent>
+        <DialogActions sx={{
+          borderTop: '1px solid #e0e0e0',
+          pt: 2,
+          px: 3
+        }}>
+          <Button
+            onClick={handleCloseRejectDialog}
+            variant="outlined"
+            sx={{
+              borderColor: '#666',
+              color: '#666',
+              '&:hover': {
+                borderColor: '#444',
+                backgroundColor: 'rgba(0, 0, 0, 0.04)'
+              }
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={() => handleReject(selectedProduct?.productCode)}
+            variant="contained"
+            color="error"
+            sx={{ ml: 1 }}
+            disabled={!rejectFeedback.trim()}
+          >
+            Reject
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       {/* Toast Messages */}
       <ToastManager toasts={toasts} handleClose={(id) => {
-        setToasts(current => 
-          current.map(toast => 
+        setToasts(current =>
+          current.map(toast =>
             toast.id === id ? { ...toast, open: false } : toast
           )
         );

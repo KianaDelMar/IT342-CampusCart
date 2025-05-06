@@ -13,11 +13,11 @@ import {
 const ViewProductAdmin = ({ open, onClose, product }) => {
   if (!product || !product.product) return null;
 
-  const { product: productDetails, sellerUsername } = product;
+  const { product: productDetails, userUsername } = product;
 
   return (
-    <Dialog 
-      open={open} 
+    <Dialog
+      open={open}
       onClose={onClose}
       maxWidth="md"
       fullWidth
@@ -28,7 +28,7 @@ const ViewProductAdmin = ({ open, onClose, product }) => {
         }
       }}
     >
-      <DialogTitle sx={{ 
+      <DialogTitle sx={{
         borderBottom: '1px solid #e0e0e0',
         pb: 2,
         fontSize: '1.5rem',
@@ -40,7 +40,7 @@ const ViewProductAdmin = ({ open, onClose, product }) => {
         <Grid container spacing={3} sx={{ height: '100%' }}>
           {/* Product Image */}
           <Grid item xs={12} md={4} sx={{ height: '100%' }}>
-            <Box sx={{ 
+            <Box sx={{
               width: '100%',
               height: '100%',
               borderRadius: '8px',
@@ -48,7 +48,7 @@ const ViewProductAdmin = ({ open, onClose, product }) => {
               border: '1px solid #e0e0e0'
             }}>
               {productDetails.imagePath ? (
-                <img 
+                <img
                   src={`http://localhost:8080/${productDetails.imagePath}`}
                   alt={productDetails.name}
                   style={{
@@ -58,7 +58,7 @@ const ViewProductAdmin = ({ open, onClose, product }) => {
                   }}
                 />
               ) : (
-                <Box sx={{ 
+                <Box sx={{
                   width: '100%',
                   height: '100%',
                   display: 'flex',
@@ -76,8 +76,8 @@ const ViewProductAdmin = ({ open, onClose, product }) => {
 
           {/* Product Details */}
           <Grid item xs={12} md={8} sx={{ height: '270px' }}>
-            <Box sx={{ 
-              p: 2, 
+            <Box sx={{
+              p: 2,
               bgcolor: '#f8f9fa',
               borderRadius: '8px',
               border: '1px solid #e0e0e0',
@@ -88,10 +88,16 @@ const ViewProductAdmin = ({ open, onClose, product }) => {
               <Typography variant="h6" sx={{ color: '#1a237e', mb: 1 }}>
                 {productDetails.name}
               </Typography>
+              <Typography variant="subtitle2" color="text.secondary">
+                Description
+              </Typography>
+              <Typography variant="body1" sx={{ mb: 2, fontWeight: 500 }}>
+                {productDetails.pdtDescription}
+              </Typography>
               <Typography variant="h6" sx={{ color: '#1a237e', mb: 3 }}>
                 ₱{productDetails.buyPrice.toLocaleString()}
               </Typography>
-              
+
               <Grid container spacing={3}>
                 <Grid item xs={6}>
                   <Typography variant="subtitle2" color="text.secondary">
@@ -101,7 +107,7 @@ const ViewProductAdmin = ({ open, onClose, product }) => {
                     {productDetails.code}
                   </Typography>
                 </Grid>
-                
+
                 <Grid item xs={6}>
                   <Typography variant="subtitle2" color="text.secondary">
                     Category
@@ -110,16 +116,16 @@ const ViewProductAdmin = ({ open, onClose, product }) => {
                     {productDetails.category}
                   </Typography>
                 </Grid>
-                
+
                 <Grid item xs={6}>
                   <Typography variant="subtitle2" color="text.secondary">
                     Seller
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, fontWeight: 500 }}>
-                    {sellerUsername}
+                    {userUsername}
                   </Typography>
                 </Grid>
-                
+
                 <Grid item xs={6}>
                   <Typography variant="subtitle2" color="text.secondary">
                     Stock
@@ -134,7 +140,7 @@ const ViewProductAdmin = ({ open, onClose, product }) => {
         </Grid>
       </DialogContent>
       <DialogActions>
-        <Button 
+        <Button
           onClick={onClose}
           variant="contained"
           sx={{

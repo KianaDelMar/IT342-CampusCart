@@ -5,6 +5,7 @@ import axios from 'axios';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { styled } from '@mui/system';
 import api from '../../config/axiosConfig';
+import CircularProgress from '@mui/material/CircularProgress';
 
 const Search = styled('div')(({ theme }) => ({
     position: 'relative',
@@ -77,7 +78,10 @@ const BrowsePage = () => {
     const loggedInUser = sessionStorage.getItem('username');
 
     const handleCardClick = (code) => {
-        navigate(`product/${code}`);
+        if (loggedInUser && loggedInUser !== code.userUsername) {
+            navigate(`/message/${code.userUsername}`);
+        }
+        navigate(`product/${code.code}`);
     };
 
     const handleFilterClick = (event) => {
@@ -221,8 +225,27 @@ const BrowsePage = () => {
         }
     }, [searchTerm, allProducts, filters]);
 
-    if (loading) return <div>Loading...</div>;
-
+    if (loading) {
+        return (
+          <Box
+            sx={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              width: '100vw',
+              height: '100vh',
+              bgcolor: 'rgba(255,255,255,0.7)',
+              zIndex: 9999,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <CircularProgress color="secondary" />
+          </Box>
+        );
+      }
+      
     return (
         <Container maxWidth="xl" sx={{
             py: 3,
@@ -428,7 +451,7 @@ const BrowsePage = () => {
                         filteredProducts.map((product) => (
                             <Grid item xs={12} sm={6} md={4} lg={4} key={product.code}>
                                 <Card
-                                    onClick={() => handleCardClick(product.code)}
+                                    onClick={() => handleCardClick(product)}
                                     sx={{
                                         width: '100%',
                                         height: '400px',

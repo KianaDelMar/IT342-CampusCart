@@ -5,6 +5,7 @@ import axios from 'axios';
 import ToastManager from '../../components/ToastManager';
 import toast from 'react-hot-toast';
 import api from '../../config/axiosConfig';
+import { useLoading } from '../../contexts/LoadingContext';
 
 const AdminSettings = () => {
   const [username, setUsername] = useState(sessionStorage.getItem('userName') || '');
@@ -23,6 +24,7 @@ const AdminSettings = () => {
   const [openModal, setOpenModal] = useState(false);
   const [openConfirmUpdate, setOpenConfirmUpdate] = useState(false);
   const [openConfirmDelete, setOpenConfirmDelete] = useState(false);
+  const { setLoading } = useLoading();
 
   const toggleEditMode = () => {
     setEditMode((prev) => !prev);
@@ -65,6 +67,7 @@ const AdminSettings = () => {
   };
 
   const handleUploadProfileImage = async () => {
+    setLoading(true);
     if (!profileImage) {
       showToast('No profile image selected.', 'warning');
       return;
@@ -86,10 +89,13 @@ const AdminSettings = () => {
     } catch (error) {
       console.error('Error uploading profile photo: ', error);
       showToast('Failed to upload profile photo.', 'error');
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleSavePassword = async () => {
+    setLoading(true);
     if (!newPassword) {
         toast.error('New password cannot be empty');
         return;
@@ -120,10 +126,13 @@ const AdminSettings = () => {
         }
     } catch (error) {
         toast.error('Failed to change password');
+    } finally {
+      setLoading(false);
     }
 };
 
   const handleSave = async () => {
+    setLoading(true);
     try {
       const updatedData = { firstName, lastName, email, contactNo };
       const username = sessionStorage.getItem('username');
@@ -141,10 +150,13 @@ const AdminSettings = () => {
     } catch (error) {
       console.error('Error updating user data:', error);
       showToast('Failed to update admin record.', 'error');
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleDeleteAccount = async () => {
+    setLoading(true);
     const username = sessionStorage.getItem('username');
     try {
       const response = await api.delete(`/admin/deleteAdminRecord/${username}`);
@@ -159,6 +171,8 @@ const AdminSettings = () => {
     } catch (error) {
       console.error('Error deleting user account:', error);
       showToast('Failed to delete account.', 'error');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -173,6 +187,7 @@ const AdminSettings = () => {
   };
 
   useEffect(() => {
+    setLoading(true);
     const fetchProfileData = async () => {
         const username = sessionStorage.getItem('username');
         try {
@@ -193,6 +208,8 @@ const AdminSettings = () => {
             }
         } catch (error) {
             console.error('Error fetching user data:', error);
+        } finally {
+          setLoading(false);
         }
     };
 
