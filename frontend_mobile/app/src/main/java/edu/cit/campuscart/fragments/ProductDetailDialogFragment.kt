@@ -13,10 +13,11 @@ import androidx.appcompat.app.AppCompatActivity.MODE_PRIVATE
 import androidx.fragment.app.DialogFragment
 import com.sendbird.android.channel.GroupChannel
 import com.sendbird.android.params.GroupChannelCreateParams
+import com.sendbird.android.params.GroupChannelListQueryParams
 import com.squareup.picasso.Picasso
 import edu.cit.campuscart.R
 import edu.cit.campuscart.models.Products
-import edu.cit.campuscart.pages.MessagePage
+import edu.cit.campuscart.pages.ChatActivity
 import edu.cit.campuscart.utils.Constants
 import edu.cit.campuscart.utils.PreferenceUtils
 
@@ -49,29 +50,45 @@ class ProductDetailDialogFragment : DialogFragment() {
         val chatButton = view.findViewById<LinearLayout>(R.id.btnChat)
 
         chatButton.setOnClickListener {
-            val sharedPref = requireContext().getSharedPreferences("CampusCartPrefs", android.content.Context.MODE_PRIVATE)
-            val currentUserId = sharedPref.getString("loggedInUsername", null) ?: ""
+            val sharedPref = requireContext().getSharedPreferences("CampusCartPrefs", MODE_PRIVATE)
+            val currentUserId = sharedPref.getString("loggedInUsername", null) ?: return@setOnClickListener
             val sellerId = product?.userUsername ?: return@setOnClickListener
 
-            val params = GroupChannelCreateParams().apply {
-                userIds = listOf(currentUserId, sellerId)
-                isDistinct = true
-            }
+            val query = GroupChannel.createMyGroupChannelListQuery(
+                GroupChannelListQueryParams().apply {
+                    userIdsExactFilter = listOf(currentUserId, sellerId)
+                    includeEmpty = true
+                    limit = 1
+                }
+            )
 
-            GroupChannel.createChannel(params) { channel, e ->
+            query.next { channels, e ->
                 if (e != null) {
-                    Log.e("SendBird", "Channel creation failed: ${e.message}")
+                    Log.e("SendBird", "Channel query failed: ${e.message}")
+                    return@next
+                }
+
+                if (!channels.isNullOrEmpty()) {
+                    // Existing channel found
+                    val existingChannel = channels[0]
+                    goToChatActivity(existingChannel.url, sellerId)
                 } else {
-                    val intent = Intent(requireContext(), MessagePage::class.java).apply {
-                        putExtra("channel_url", channel?.url)
-                        putExtra("otherUserId", sellerId)
-                        putExtra("otherUserPhoto", product.userProfileImagePath) // NEW
+                    // No existing channel, create new
+                    val params = GroupChannelCreateParams().apply {
+                        userIds = listOf(currentUserId, sellerId)
+                        isDistinct = true
                     }
-                    startActivity(intent)
+
+                    GroupChannel.createChannel(params) { newChannel, err ->
+                        if (err != null) {
+                            Log.e("SendBird", "Channel creation failed: ${err.message}")
+                        } else {
+                            goToChatActivity(newChannel?.url, sellerId)
+                        }
+                    }
                 }
             }
         }
-
 
         val likeButton = view.findViewById<LinearLayout>(R.id.btnLike)
         val likeIcon = view.findViewById<ImageView>(R.id.imageLikeIcon)
@@ -120,4 +137,12 @@ class ProductDetailDialogFragment : DialogFragment() {
             dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
             return dialog
         }
+
+    private fun goToChatActivity(channelUrl: String?, recipientUsername: String) {
+        val intent = Intent(requireContext(), ChatActivity::class.java).apply {
+            putExtra("channel_url", channelUrl)
+            putExtra("otherUserId", recipientUsername)
+        }
+        startActivity(intent)
+    }
 }

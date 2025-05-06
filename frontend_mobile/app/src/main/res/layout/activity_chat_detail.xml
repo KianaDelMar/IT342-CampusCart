@@ -11,7 +11,6 @@
         android:layout_height="0dp"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="20dp"
-        android:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@id/messageInputContainer" />
 
     <!-- Message Input Section -->

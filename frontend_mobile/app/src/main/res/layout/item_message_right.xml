@@ -5,10 +5,10 @@
     android:padding="8dp">
 
     <TextView
-        android:id="@+id/text_message_body"
+        android:id="@+id/textRight"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/bg_message_sent"
-        android:padding="10dp"
-        android:textColor="#FFFFFF"/>
+        android:background="@drawable/message_right_bg"
+        android:textColor="#fff"
+        android:padding="10dp" />
 </LinearLayout>
