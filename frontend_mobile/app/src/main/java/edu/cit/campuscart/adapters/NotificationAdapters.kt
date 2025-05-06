@@ -8,12 +8,23 @@ import androidx.recyclerview.widget.RecyclerView
 import edu.cit.campuscart.R
 import edu.cit.campuscart.models.Notification
 
-class NotificationAdapter(private val notifications: List<Notification>) :
-    RecyclerView.Adapter<NotificationAdapter.NotificationViewHolder>() {
+class NotificationAdapter(
+    private val notifications: MutableList<Notification>,
+    private val onNotificationClick: (Notification, Int) -> Unit
+) : RecyclerView.Adapter<NotificationAdapter.NotificationViewHolder>() {
 
     inner class NotificationViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val messageText: TextView = view.findViewById(R.id.messageText)
         val timestampText: TextView = view.findViewById(R.id.timestampText)
+
+        init {
+            view.setOnClickListener {
+                val position = adapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    onNotificationClick(notifications[position], position)
+                }
+            }
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NotificationViewHolder {

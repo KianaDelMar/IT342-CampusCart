@@ -81,18 +81,18 @@ class ProfilePage : BaseActivity() {
 
                             // Set user details
                             txtUsername.text = user.username
-                            phone.text = user.contactNo
+                            phone.text = user.contactNo ?: "N/A"
                             txtAddress.text = user.address
 
                             // Load profile picture using Glide (or Picasso)
-                            if (user.profilePhoto.isNotEmpty()) {
+                            if (!user.profilePhoto.isNullOrEmpty()) {
                                 Glide.with(this@ProfilePage)
                                     .load("${Constants.BASE_URL}uploads/${user.profilePhoto}")
                                     .placeholder(R.drawable.defaultphoto)
                                     .error(R.drawable.defaultphoto)
                                     .into(profilepic)
                             } else {
-                                profilepic.setImageResource(R.drawable.defaultphoto) // Set default image
+                                profilepic.setImageResource(R.drawable.defaultphoto)
                             }
 
                             Log.d("ProfilePage", "Setting texts: ${user.username}, ${user.contactNo}, ${user.address}")
@@ -134,11 +134,11 @@ class ProfilePage : BaseActivity() {
         homeButton.setOnClickListener {
             startActivity(Intent(this@ProfilePage, HomePage::class.java))
         }
-        /*
+
         val messageButton = findViewById<ImageButton>(R.id.btnMessage)
         messageButton.setOnClickListener {
             startActivity(Intent(this@ProfilePage, MessagePage::class.java))
-        }*/
+        }
 
         val likeButton = findViewById<ImageButton>(R.id.btnLikes)
         likeButton.setOnClickListener {

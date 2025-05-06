@@ -32,14 +32,14 @@ class ProductAdapters(
         holder.userUsername.text = seller ?: "Unknown Seller"
 
         Picasso.get()
-            .load("${Constants.BASE_URL}/${product.imagePath}")
+            .load("${Constants.BASE_URL}${product.imagePath}")
             .placeholder(R.drawable.defaultimage)
             .error(R.drawable.defaultimage)
             .into(holder.productImage)
 
         if (!product.userProfileImagePath.isNullOrBlank()) {
             Picasso.get()
-                .load("${Constants.BASE_URL}/uploads/${product.userProfileImagePath}")
+                .load("${Constants.BASE_URL}uploads/${product.userProfileImagePath}")
                 .placeholder(R.drawable.defaultphoto)
                 .error(R.drawable.defaultphoto)
                 .into(holder.sellerPhoto)

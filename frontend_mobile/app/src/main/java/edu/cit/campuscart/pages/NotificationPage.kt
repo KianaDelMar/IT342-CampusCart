@@ -15,6 +15,7 @@ import edu.cit.campuscart.BaseActivity
 import edu.cit.campuscart.R
 import edu.cit.campuscart.adapters.NotificationAdapter
 import edu.cit.campuscart.api.APIService
+import edu.cit.campuscart.fragments.NotificationDialogFragment
 import edu.cit.campuscart.models.Notification
 import edu.cit.campuscart.utils.Constants
 import retrofit2.*
@@ -54,7 +55,19 @@ class NotificationPage : BaseActivity() {
 
         if (username.isNotEmpty() && authToken.isNotEmpty()) {
             loadNotificationsFromPrefs()
-            adapter = NotificationAdapter(notificationStack)
+            adapter = NotificationAdapter(notificationStack) { notification, position ->
+                notification.isRead = true
+
+                NotificationDialogFragment(
+                    notification,
+                    onDelete = {
+                        notificationStack.removeAt(position)
+                        adapter.notifyItemRemoved(position)
+                        saveNotificationsToPrefs()
+                    }
+                ).show(supportFragmentManager, "NotificationDialog")
+            }
+
             recyclerView.adapter = adapter
             fetchNotifications(username, authToken)
             startAutoRefresh()
@@ -78,9 +91,7 @@ class NotificationPage : BaseActivity() {
     }
 
     private fun setupNavigationButtons() {
-        findViewById<ImageButton>(R.id.btnNotifs).setOnClickListener {
-            // Already in NotificationPage
-        }
+        findViewById<ImageButton>(R.id.btnNotifs).setOnClickListener { }
         findViewById<ImageButton>(R.id.btnHome).setOnClickListener {
             startActivity(Intent(this, HomePage::class.java))
         }
@@ -92,6 +103,9 @@ class NotificationPage : BaseActivity() {
         }
         findViewById<ImageButton>(R.id.btnProfile).setOnClickListener {
             startActivity(Intent(this, ProfilePage::class.java))
+        }
+        findViewById<ImageButton>(R.id.btnMessage).setOnClickListener {
+            startActivity(Intent(this, MessagePage::class.java))
         }
     }
 
@@ -105,7 +119,6 @@ class NotificationPage : BaseActivity() {
                     val newNotifications = response.body() ?: emptyList()
                     val existingIds = newNotifications.map { it.id }
 
-                    // Remove notifications for products that have gone back to pending
                     val iterator = notificationStack.iterator()
                     var removedPending = false
                     while (iterator.hasNext()) {
@@ -116,7 +129,6 @@ class NotificationPage : BaseActivity() {
                         }
                     }
 
-                    // Add new notifications that don't already exist
                     var addedNew = false
                     for (notification in newNotifications.reversed()) {
                         if (notificationStack.none { it.id == notification.id }) {
@@ -171,5 +183,10 @@ class NotificationPage : BaseActivity() {
 
     private fun stopAutoRefresh() {
         handler.removeCallbacksAndMessages(null)
+    }
+
+    private fun extractProductIdFromMessage(message: String): Long? {
+        val regex = Regex("""productId=(\d+)""")
+        return regex.find(message)?.groupValues?.get(1)?.toLongOrNull()
     }
 }

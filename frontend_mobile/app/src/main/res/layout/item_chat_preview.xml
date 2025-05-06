@@ -1,0 +1,33 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="12dp"
+    android:background="?selectableItemBackground">
+
+    <TextView
+        android:id="@+id/usernameText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Username"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:textColor="#000"/>
+
+    <TextView
+        android:id="@+id/messageTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Jan 1, 12:00 PM"
+        android:textSize="12sp"
+        android:textColor="#666"/>
+
+    <TextView
+        android:id="@+id/messagePreview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Last message preview goes here..."
+        android:textSize="14sp"
+        android:textColor="#444"/>
+</LinearLayout>

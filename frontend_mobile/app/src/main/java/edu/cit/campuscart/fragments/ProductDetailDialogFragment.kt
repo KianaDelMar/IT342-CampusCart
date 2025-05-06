@@ -2,15 +2,21 @@ package edu.cit.campuscart.fragments
 
 import android.app.AlertDialog
 import android.app.Dialog
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity.MODE_PRIVATE
 import androidx.fragment.app.DialogFragment
+import com.sendbird.android.channel.GroupChannel
+import com.sendbird.android.params.GroupChannelCreateParams
 import com.squareup.picasso.Picasso
 import edu.cit.campuscart.R
 import edu.cit.campuscart.models.Products
+import edu.cit.campuscart.pages.MessagePage
 import edu.cit.campuscart.utils.Constants
 import edu.cit.campuscart.utils.PreferenceUtils
 
@@ -22,7 +28,7 @@ class ProductDetailDialogFragment : DialogFragment() {
         fun newInstance(product: Products): ProductDetailDialogFragment {
             val fragment = ProductDetailDialogFragment()
             val args = Bundle()
-            args.putSerializable(ARG_PRODUCT, product) // Make sure Products implements Serializable
+            args.putSerializable(ARG_PRODUCT, product)
             fragment.arguments = args
             return fragment
         }
@@ -40,6 +46,32 @@ class ProductDetailDialogFragment : DialogFragment() {
         val productPrice = view.findViewById<TextView>(R.id.product_price)
         val sellerPhoto = view.findViewById<ImageView>(R.id.seller_photo)
         val sellerUsername = view.findViewById<TextView>(R.id.seller_username)
+        val chatButton = view.findViewById<LinearLayout>(R.id.btnChat)
+
+        chatButton.setOnClickListener {
+            val sharedPref = requireContext().getSharedPreferences("CampusCartPrefs", android.content.Context.MODE_PRIVATE)
+            val currentUserId = sharedPref.getString("loggedInUsername", null) ?: ""
+            val sellerId = product?.userUsername ?: return@setOnClickListener
+
+            val params = GroupChannelCreateParams().apply {
+                userIds = listOf(currentUserId, sellerId)
+                isDistinct = true
+            }
+
+            GroupChannel.createChannel(params) { channel, e ->
+                if (e != null) {
+                    Log.e("SendBird", "Channel creation failed: ${e.message}")
+                } else {
+                    val intent = Intent(requireContext(), MessagePage::class.java).apply {
+                        putExtra("channel_url", channel?.url)
+                        putExtra("otherUserId", sellerId)
+                        putExtra("otherUserPhoto", product.userProfileImagePath) // NEW
+                    }
+                    startActivity(intent)
+                }
+            }
+        }
+
 
         val likeButton = view.findViewById<LinearLayout>(R.id.btnLike)
         val likeIcon = view.findViewById<ImageView>(R.id.imageLikeIcon)
@@ -51,18 +83,17 @@ class ProductDetailDialogFragment : DialogFragment() {
             sellerUsername.text = it.userUsername ?: "Unknown Seller"
 
             Picasso.get()
-                .load("${Constants.BASE_URL}/${it.imagePath}")
+                .load("${Constants.BASE_URL}${it.imagePath}")
                 .placeholder(R.drawable.defaultimage)
                 .error(R.drawable.defaultimage)
                 .into(productImage)
 
             Picasso.get()
-                .load("${Constants.BASE_URL}/uploads/${it.userProfileImagePath}")
+                .load("${Constants.BASE_URL}uploads/${it.userProfileImagePath}")
                 .placeholder(R.drawable.defaultphoto)
                 .error(R.drawable.defaultphoto)
                 .into(sellerPhoto)
 
-            // ✅ Set initial heart icon based on like status
             if (likedProducts.contains(it.name)) {
                 likeIcon.setImageResource(R.drawable.full_heart)
             } else {
@@ -82,10 +113,10 @@ class ProductDetailDialogFragment : DialogFragment() {
 
             val dialog = AlertDialog.Builder(requireContext())
                 .setView(view)
-                .setCancelable(true) // Allow dialog to be cancelled by tapping outside
+                .setCancelable(true)
                 .create()
 
-            dialog.setCanceledOnTouchOutside(true) // Close dialog when tapping outside
+            dialog.setCanceledOnTouchOutside(true)
             dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
             return dialog
         }

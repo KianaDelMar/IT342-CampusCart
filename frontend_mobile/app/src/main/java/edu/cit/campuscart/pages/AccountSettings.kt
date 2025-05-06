@@ -96,11 +96,11 @@ class AccountSettings : BaseActivity() {
         homeButton.setOnClickListener {
             startActivity(Intent(this@AccountSettings, HomePage::class.java))
         }
-        /*
+
         val messageButton = findViewById<ImageButton>(R.id.btnMessage)
         messageButton.setOnClickListener {
-            startActivity(Intent(this@ProfilePage, MessagePage::class.java))
-        }*/
+            startActivity(Intent(this@AccountSettings, MessagePage::class.java))
+        }
 
         val likeButton = findViewById<ImageButton>(R.id.btnLikes)
         likeButton.setOnClickListener {
@@ -214,7 +214,7 @@ class AccountSettings : BaseActivity() {
                             textEmail.text = it.email
                             textContact.text = it.contactNo
 
-                            if (sellerData.profilePhoto.isNotEmpty()) {
+                            if (!sellerData.profilePhoto.isNullOrEmpty()) {
                                 Glide.with(this@AccountSettings)
                                     .load("${Constants.BASE_URL}uploads/${sellerData.profilePhoto}")
                                     .placeholder(R.drawable.defaultphoto)
