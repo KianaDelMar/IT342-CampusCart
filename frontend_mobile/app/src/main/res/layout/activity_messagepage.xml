@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background_gradient">
+
+    <!-- Top Section -->
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="5dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="200dp"
+            android:layout_height="70dp"
+            android:layout_gravity="left"
+            app:srcCompat="@drawable/logo" />
+
+        <!-- Profile pictures (horizontal list) -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/profileRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:paddingStart="10dp"
+            android:paddingBottom="8dp"
+            android:orientation="horizontal"
+            android:scrollbars="horizontal"
+            tools:listitem="@layout/item_profile_pic"
+            android:clipToPadding="false" />
+    </LinearLayout>
+
+    <!-- Content Section -->
+    <LinearLayout
+        android:id="@+id/contentSection"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#FED700"
+        android:orientation="vertical"
+        android:padding="5dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/linearLayout"
+        android:gravity="center"
+        android:layout_gravity="center">
+
+        <!-- To: Seller Username -->
+        <TextView
+            android:id="@+id/toUsernameTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="To: SellerUsername"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:textColor="#89343B"
+            android:paddingStart="12dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="8dp" />
+    </LinearLayout>
+
+    <!-- Swipe Refresh & Messages -->
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshLayout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/contentSection"
+        app:layout_constraintBottom_toTopOf="@id/bottomNavBar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/notificationRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#FFFFFF"
+            android:padding="8dp" />
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    <LinearLayout
+        android:id="@+id/messageInputContainer"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="8dp"
+        android:background="#EAEAEA"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/bottomNavBar">
+
+        <EditText
+            android:id="@+id/messageInput"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="Type a message"
+            android:padding="10dp"
+            android:textColor="#000000"
+            android:textSize="16sp"/>
+
+        <ImageButton
+            android:id="@+id/sendButton"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:src="@drawable/sendbutton"
+            android:background="@null"
+            android:contentDescription="Send"
+            android:scaleType="fitCenter"/>
+    </LinearLayout>
+
+    <!-- Bottom Navigation Bar -->
+    <LinearLayout
+        android:id="@+id/bottomNavBar"
+        android:layout_width="match_parent"
+        android:layout_height="75dp"
+        android:background="#FED700"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:padding="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- Home -->
+        <LinearLayout
+            android:id="@+id/Home"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <ImageButton
+                android:id="@+id/btnHome"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:src="@drawable/home"
+                android:contentDescription="@string/home"
+                android:background="@null"
+                android:scaleType="fitCenter"
+                android:focusable="true"
+                android:clickable="true"/>
+
+            <TextView
+                android:id="@+id/txtHome"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/home"
+                android:textSize="13sp"
+                android:gravity="center"
+                android:textColor="#89343B"
+                android:textStyle="bold"/>
+        </LinearLayout>
+
+        <!-- Browse -->
+        <LinearLayout
+            android:id="@+id/Browse"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <ImageButton
+                android:id="@+id/btnBrowse"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:background="@null"
+                android:scaleType="fitCenter"
+                android:src="@drawable/search"
+                android:contentDescription="@string/browse"
+                android:focusable="true"
+                android:clickable="true"/>
+
+            <TextView
+                android:id="@+id/txtBrowse"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/browse"
+                android:textSize="13sp"
+                android:gravity="center"
+                android:textColor="#89343B"
+                android:textStyle="bold"/>
+        </LinearLayout>
+
+        <!-- Likes -->
+        <LinearLayout
+            android:id="@+id/Likes"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <ImageButton
+                android:id="@+id/btnLikes"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:background="@null"
+                android:scaleType="fitCenter"
+                android:src="@drawable/heart"
+                android:contentDescription="@string/likes"
+                android:focusable="true"
+                android:clickable="true"/>
+
+            <TextView
+                android:id="@+id/txtLikes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/likes"
+                android:textSize="13sp"
+                android:gravity="center"
+                android:textColor="#89343B"
+                android:textStyle="bold"/>
+        </LinearLayout>
+
+        <!-- Notifications -->
+        <LinearLayout
+            android:id="@+id/Notifications"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <ImageButton
+                android:id="@+id/btnNotifs"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:background="@null"
+                android:scaleType="fitCenter"
+                android:src="@drawable/notifications"
+                android:contentDescription="@string/notifications"
+                android:focusable="true"
+                android:clickable="true"/>
+
+            <TextView
+                android:id="@+id/txtNotifs"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/notify"
+                android:textSize="13sp"
+                android:gravity="center"
+                android:textColor="#89343B"
+                android:textStyle="bold"/>
+        </LinearLayout>
+
+        <!-- Messages -->
+        <LinearLayout
+            android:id="@+id/Message"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <ImageButton
+                android:id="@+id/btnMessage"
+                android:layout_width="36dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:background="@null"
+                android:scaleType="fitCenter"
+                android:contentDescription="@string/messages"
+                android:src="@drawable/mail"
+                android:focusable="true"
+                android:clickable="true"/>
+
+            <TextView
+                android:id="@+id/txtMessage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/message2"
+                android:textSize="13sp"
+                android:gravity="center"
+                android:textColor="#89343B"
+                android:textStyle="bold"/>
+        </LinearLayout>
+
+        <!-- Profile -->
+        <LinearLayout
+            android:id="@+id/Profile"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <ImageButton
+                android:id="@+id/btnProfile"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:background="@null"
+                android:scaleType="fitCenter"
+                android:src="@drawable/profile"
+                android:contentDescription="@string/profile"
+                android:focusable="true"
+                android:clickable="true"/>
+
+            <TextView
+                android:id="@+id/txtProfile"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/profile"
+                android:textSize="13sp"
+                android:gravity="center"
+                android:textColor="#89343B"
+                android:textStyle="bold"/>
+        </LinearLayout>
+    </LinearLayout>
+    <FrameLayout
+        android:id="@+id/loadingOverlay"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@android:color/transparent"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </FrameLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

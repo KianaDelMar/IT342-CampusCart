@@ -90,6 +90,7 @@ dependencies {
     annotationProcessor ("com.github.bumptech.glide:compiler:4.12.0")
     implementation ("com.google.android.material:material:1.11.0")
     implementation ("com.squareup.okhttp3:logging-interceptor:4.12.0")
+    implementation("com.sendbird.sdk:sendbird-chat:4.24.2")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

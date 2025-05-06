@@ -16,7 +16,6 @@ import edu.cit.campuscart.R
 import edu.cit.campuscart.adapters.ProductAdapters
 import edu.cit.campuscart.forms.AddProductDialogFragment
 import edu.cit.campuscart.fragments.ProductDetailDialogFragment
-import edu.cit.campuscart.fragments.SellerProductDetail
 import edu.cit.campuscart.models.Notification
 import edu.cit.campuscart.models.Products
 import edu.cit.campuscart.utils.RetrofitClient
@@ -84,10 +83,10 @@ class HomePage : BaseActivity() {
             startActivity(Intent(this@HomePage, NotificationPage::class.java))
         }
 
-        /*val messageButton = findViewById<ImageButton>(R.id.btnMessage)
+        val messageButton = findViewById<ImageButton>(R.id.btnMessage)
         messageButton.setOnClickListener {
             startActivity(Intent(this@HomePage, MessagePage::class.java))
-        }*/
+        }
 
         val profileButton = findViewById<ImageButton>(R.id.btnProfile)
         profileButton.setOnClickListener {

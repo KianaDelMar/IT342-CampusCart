@@ -14,7 +14,6 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.PopupWindow
-import android.widget.ProgressBar
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
@@ -146,11 +145,11 @@ class BrowsePage : BaseActivity() {
         profileButton.setOnClickListener {
             startActivity(Intent(this@BrowsePage, ProfilePage::class.java))
         }
-        /*
+
         val messageButton = findViewById<ImageButton>(R.id.btnMessage)
         messageButton.setOnClickListener {
             startActivity(Intent(this@BrowsePage, MessagePage::class.java))
-        }*/
+        }
 
     }
 

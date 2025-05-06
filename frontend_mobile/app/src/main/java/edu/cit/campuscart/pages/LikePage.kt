@@ -74,10 +74,10 @@ class LikePage : BaseActivity() {
             startActivity(Intent(this@LikePage, HomePage::class.java))
         }
 
-        /*val messageButton = findViewById<ImageButton>(R.id.btnMessage)
+        val messageButton = findViewById<ImageButton>(R.id.btnMessage)
         messageButton.setOnClickListener {
             startActivity(Intent(this@LikePage, MessagePage::class.java))
-        }*/
+        }
 
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerViewLikes)
         val adapter = ProductAdapters(mutableListOf(), ::onProductClicked)

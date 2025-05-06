@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!-- Messages List -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="20dp"
+        android:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/messageInputContainer" />
+
+    <!-- Message Input Section -->
+    <LinearLayout
+        android:id="@+id/messageInputContainer"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+        android:background="#EAEAEA"
+        android:orientation="horizontal"
+        android:padding="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <EditText
+            android:id="@+id/messageInput"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="Type a message"
+            android:textColor="#000000"
+            android:textSize="16sp"/>
+
+        <ImageButton
+            android:id="@+id/sendButton"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:src="@drawable/sendbutton"
+            android:background="@null"
+            android:contentDescription="Send"
+            android:scaleType="fitCenter"/>
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -7,6 +7,6 @@ data class Notification(
     @Expose val id: Long,
     @Expose val message: String,
     @Expose val type: String,
-    @Expose val isRead: Boolean,
+    @Expose var isRead: Boolean,
     @Expose val timestamp: String
 )
