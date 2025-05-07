@@ -31,6 +31,7 @@ const UserProfile = () => {
 
     useEffect(() => {
         const fetchProducts = async () => {
+            setLoading(true);
             try {
                 const response = await api.get(`/product/getProductsByUser/${loggedInUser}`);
                 setProducts(response.data);

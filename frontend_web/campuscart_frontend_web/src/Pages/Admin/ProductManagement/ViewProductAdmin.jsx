@@ -125,15 +125,6 @@ const ViewProductAdmin = ({ open, onClose, product }) => {
                     {userUsername}
                   </Typography>
                 </Grid>
-
-                <Grid item xs={6}>
-                  <Typography variant="subtitle2" color="text.secondary">
-                    Stock
-                  </Typography>
-                  <Typography variant="body1" sx={{ mb: 2, fontWeight: 500 }}>
-                    {productDetails.qtyInStock}
-                  </Typography>
-                </Grid>
               </Grid>
             </Box>
           </Grid>
