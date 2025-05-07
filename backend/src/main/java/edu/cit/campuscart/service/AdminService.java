@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
-
-import javax.naming.NameAlreadyBoundException;
 import javax.naming.NameNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -107,11 +105,6 @@ public class AdminService {
 	}
     
     // ========================= Product Management =========================
-
-    // View all products
-    public List<ProductEntity> viewAllProducts() {
-        return productRepo.findAll();
-    }
     
     // Retrieve all products with corresponding user username
     public List<Map<String, Object>> getAllProductsWithUsers() {
@@ -135,12 +128,6 @@ public class AdminService {
     @Transactional
     public int deleteProductsByCodes(List<Integer> productCodes) {
         return productRepo.deleteByCodeIn(productCodes);
-    }
-    
-    // Get product by code
-    public ProductEntity getProductByCode(int code) {
-        return productRepo.findById(code)
-                .orElseThrow(() -> new NoSuchElementException("Product with code " + code + " not found"));
     }
     
     // Update an existing product
@@ -168,20 +155,6 @@ public class AdminService {
     }
     
     // ========================= User Management =========================
-    
-    // Admin creates a new user
-    public UserEntity createUser(UserEntity user) throws NameAlreadyBoundException {
-        if (userRepo.existsById(user.getUsername())) {
-            throw new NameAlreadyBoundException("Username " + user.getUsername() + " is already taken. Input another username.");
-        }
-
-        if (userRepo.existsByEmail(user.getEmail())) {
-            throw new NameAlreadyBoundException("Email already exists");
-        }
-
-        return userRepo.save(user);
-    }
-    
     // Admin gets all users
     public List<UserEntity> getAllUsers() {
         return userRepo.findAll();

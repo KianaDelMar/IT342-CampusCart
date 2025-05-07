@@ -26,50 +26,7 @@ const MarketplaceHeader = () => {
   const { setLoading } = useLoading();
   const [profilePhoto, setProfilePhoto] = useState(''); 
   const [notificationAnchor, setNotificationAnchor] = useState(null);
-  const [notifications, setNotifications] = useState([
-    { 
-      id: 1, 
-      title: 'New Message',
-      content: 'You have a new message from seller',
-      time: '2 minutes ago', 
-      read: false 
-    },
-    { 
-      id: 2, 
-      title: 'Product Liked',
-      content: 'Someone liked your iPhone 15 Pro',
-      time: '1 hour ago', 
-      read: false 
-    },
-    { 
-      id: 3, 
-      title: 'Product Approved',
-      content: 'Your product "MacBook Pro" has been approved',
-      time: '3 hours ago', 
-      read: true 
-    },
-    { 
-      id: 4, 
-      title: 'New Review',
-      content: 'A buyer left a 5-star review on your Samsung Galaxy S23',
-      time: '5 hours ago', 
-      read: true 
-    },
-    { 
-      id: 5, 
-      title: 'Similar Product',
-      content: 'A similar product to your "iPad Pro" was recently listed',
-      time: '1 day ago', 
-      read: true 
-    },
-    { 
-      id: 6, 
-      title: 'Account Security',
-      content: 'New login detected from Chrome on Windows',
-      time: '2 days ago', 
-      read: true 
-    }
-  ]);
+  const [notifications, setNotifications] = useState([]);
   const [unreadMessageCount, setUnreadMessageCount] = useState(0);
 
   const handleClick = (event) => {
@@ -113,10 +70,50 @@ const MarketplaceHeader = () => {
     setNotificationAnchor(null);
   };
 
-  const handleMarkAllAsRead = () => {
+  const fetchNotifications = async () => {
+    try {
+      const response = await api.get(`/notifications/user/${username}`);
+      if (response.status === 200) {
+        const formattedNotifications = response.data.map(notification => ({
+          id: notification.id,
+          title: notification.type === 'info' ? 'Product Approved' : 'Product Rejected',
+          content: notification.message,
+          time: new Date(notification.timestamp).toLocaleString(),
+          read: notification.isRead
+        }));
+        setNotifications(formattedNotifications);
+      }
+    } catch (error) {
+      console.error('Error fetching notifications:', error);
+    }
+  };
+
+  useEffect(() => {
+    if (username) {
+      fetchNotifications();
+      // Set up polling for new notifications every 30 seconds
+      const interval = setInterval(fetchNotifications, 3600000);
+      return () => clearInterval(interval);
+    }
+  }, [username]);
+
+  const handleMarkAllAsRead = async () => {
     if (notifications.some(n => !n.read)) {
-      setNotifications(prev => prev.map(n => ({ ...n, read: true })));
-      toast.success('All notifications marked as read');
+      try {
+        const token = sessionStorage.getItem('token');
+        // Call backend to mark all notifications as read
+        await api.put(`/notifications/markAllAsRead/${username}`, {}, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        // Update local state
+        setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+        toast.success('All notifications marked as read');
+      } catch (error) {
+        console.error('Error marking notifications as read:', error);
+        toast.error('Failed to mark notifications as read');
+      }
     } else {
       toast.error('No unread notifications');
     }
@@ -161,8 +158,12 @@ const MarketplaceHeader = () => {
 
   useEffect(() => {
     const fetchProfileData = async () => {
+        if (!username) {
+            setLoading(false);
+            return;
+        }
+        
         setLoading(true);
-        const username = sessionStorage.getItem('username');
         try {
             const response = await api.get(`/user/getUserRecord/${username}`);
             if (response.status === 200) {
@@ -175,12 +176,12 @@ const MarketplaceHeader = () => {
         } catch (error) {
             console.error('Error fetching user data:', error);
         } finally {
-          setLoading(false); 
-      }
+            setLoading(false); 
+        }
     };
 
     fetchProfileData();
-}, []);
+}, [username]);
 
   useEffect(() => {
     const fetchUnreadCount = async () => {
@@ -542,7 +543,10 @@ const MarketplaceHeader = () => {
                   key={notification.id}
                   onClick={() => {
                     handleNotificationClose();
-                    navigate('/notifications');
+                    // Navigate to appropriate page based on notification type
+                    if (notification.type === 'info' || notification.type === 'rejection') {
+                      navigate('/profile');
+                    }
                   }}
                   sx={{
                     py: 1.5,
@@ -595,7 +599,7 @@ const MarketplaceHeader = () => {
           <MenuItem
             onClick={() => {
               handleNotificationClose();
-              navigate('/notifications');
+              navigate('/profile');
             }}
             sx={{
               justifyContent: 'center',

@@ -77,7 +77,6 @@ const AddProductForm = ({ open, handleClose }) => {
     const formData = new FormData();
     formData.append('name', productName);
     formData.append('pdtDescription', description);
-    formData.append('qtyInStock', quantity);
     formData.append('buyPrice', price);
     formData.append('category', category);
     formData.append('status', status);
@@ -108,7 +107,6 @@ const AddProductForm = ({ open, handleClose }) => {
       // Reset all form fields
       setProductName('');
       setDescription('');
-      setQuantity('');
       setPrice('');
       setCategory('');
       setConditionType('');
@@ -361,19 +359,6 @@ const AddProductForm = ({ open, handleClose }) => {
             </Box>
 
             <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr' }, gap: 2 }}>
-              {/*
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                type="number"
-                label="Quantity in Stock"
-                value={quantity}
-                onChange={(e) => setQuantity(e.target.value)}
-                InputLabelProps={{ shrink: true }}
-                inputProps={{ min: "1" }}
-              />
-              */}
 
               <TextField
                 margin="normal"
@@ -384,42 +369,7 @@ const AddProductForm = ({ open, handleClose }) => {
                 InputLabelProps={{ shrink: true }}
                 sx={{ bgcolor: '#f5f5f5' }}
               />
-
-              {/*
-              <FormControl fullWidth margin="normal">
-                <InputLabel shrink>Status</InputLabel>
-                <Select
-                  value={status}
-                  onChange={(e) => setStatus(e.target.value)}
-                  required
-                  displayEmpty
-                  sx={{
-                    color: status ? 'inherit' : '#A9A9A9',
-                    '& .MuiSelect-icon': {
-                      color: '#89343b',
-                    },
-                  }}
-                >
-                  <MenuItem value="" disabled>Select status</MenuItem>
-                  <MenuItem value="Pending">Pending</MenuItem>
-                </Select>
-              </FormControl>
-              */}
             </Box>
-
-            {/*
-            <TextField
-              margin="normal"
-              fullWidth
-              label="Username"
-              value={userUsername}
-              InputProps={{
-                readOnly: true,
-              }}
-              InputLabelProps={{ shrink: true }}
-              sx={{ bgcolor: '#f5f5f5' }}
-            /> 
-            */}
 
             <FormControl fullWidth margin="normal" error={imageError}>
               <InputLabel shrink htmlFor="image-upload">Product Image</InputLabel>

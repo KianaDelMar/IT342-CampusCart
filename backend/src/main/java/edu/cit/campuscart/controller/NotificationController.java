@@ -19,4 +19,9 @@ public class NotificationController {
     public List<NotificationEntity> getNotificationsForUser(@PathVariable String username) {
         return notificationService.getNotificationsForUser(username);
     }
+
+    @PutMapping("/markAllAsRead/{username}")
+    public void markAllNotificationsAsRead(@PathVariable String username) {
+        notificationService.markAllNotificationsAsRead(username);
+    }
 }

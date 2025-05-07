@@ -131,16 +131,6 @@ public class AdminController {
         return adminService.getAllAdmins();
     }
   	
-  	@GetMapping("/products")
-    public List<ProductEntity> viewAllProducts() {
-        return adminService.viewAllProducts();
-    }
-
-  	@GetMapping("/products/{code}")
-    public ProductEntity getProductByCode(@PathVariable int code) {
-        return adminService.getProductByCode(code);
-    }
-  	
   	@PutMapping("/editproducts/{code}")
     public ProductEntity updateProduct(@PathVariable int code, @RequestBody ProductEntity updatedProduct) {
         return adminService.updateProduct(code, updatedProduct);
@@ -173,36 +163,6 @@ public class AdminController {
             return new ResponseEntity<>(users, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-    
-    @GetMapping("/users/{username}")
-    public ResponseEntity<?> getUserByUsername(@PathVariable String username) {
-        try {
-        	UserEntity user = adminService.getUserByUsername(username);
-            return new ResponseEntity<>(user, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-        }
-    }
-    
-    @PutMapping("/users/{username}")
-    public ResponseEntity<?> updateUser(@PathVariable String username, @RequestBody UserEntity updatedDetails) {
-        try {
-        	UserEntity updatedUser = adminService.updateUserDetails(username, updatedDetails);
-            return new ResponseEntity<>(updatedUser, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-        }
-    }
-    
-    @DeleteMapping("/users/{username}")
-    public ResponseEntity<String> deleteUser(@PathVariable String username) {
-        try {
-            String message = adminService.deleteSeller(username);
-            return new ResponseEntity<>(message, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
     

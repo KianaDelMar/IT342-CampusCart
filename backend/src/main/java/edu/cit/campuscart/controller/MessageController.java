@@ -34,7 +34,7 @@ public class MessageController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/unread/{username}")
+    @GetMapping("/unread/{username}")  // not used
     public ResponseEntity<List<MessageDTO>> getUnreadMessages(@PathVariable String username) {
         return ResponseEntity.ok(messageService.getUnreadMessages(username));
     }

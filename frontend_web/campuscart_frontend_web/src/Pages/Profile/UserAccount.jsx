@@ -293,9 +293,9 @@ const UserAccount = (props) => {
     };
 
     useEffect(() => {
-        setLoading(true);
         const fetchProfileData = async () => {
             const username = sessionStorage.getItem('username');
+            setLoading(true);
             try {
                 const response = await api.get(`/user/getUserRecord/${username}`);
 

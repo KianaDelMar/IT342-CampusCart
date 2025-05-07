@@ -13,7 +13,6 @@ import { useLoading } from '../../contexts/LoadingContext';
 const UpdateProductForm = ({ product, onUpdateSuccess, setProduct }) => {
   const [productName, setProductName] = useState(product.name || '');
   const [description, setDescription] = useState(product.pdtDescription || '');
-  const [quantity, setQuantity] = useState(product.qtyInStock || '');
   const [price, setPrice] = useState(product.buyPrice || '');
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
@@ -29,7 +28,6 @@ const UpdateProductForm = ({ product, onUpdateSuccess, setProduct }) => {
     console.log('product passed to form:', product);
     setProductName(product.name || '');
     setDescription(product.pdtDescription || '');
-    setQuantity(product.qtyInStock || '');
     setPrice(product.buyPrice || '');
     setCategory(product.category || '');
     setStatus(product.status || '');
@@ -38,7 +36,6 @@ const UpdateProductForm = ({ product, onUpdateSuccess, setProduct }) => {
     setOriginalValues({
       name: product.name,
       pdtDescription: product.pdtDescription,
-      qtyInStock: product.qtyInStock,
       buyPrice: product.buyPrice,
       category: product.category,
       conditionType: product.conditionType,
@@ -78,17 +75,11 @@ const UpdateProductForm = ({ product, onUpdateSuccess, setProduct }) => {
       return;
     }
 
-    if (Number(quantity) <= 0) {
-      toast.error('Quantity must be greater than 0');
-      return;
-    }
-
     // Check if any values have changed when status is "Approved"
     const hasChanges = 
       product.status === "Approved" && (
         productName !== originalValues.name ||
         description !== originalValues.pdtDescription ||
-        Number(quantity) !== originalValues.qtyInStock ||
         Number(price) !== originalValues.buyPrice ||
         category !== originalValues.category ||
         conditionType !== originalValues.conditionType ||
@@ -99,7 +90,6 @@ const UpdateProductForm = ({ product, onUpdateSuccess, setProduct }) => {
       product.status === "Rejected" && (
         productName !== originalValues.name ||
         description !== originalValues.pdtDescription ||
-        Number(quantity) !== originalValues.qtyInStock ||
         Number(price) !== originalValues.buyPrice ||
         category !== originalValues.category ||
         conditionType !== originalValues.conditionType ||
@@ -125,7 +115,6 @@ const UpdateProductForm = ({ product, onUpdateSuccess, setProduct }) => {
       const productData = {
         name: productName,
         pdtDescription: description,
-        qtyInStock: quantity,
         buyPrice: price,
         category,
         status: newStatus,
@@ -346,41 +335,40 @@ const UpdateProductForm = ({ product, onUpdateSuccess, setProduct }) => {
         </Box>
 
         <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2 }}>
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            type="number"
-            label="Quantity in Stock"
-            value={quantity}
-            onChange={(e) => setQuantity(e.target.value)}
-            InputLabelProps={{ shrink: true }}
-            inputProps={{ min: "1" }}
-          />
-
-          <FormControl fullWidth margin="normal">
-            <InputLabel shrink>Status</InputLabel>
-            <Select
-              value={status}
-              onChange={(e) => setStatus(e.target.value)}
-              required
-              displayEmpty
-              sx={{ 
-                color: status ? 'inherit' : '#A9A9A9',
-                '& .MuiSelect-icon': {
-                  color: '#89343b',
-                },
-              }}
-            >
-              <MenuItem value="" disabled>Select status</MenuItem>
-              {product.status === "Approved" ? [
-                <MenuItem key="approved" value="Approved" disabled>Approved</MenuItem>,
-                <MenuItem key="sold" value="Sold">Sold</MenuItem>
-              ] : (
-                <MenuItem value="Pending" disabled>Pending</MenuItem>
-              )}
-            </Select>
-          </FormControl>
+          {product.status === 'Rejected' ? (
+            <TextField
+              label="Status"
+              value="Pending"
+              InputProps={{ readOnly: true }}
+              InputLabelProps={{ shrink: true }}
+              fullWidth
+              sx={{ bgcolor: '#f5f5f5' }}
+            />
+          ) : (
+            <FormControl fullWidth margin="normal">
+              <InputLabel shrink>Status</InputLabel>
+              <Select
+                value={status}
+                onChange={(e) => setStatus(e.target.value)}
+                required
+                displayEmpty
+                sx={{ 
+                  color: status ? 'inherit' : '#A9A9A9',
+                  '& .MuiSelect-icon': {
+                    color: '#89343b',
+                  },
+                }}
+              >
+                <MenuItem value="" disabled>Select status</MenuItem>
+                {product.status === "Approved" ? [
+                  <MenuItem key="approved" value="Approved" disabled>Approved</MenuItem>,
+                  <MenuItem key="sold" value="Sold">Sold</MenuItem>
+                ] : (
+                  <MenuItem value="Pending" disabled>Pending</MenuItem>
+                )}
+              </Select>
+            </FormControl>
+          )}
         </Box>
 
         <FormControl fullWidth margin="normal" error={imageError}>

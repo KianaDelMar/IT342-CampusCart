@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Box, Typography, Card, CardMedia, CardContent, Button, Grid, Avatar, Modal, IconButton } from '@mui/material';
 import axios from 'axios';
-import StarIcon from '@mui/icons-material/Star';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import UpdateProductForm from '../Sell/UpdateProductForm';
 import '../../App.css';
@@ -271,28 +270,6 @@ const SellerView = () => {
                   >
                     {sellerUsername}
                   </Typography>
-
-                  <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
-                    {[...Array(5)].map((_, index) => (
-                      <StarIcon
-                        key={index}
-                        sx={{
-                          color: '#FFD700',
-                          fontSize: '18px',
-                          mr: 0.2
-                        }}
-                      />
-                    ))}
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        ml: 1,
-                        color: '#666'
-                      }}
-                    >
-                      5.0 | 10K+ Sold
-                    </Typography>
-                  </Box>
                 </Box>
               </Box>
 

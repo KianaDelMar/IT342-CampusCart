@@ -78,25 +78,9 @@ const GoogleSignIn = () => {
             <Box
                 sx={{
                     width: '100%',
-                    '& > div': {
-                        width: '100% !important',
-                        display: 'flex !important',
-                        justifyContent: 'center !important',
-                    },
-                    '& > div > div': {
-                        width: '100% !important',
-                        display: 'flex !important',
-                        justifyContent: 'center !important',
-                        '& > div': {
-                            width: '100% !important',
-                            maxWidth: 'none !important'
-                        }
-                    },
-                    '& iframe': {
-                        scale: '1.2 !important',
-                        marginTop: '4px !important',
-                        marginBottom: '4px !important'
-                    }
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
                 }}
             >
                 <GoogleLogin
@@ -109,7 +93,6 @@ const GoogleSignIn = () => {
                     size="large"
                     text="continue_with"
                     shape="rectangular"
-                    width="100%"
                 />
             </Box>
         </Box>
