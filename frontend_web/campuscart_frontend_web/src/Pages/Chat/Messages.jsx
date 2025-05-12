@@ -168,6 +168,7 @@ const Messages = () => {
             };
 
             const response = await api.post('/messages', messageData);
+            console.log("Sending message");
             setMessages(prev => [...prev, response.data]);
             setNewMessage('');
             fetchUnreadCounts();

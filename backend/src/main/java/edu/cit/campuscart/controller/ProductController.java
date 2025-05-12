@@ -155,43 +155,6 @@ public class ProductController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 		}
 	}
-	
-	@GetMapping("/getProducts/{username}")
-	public ResponseEntity<List<Map<String, Object>>> getProducts(@PathVariable String username) {
-		try {
-			List<ProductEntity> products = pserv.getProducts(username);
-
-			List<Map<String, Object>> response = new ArrayList<>();
-			for (ProductEntity product : products) {
-				Map<String, Object> productData = new HashMap<>();
-				productData.put("code", product.getCode());
-				productData.put("name", product.getName());
-				productData.put("status", product.getStatus());
-				productData.put("pdtDescription", product.getPdtDescription());
-				productData.put("buyPrice", product.getBuyPrice());
-				productData.put("imagePath", product.getImagePath());
-
-				// Get user's username
-				if (product.getUser() != null) {
-					productData.put("userUsername", product.getUser().getUsername());
-				}
-
-				response.add(productData);
-			}
-
-			if (response.isEmpty()) {
-				return ResponseEntity.noContent().build();
-			}
-
-			return new ResponseEntity<>(response, HttpStatus.OK);
-		} catch (NoSuchElementException ex) {
-			System.err.println("No products found for user: " + username);
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-		} catch (Exception ex) {
-			System.err.println("An error occurred while retrieving products: " + ex.getMessage());
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-		}
-	}
 
 	// Filtering Products
 	@GetMapping("/getAllProductsFilter/{username}")

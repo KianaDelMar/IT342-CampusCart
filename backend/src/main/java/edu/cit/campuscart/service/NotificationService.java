@@ -6,6 +6,7 @@ import edu.cit.campuscart.repository.NotificationRepository;
 import edu.cit.campuscart.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -38,5 +39,17 @@ public class NotificationService {
                 .orElseThrow(() -> new RuntimeException("User not found with username: " + username));
     
         return notificationRepository.findByUserOrderByTimestampDesc(user);
+    }
+
+    @Transactional
+    public void markAllNotificationsAsRead(String username) {
+        UserEntity user = userRepository.findById(username)
+                .orElseThrow(() -> new RuntimeException("User not found with username: " + username));
+        
+        List<NotificationEntity> notifications = notificationRepository.findByUserOrderByTimestampDesc(user);
+        for (NotificationEntity notification : notifications) {
+            notification.setIsRead(true);
+        }
+        notificationRepository.saveAll(notifications);
     }
 }
