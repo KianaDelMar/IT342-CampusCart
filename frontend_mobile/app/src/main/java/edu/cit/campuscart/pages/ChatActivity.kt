@@ -1,158 +1,197 @@
 package edu.cit.campuscart.pages
 
+import android.content.Context
+import android.content.Intent
 import android.icu.text.SimpleDateFormat
 import android.os.Bundle
-import android.widget.Button
-import android.widget.EditText
+import android.widget.*
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.sendbird.android.SendbirdChat
-import com.sendbird.android.channel.BaseChannel
-import com.sendbird.android.channel.GroupChannel
-import com.sendbird.android.handler.GroupChannelHandler
-import com.sendbird.android.message.BaseMessage
-import com.sendbird.android.message.UserMessage
-import com.sendbird.android.params.GroupChannelCreateParams
-import com.sendbird.android.params.MessageListParams
-import com.sendbird.android.params.UserMessageCreateParams
+import com.squareup.picasso.Picasso
 import edu.cit.campuscart.BaseActivity
 import edu.cit.campuscart.R
-import edu.cit.campuscart.adapters.ChatAdapter
-import edu.cit.campuscart.models.ChatMessage
-import java.util.Date
-import java.util.Locale
+import edu.cit.campuscart.adapters.MessageAdapter
+import edu.cit.campuscart.models.MessageDTO
+import edu.cit.campuscart.utils.RetrofitClient
+import kotlinx.coroutines.launch
+import java.util.*
 
 class ChatActivity : BaseActivity() {
+
+    private lateinit var messageAdapter: MessageAdapter
     private lateinit var recyclerView: RecyclerView
-    private lateinit var adapter: ChatAdapter
-    private lateinit var messageInput: EditText
-    private lateinit var sendButton: Button
-    private lateinit var channel: GroupChannel
-    private lateinit var otherUsername: String
-    private val messages = mutableListOf<ChatMessage>()
+    private val messages = mutableListOf<MessageDTO>()
+
+    private lateinit var token: String
+    private lateinit var currentUser: String
+    private lateinit var otherUser: String
+    private var productCode: Int? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat)
 
-        recyclerView = findViewById(R.id.messageRecyclerView)
-        messageInput = findViewById(R.id.messageInput)
-        sendButton = findViewById(R.id.sendButton)
+        // Initialize views
+        val backButton = findViewById<Button>(R.id.btnback)
+        val editMessage = findViewById<EditText>(R.id.editMessage)
+        val buttonSend = findViewById<ImageButton>(R.id.buttonSend)
+        recyclerView = findViewById(R.id.recyclerMessages)
 
-        val currentUserId = SendbirdChat.currentUser?.userId ?: ""
+        // Load from shared preferences
+        val sharedPref = getSharedPreferences("CampusCartPrefs", Context.MODE_PRIVATE)
+        token = "Bearer ${sharedPref.getString("authToken", "") ?: ""}"
+        currentUser = sharedPref.getString("loggedInUsername", "") ?: ""
 
-        adapter = ChatAdapter(messages, currentUserId)
-        recyclerView.adapter = adapter
-        recyclerView.layoutManager = LinearLayoutManager(this)
-
-        // Get recipient username from Intent (for product selection or manual entry)
-        // Inside ChatActivity
-        val recipientUsername = intent.getStringExtra("otherUserId") ?: ""  // Check if passed via intent
-        val recipientField = findViewById<EditText>(R.id.recipientInput)
-
-
-        // If the recipient username is empty, let the user manually type, otherwise, set the value automatically
-        if (recipientUsername.isNotBlank()) {
-            recipientField.setText(recipientUsername)
-            recipientField.isFocusable = false  // Disable editing
-            recipientField.isClickable = false
-        } else {
-            recipientField.isFocusableInTouchMode = true  // Allow manual entry
-            recipientField.isClickable = true
+        if (currentUser.isEmpty()) {
+            Toast.makeText(this, "User not found", Toast.LENGTH_SHORT).show()
+            finish()
+            return
         }
 
-        // Set up SendBird channel
-        openChannelWithUser(recipientUsername)
+        // Get otherUser and productCode from intent
+        otherUser = intent.getStringExtra("recipientUsername") ?: ""
+        productCode = intent.getIntExtra("productCode", -1).takeIf { it != -1 }
 
-        sendButton.setOnClickListener {
-            val text = messageInput.text.toString()
-            if (text.isNotBlank()) {
-                sendMessage(text)
-            }
+        if (otherUser.isEmpty()) {
+            Toast.makeText(this, "Recipient not found", Toast.LENGTH_SHORT).show()
+            finish()
+            return
+        }
+
+        // Set up UI
+        setupUI()
+        setupRecyclerView()
+        setupClickListeners(backButton, editMessage, buttonSend)
+        loadMessages()
+    }
+
+    private fun setupUI() {
+        // Set "To: sellerUsername"
+        findViewById<TextView>(R.id.recipient_label).text = "To: $otherUser"
+
+        // Retrieve product info from intent
+        val productName = intent.getStringExtra("productName")
+        val productImagePath = intent.getStringExtra("productImagePath")
+        val productPrice = intent.getDoubleExtra("productPrice", 0.0)
+        val productDescription = intent.getStringExtra("productDescription")
+
+        // Set product info
+        findViewById<TextView>(R.id.product_info)?.apply {
+            text = "$productName\n₱${String.format("%.2f", productPrice)}\n$productDescription"
+        }
+
+        val productImageView = findViewById<ImageView>(R.id.product_image)
+        if (productImagePath != null && productImageView != null) {
+            val baseUrl = "https://campuscart-online-marketplace-system-production.up.railway.app/"
+            Picasso.get()
+                .load("$baseUrl$productImagePath")
+                .placeholder(R.drawable.defaultimage)
+                .error(R.drawable.defaultimage)
+                .into(productImageView)
         }
     }
 
-    private fun openChannelWithUser(username: String) {
-        GroupChannel.createChannel(
-            GroupChannelCreateParams().apply {
-                userIds = listOf(username)
-                isDistinct = true
-            }
-        ) { result, e ->
-            if (e == null && result != null) {
-                channel = result
-                loadPreviousMessages()
-                listenForNewMessages()
-            }
+    private fun setupRecyclerView() {
+        recyclerView.layoutManager = LinearLayoutManager(this).apply {
+            stackFromEnd = true // Messages will start from bottom
         }
+        messageAdapter = MessageAdapter(currentUser)
+        recyclerView.adapter = messageAdapter
     }
 
-    private fun loadPreviousMessages() {
-        val messageListParams = MessageListParams().apply {
-            reverse = false
-            previousResultSize = 50
+    private fun setupClickListeners(
+        backButton: Button,
+        editMessage: EditText,
+        buttonSend: ImageButton
+    ) {
+        backButton.setOnClickListener {
+            val intent = Intent(this, MessagePage::class.java)
+            startActivity(intent)
+            finish()
         }
 
-        channel.getMessagesByTimestamp(System.currentTimeMillis(), messageListParams) { messagesList, e ->
-            if (e == null && messagesList != null) {
-                messages.clear()
-                messagesList.filterIsInstance<UserMessage>().forEach {
-                    messages.add(
-                        ChatMessage(
-                            senderUsername = it.sender?.userId ?: "Unknown",
-                            message = it.message,
-                            timestamp = formatTime(it.createdAt)
-                        )
-                    )
-                }
-                adapter.notifyDataSetChanged()
-                recyclerView.scrollToPosition(messages.size - 1)
-            }
-        }
-    }
-
-    private fun listenForNewMessages() {
-        val handlerId = "CHAT_${channel.url}"
-        SendbirdChat.addChannelHandler(handlerId, object : GroupChannelHandler() {
-            override fun onMessageReceived(channel: BaseChannel, message: BaseMessage) {
-                if (message is UserMessage) {
-                    messages.add(
-                        ChatMessage(
-                            senderUsername = message.sender?.userId ?: "Unknown",
-                            message = message.message,
-                            timestamp = formatTime(message.createdAt)
-                        )
-                    )
-                    adapter.notifyItemInserted(messages.size - 1)
-                    recyclerView.scrollToPosition(messages.size - 1)
-                }
-            }
-        })
-    }
-
-    private fun sendMessage(text: String) {
-        channel.sendUserMessage(UserMessageCreateParams(text)) { message, e ->
-            if (e == null && message != null) {
-                messages.add(
-                    ChatMessage(
-                        senderUsername = message.sender?.userId ?: "Unknown",
-                        message = message.message,
-                        timestamp = formatTime(message.createdAt)
-                    )
+        buttonSend.setOnClickListener {
+            val content = editMessage.text.toString().trim()
+            if (content.isNotBlank()) {
+                val message = MessageDTO(
+                    sender = currentUser,
+                    receiver = otherUser,
+                    content = content,
+                    timestamp = getCurrentTime(),
+                    productCode = productCode
                 )
-                adapter.notifyItemInserted(messages.size - 1)
-                recyclerView.scrollToPosition(messages.size - 1)
-                messageInput.text.clear()
+                sendMessage(message)
+                editMessage.text.clear()
+            }
+        }
+
+        // Send message on Enter key
+        editMessage.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == android.view.inputmethod.EditorInfo.IME_ACTION_SEND) {
+                val content = editMessage.text.toString().trim()
+                if (content.isNotBlank()) {
+                    val message = MessageDTO(
+                        sender = currentUser,
+                        receiver = otherUser,
+                        content = content,
+                        timestamp = getCurrentTime(),
+                        productCode = productCode
+                    )
+                    sendMessage(message)
+                    editMessage.text.clear()
+                }
+                true
+            } else {
+                false
             }
         }
     }
 
-    private fun formatTime(timeMillis: Long): String {
-        return SimpleDateFormat("HH:mm dd/MM", Locale.getDefault()).format(Date(timeMillis))
+    private fun loadMessages() {
+        lifecycleScope.launch {
+            try {
+                val response = if (productCode != null) {
+                    RetrofitClient.instance.getProductConversation(token, currentUser, otherUser, productCode!!)
+                } else {
+                    RetrofitClient.instance.getConversation(token, currentUser, otherUser)
+                }
+
+                if (response.isSuccessful) {
+                    messages.clear()
+                    messages.addAll(response.body() ?: emptyList())
+                    messageAdapter.setMessages(messages)
+                    messageAdapter.notifyDataSetChanged()
+                    recyclerView.scrollToPosition(messages.size - 1)
+                } else {
+                    Toast.makeText(this@ChatActivity, "Failed to load messages", Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
+                Toast.makeText(this@ChatActivity, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
-    override fun onDestroy() {
-        SendbirdChat.removeChannelHandler("CHAT_${channel.url}")
-        super.onDestroy()
+    private fun sendMessage(message: MessageDTO) {
+        lifecycleScope.launch {
+            try {
+                val response = RetrofitClient.instance.sendMessage(token, message)
+                if (response.isSuccessful) {
+                    // Add message to local list and update UI
+                    messages.add(message)
+                    messageAdapter.addMessage(message)
+                    messageAdapter.notifyItemInserted(messages.size - 1)
+                    recyclerView.scrollToPosition(messages.size - 1)
+                } else {
+                    Toast.makeText(this@ChatActivity, "Failed to send message", Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
+                Toast.makeText(this@ChatActivity, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun getCurrentTime(): String {
+        return SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()).format(Date())
     }
 }
