@@ -6,10 +6,9 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.sendbird.android.user.Member
 import edu.cit.campuscart.R
 import edu.cit.campuscart.utils.Constants
-
+/*
 class ProfileAdapter(
     private val members: List<Member>,  // Members from the group channel
     private val onClick: (Member) -> Unit  // This will handle item click to filter messages
@@ -43,3 +42,4 @@ class ProfileAdapter(
         val profileImage: ImageView = view.findViewById(R.id.imageProfile)
     }
 }
+*/

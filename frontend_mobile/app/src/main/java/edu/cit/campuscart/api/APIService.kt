@@ -1,8 +1,10 @@
 package edu.cit.campuscart.api
 
 import edu.cit.campuscart.models.ChangePasswordRequest
+import edu.cit.campuscart.models.ConversationDTO
 import edu.cit.campuscart.models.LoginRequest
 import edu.cit.campuscart.models.LoginResponse
+import edu.cit.campuscart.models.MessageDTO
 import edu.cit.campuscart.models.Notification
 import edu.cit.campuscart.models.Products
 import edu.cit.campuscart.models.Seller
@@ -11,6 +13,7 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Call
+import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -149,4 +152,49 @@ interface APIService {
         @Header("Authorization") token: String,
         @Path("username") username: String
     ):  Call<ResponseBody>
+
+    @Headers("Content-Type: application/json")
+    @POST("api/messages")
+    suspend fun sendMessage(
+        @Header("Authorization") token: String,
+        @Body messageDTO: MessageDTO
+    ): Response<MessageDTO>
+
+    @Headers("Content-Type: application/json")
+    @GET("api/messages/conversation/{username1}/{username2}")
+    suspend fun getConversation(
+        @Header("Authorization") token: String,
+        @Path("username1") username1: String,
+        @Path("username2") username2: String
+    ): Response<List<MessageDTO>>
+
+    @Headers("Content-Type: application/json")
+    @PUT("api/messages/{messageId}/read")
+    suspend fun markAsRead(
+        @Header("Authorization") token: String,
+        @Path("messageId") messageId: Long
+    ): Response<Void>
+
+    @Headers("Content-Type: application/json")
+    @GET("api/messages/unread/count/{username}")
+    suspend fun getUnreadMessageCount(
+        @Header("Authorization") token: String,
+        @Path("username") username: String
+    ): Response<Long>
+
+    @Headers("Content-Type: application/json")
+    @GET("api/messages/conversation/{username1}/{username2}/product/{productCode}")
+    suspend fun getProductConversation(
+        @Header("Authorization") token: String,
+        @Path("username1") username1: String,
+        @Path("username2") username2: String,
+        @Path("productCode") productCode: Int
+    ): Response<List<MessageDTO>>
+
+    @Headers("Content-Type: application/json")
+    @GET("api/messages/conversations/{username}")
+    suspend fun getConversations(
+        @Header("Authorization") token: String,
+        @Path("username") username: String
+    ): Response<List<ConversationDTO>>
 }

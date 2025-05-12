@@ -232,23 +232,42 @@
             android:orientation="vertical"
             android:gravity="center">
 
-            <ImageButton
-                android:id="@+id/btnMessage"
-                android:layout_width="36dp"
-                android:layout_height="40dp"
-                android:layout_gravity="center"
-                android:background="@null"
-                android:scaleType="fitCenter"
-                android:contentDescription="@string/messages"
-                android:src="@drawable/mail"
-                android:focusable="true"
-                android:clickable="true"/>
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <ImageButton
+                    android:id="@+id/btnMessage"
+                    android:layout_width="36dp"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center"
+                    android:background="@null"
+                    android:scaleType="fitCenter"
+                    android:contentDescription="Messages"
+                    android:src="@drawable/mail"
+                    android:focusable="true"
+                    android:clickable="true"/>
+
+                <!-- Badge View -->
+                <TextView
+                    android:id="@+id/messageBadge"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_gravity="top|end"
+                    android:background="@drawable/badge_background"
+                    android:text="0"
+                    android:textColor="@android:color/white"
+                    android:textSize="10sp"
+                    android:gravity="center"
+                    android:visibility="gone"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginEnd="2dp"/>
+            </FrameLayout>
 
             <TextView
                 android:id="@+id/txtMessage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/message2"
+                android:text="Message"
                 android:textSize="13sp"
                 android:gravity="center"
                 android:textColor="#89343B"

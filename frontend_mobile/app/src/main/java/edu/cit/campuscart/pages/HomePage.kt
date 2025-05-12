@@ -7,6 +7,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
@@ -19,6 +20,9 @@ import edu.cit.campuscart.fragments.ProductDetailDialogFragment
 import edu.cit.campuscart.models.Notification
 import edu.cit.campuscart.models.Products
 import edu.cit.campuscart.utils.RetrofitClient
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -39,6 +43,40 @@ class HomePage : BaseActivity() {
         }
     }
 
+    private fun updateMessageBadgeFromApi(badgeTextView: TextView) {
+        val sharedPreferences = getSharedPreferences("CampusCartPrefs", MODE_PRIVATE)
+        val token = sharedPreferences.getString("authToken", "") ?: ""
+        val username = sharedPreferences.getString("loggedInUsername", "") ?: ""
+
+        if (token.isEmpty() || username.isEmpty()) {
+            badgeTextView.visibility = View.GONE
+            return
+        }
+
+        val bearerToken = "Bearer $token"
+
+        // Use lifecycleScope to launch a coroutine
+        lifecycleScope.launch {
+            try {
+                val response = RetrofitClient.instance.getUnreadMessageCount(bearerToken, username)
+
+                withContext(Dispatchers.Main) {
+                    val count = response.body() ?: 0
+                    if (response.isSuccessful && count > 0) {
+                        badgeTextView.text = count.toString()
+                        badgeTextView.visibility = View.VISIBLE
+                    } else {
+                        badgeTextView.visibility = View.GONE
+                    }
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    badgeTextView.visibility = View.GONE
+                }
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_homepage) // Make sure this layout exists!
@@ -50,6 +88,9 @@ class HomePage : BaseActivity() {
 
         val badgeTextView: TextView = findViewById(R.id.notificationBadge)
         updateNotificationBadgeFromPrefs(badgeTextView)
+
+        val messageBadgeTextView: TextView = findViewById(R.id.messageBadge)
+        updateMessageBadgeFromApi(messageBadgeTextView)
 
         val addButton = findViewById<ImageButton>(R.id.btnAddProduct)
         addButton.setOnClickListener {

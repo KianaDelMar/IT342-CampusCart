@@ -2,6 +2,7 @@ package edu.cit.campuscart.fragments
 
 import android.app.AlertDialog
 import android.app.Dialog
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -11,15 +12,18 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity.MODE_PRIVATE
 import androidx.fragment.app.DialogFragment
-import com.sendbird.android.channel.GroupChannel
-import com.sendbird.android.params.GroupChannelCreateParams
-import com.sendbird.android.params.GroupChannelListQueryParams
+import androidx.lifecycle.lifecycleScope
+import com.google.gson.Gson
 import com.squareup.picasso.Picasso
 import edu.cit.campuscart.R
 import edu.cit.campuscart.models.Products
 import edu.cit.campuscart.pages.ChatActivity
 import edu.cit.campuscart.utils.Constants
 import edu.cit.campuscart.utils.PreferenceUtils
+import edu.cit.campuscart.utils.RetrofitClient
+import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody.Companion.toRequestBody
 
 class ProductDetailDialogFragment : DialogFragment() {
 
@@ -49,44 +53,23 @@ class ProductDetailDialogFragment : DialogFragment() {
         val sellerUsername = view.findViewById<TextView>(R.id.seller_username)
         val chatButton = view.findViewById<LinearLayout>(R.id.btnChat)
 
+        val token = requireContext().getSharedPreferences("CampusCartPrefs", MODE_PRIVATE).getString("authToken", "") ?: ""
+        val username1 = requireContext()
+            .getSharedPreferences("CampusCartPrefs", Context.MODE_PRIVATE)
+            .getString("loggedInUsername", "") ?: ""
+        val bearerToken = "Bearer $token"
+
         chatButton.setOnClickListener {
-            val sharedPref = requireContext().getSharedPreferences("CampusCartPrefs", MODE_PRIVATE)
-            val currentUserId = sharedPref.getString("loggedInUsername", null) ?: return@setOnClickListener
-            val sellerId = product?.userUsername ?: return@setOnClickListener
-
-            val query = GroupChannel.createMyGroupChannelListQuery(
-                GroupChannelListQueryParams().apply {
-                    userIdsExactFilter = listOf(currentUserId, sellerId)
-                    includeEmpty = true
-                    limit = 1
+            product?.let {
+                val intent = Intent(requireContext(), ChatActivity::class.java).apply {
+                    putExtra("recipientUsername", it.userUsername)
+                    putExtra("productCode", it.code)
+                    putExtra("productName", it.name)
+                    putExtra("productImagePath", it.imagePath)
+                    putExtra("productPrice", it.buyPrice)
+                    putExtra("productDescription", it.pdtDescription)
                 }
-            )
-
-            query.next { channels, e ->
-                if (e != null) {
-                    Log.e("SendBird", "Channel query failed: ${e.message}")
-                    return@next
-                }
-
-                if (!channels.isNullOrEmpty()) {
-                    // Existing channel found
-                    val existingChannel = channels[0]
-                    goToChatActivity(existingChannel.url, sellerId)
-                } else {
-                    // No existing channel, create new
-                    val params = GroupChannelCreateParams().apply {
-                        userIds = listOf(currentUserId, sellerId)
-                        isDistinct = true
-                    }
-
-                    GroupChannel.createChannel(params) { newChannel, err ->
-                        if (err != null) {
-                            Log.e("SendBird", "Channel creation failed: ${err.message}")
-                        } else {
-                            goToChatActivity(newChannel?.url, sellerId)
-                        }
-                    }
-                }
+                startActivity(intent)
             }
         }
 

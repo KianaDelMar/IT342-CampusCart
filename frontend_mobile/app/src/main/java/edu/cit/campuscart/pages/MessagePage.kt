@@ -1,110 +1,117 @@
 package edu.cit.campuscart.pages
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.widget.EditText
+import android.view.View
 import android.widget.ImageButton
-import androidx.appcompat.app.AlertDialog
+import android.widget.TextView
+import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.sendbird.android.SendbirdChat
-import com.sendbird.android.channel.GroupChannel
-import com.sendbird.android.message.UserMessage
-import com.sendbird.android.params.GroupChannelListQueryParams
-import com.sendbird.android.params.GroupChannelCreateParams
 import edu.cit.campuscart.BaseActivity
 import edu.cit.campuscart.R
 import edu.cit.campuscart.adapters.ConversationAdapter
-import edu.cit.campuscart.models.ConversationPreview
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import edu.cit.campuscart.models.ConversationDTO
+import edu.cit.campuscart.utils.RetrofitClient
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MessagePage : BaseActivity() {
 
+    private lateinit var conversationAdapter: ConversationAdapter
     private lateinit var recyclerView: RecyclerView
-    private lateinit var adapter: ConversationAdapter
+    private val conversations = mutableListOf<ConversationDTO>()
+
+    private lateinit var token: String
+    private lateinit var currentUser: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_messagepage)
 
+        // Initialize views
+        val messageBadgeTextView: TextView = findViewById(R.id.messageBadge)
         recyclerView = findViewById(R.id.conversationList)
-        recyclerView.layoutManager = LinearLayoutManager(this)
 
-        findViewById<ImageButton>(R.id.btnNewMessage).setOnClickListener {
-            showNewMessageDialog()
+        // Load from shared preferences
+        val sharedPref = getSharedPreferences("CampusCartPrefs", Context.MODE_PRIVATE)
+        token = "Bearer ${sharedPref.getString("authToken", "") ?: ""}"
+        currentUser = sharedPref.getString("loggedInUsername", "") ?: ""
+
+        if (currentUser.isEmpty()) {
+            Toast.makeText(this, "User not found", Toast.LENGTH_SHORT).show()
+            finish()
+            return
         }
+
+        setupRecyclerView()
         setupNavigationButtons()
+        updateMessageBadgeFromApi(messageBadgeTextView)
         loadConversations()
     }
 
-    private fun loadConversations() {
-        val query = GroupChannel.createMyGroupChannelListQuery(
-            GroupChannelListQueryParams().apply {
-                includeEmpty = false
+    private fun setupRecyclerView() {
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        conversationAdapter = ConversationAdapter(conversations, currentUser, token) { conversation ->
+            // When a conversation is clicked
+            val otherUser = if (conversation.participant1 == currentUser) conversation.participant2 else conversation.participant1
+            val intent = Intent(this, ChatActivity::class.java).apply {
+                putExtra("recipientUsername", otherUser)
+                putExtra("productCode", conversation.productCode ?: -1)
+                // Add product details if available
+                conversation.productName?.let { putExtra("productName", it) }
+                conversation.productImagePath?.let { putExtra("productImagePath", it) }
+                conversation.productPrice?.let { putExtra("productPrice", it) }
+                conversation.productDescription?.let { putExtra("productDescription", it) }
             }
-        )
+            startActivity(intent)
+        }
+        recyclerView.adapter = conversationAdapter
+    }
 
-        query.next { channels, e ->
-            if (e != null) return@next
-            val currentUserId = SendbirdChat.currentUser?.userId
-
-            val previews = channels?.map {
-                val lastMessage = it.lastMessage?.message ?: ""
-                val time = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
-                    .format(Date(it.lastMessage?.createdAt ?: 0))
-
-                val otherUser = it.members.firstOrNull { m -> m.userId != currentUserId }
-                val displayLastMessage = if (it.lastMessage is UserMessage && (it.lastMessage as UserMessage).sender?.userId == currentUserId) {
-                    "You: $lastMessage"
-                } else {
-                    lastMessage
+    private fun updateMessageBadgeFromApi(badgeTextView: TextView) {
+        lifecycleScope.launch {
+            try {
+                val response = RetrofitClient.instance.getUnreadMessageCount(token, currentUser)
+                withContext(Dispatchers.Main) {
+                    if (response.isSuccessful) {
+                        val count = response.body() ?: 0
+                        if (count > 0) {
+                            badgeTextView.text = count.toString()
+                            badgeTextView.visibility = View.VISIBLE
+                        } else {
+                            badgeTextView.visibility = View.GONE
+                        }
+                    } else {
+                        badgeTextView.visibility = View.GONE
+                    }
                 }
-
-                ConversationPreview(
-                    userId = otherUser?.userId ?: "",
-                    username = otherUser?.nickname ?: "Unknown",
-                    lastMessage = displayLastMessage,
-                    timestamp = time
-                )
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    badgeTextView.visibility = View.GONE
+                }
             }
-
-            adapter = ConversationAdapter(previews.orEmpty()) { selected ->
-                val intent = Intent(this, ChatActivity::class.java)
-                intent.putExtra("userId", selected.userId)
-                startActivity(intent)
-            }
-
-            recyclerView.adapter = adapter
         }
     }
 
-    private fun showNewMessageDialog() {
-        val editText = EditText(this)
-        editText.hint = "Enter user ID"
-
-        // In the MessagePage dialog where the new message is created
-        AlertDialog.Builder(this)
-            .setTitle("New Message")
-            .setView(editText)
-            .setPositiveButton("Start") { _, _ ->
-                val userId = editText.text.toString()
-                GroupChannel.createChannel(
-                    GroupChannelCreateParams().apply {
-                        userIds = listOf(userId)
-                        isDistinct = true
-                    }
-                ) { channel, e ->
-                    if (channel != null) {
-                        val intent = Intent(this, ChatActivity::class.java)
-                        intent.putExtra("otherUserId", userId)  // Pass the userId to ChatActivity
-                        startActivity(intent)
-                    }
+    private fun loadConversations() {
+        lifecycleScope.launch {
+            try {
+                val response = RetrofitClient.instance.getConversations(token, currentUser)
+                if (response.isSuccessful) {
+                    conversations.clear()
+                    conversations.addAll(response.body() ?: emptyList())
+                    conversationAdapter.notifyDataSetChanged()
+                } else {
+                    Toast.makeText(this@MessagePage, "Failed to load conversations", Toast.LENGTH_SHORT).show()
                 }
+            } catch (e: Exception) {
+                Toast.makeText(this@MessagePage, "An error occurred: ${e.message}", Toast.LENGTH_LONG).show()
             }
-            .setNegativeButton("Cancel", null)
-            .show()
+        }
     }
 
     private fun setupNavigationButtons() {
@@ -123,6 +130,15 @@ class MessagePage : BaseActivity() {
         findViewById<ImageButton>(R.id.btnProfile).setOnClickListener {
             startActivity(Intent(this, ProfilePage::class.java))
         }
-        findViewById<ImageButton>(R.id.btnMessage).setOnClickListener { }
+        findViewById<ImageButton>(R.id.btnMessage).setOnClickListener {
+            loadConversations() // refresh
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Refresh conversations and badge when returning to this activity
+        loadConversations()
+        updateMessageBadgeFromApi(findViewById(R.id.messageBadge))
     }
 }

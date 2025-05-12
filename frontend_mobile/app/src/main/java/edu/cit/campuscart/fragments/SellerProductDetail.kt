@@ -107,7 +107,7 @@ class SellerProductDetail : DialogFragment() {
             }
 
             Picasso.get()
-                .load("${Constants.BASE_URL}uploads/${it.imagePath}")
+                .load("${Constants.BASE_URL}${it.imagePath}")
                 .placeholder(R.drawable.defaultimage)
                 .error(R.drawable.defaultimage)
                 .into(productImage)
